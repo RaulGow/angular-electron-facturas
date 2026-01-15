@@ -1,0 +1,177 @@
+@use '../../../styles.scss' as *;
+
+// Reset para el componente y asegurar el 100% sin scroll
+.main-page {
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 24px;
+  background-color: $secondary;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  height: 100vh; // Ocupa todo el alto
+  width: 100%; // Ocupa todo el ancho
+  box-sizing: border-box;
+  overflow: hidden; // Evita scroll general
+}
+
+// Estilos para el Header
+.header {
+  h1 {
+    margin: 0;
+    font-size: 2rem;
+    color: #000000;
+  }
+
+  p {
+    font-size: 1rem;
+    margin: 4px 0 0;
+    color: #333;
+  }
+}
+
+// Resumen de tarjetas
+.dashboard-sumary {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+}
+
+.card-sumary {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  align-items: center;
+  background-color: $white;
+  box-shadow: $shadow;
+  border-radius: 12px;
+  padding: 24px;
+  flex: 1;
+  cursor: pointer;
+  border: none; // Al ser un button, quitamos el borde por defecto
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  img {
+    width: 62px;
+    height: 62px;
+    object-fit: contain; // Evita que la imagen se deforme
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.card-sumary-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+
+  .card-sumary-content-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #222;
+    padding-bottom: 1rem;
+  }
+
+  .card-sumary-content-price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: $primary;
+  }
+
+  .card-sumary-content-data {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #444;
+  }
+
+}
+
+// Sección de Botones de Acción
+.actions {
+  display: flex;
+  gap: 16px;
+
+  .actions-button {
+    background-color: $primary;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+
+    &-secondary {
+      background-color: #8dc5e6;
+      color: #000;
+    }
+
+    &:hover {
+      filter: brightness(1.1);
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+}
+
+// Sección de Tabla (con scroll interno si hay muchos datos)
+.sumary {
+  flex: 1;
+  background-color: $white;
+  border-radius: 12px;
+  box-shadow: $shadow;
+  overflow: hidden; // Para que el borde redondeado funcione
+  display: flex;
+  flex-direction: column;
+
+  .sumary-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+
+    thead {
+      background-color: #c1c1c1;
+      position: sticky;
+      top: 0;
+
+      th {
+        font-size: 1.25rem;
+        padding: 16px;
+        color: #333;
+        font-weight: 600;
+        border-bottom: 2px solid #eee;
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px solid #f0f0f0;
+
+        &:hover {
+          background-color: #f3d1d1;
+        }
+
+        td {
+          font-size: 1rem;
+          padding: 14px 16px;
+          color: #333;
+
+          &.sumary-table-number {
+            font-weight: 600;
+          }
+
+          &.sumary-table-price {
+            font-weight: 600;
+            color: $primary;
+          }
+        }
+      }
+    }
+  }
+}

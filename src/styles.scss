@@ -1,1 +1,24 @@
 /* You can add global styles to this file, and also import other style files */
+$primary: #940000;
+$secondary: #ececec;
+$text-dark: #333;
+$white: #ffffff;
+$shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+/* styles.scss */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  background-color: $secondary;
+}
+
+p, h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+}
+
+* {
+  box-sizing: border-box;
+}

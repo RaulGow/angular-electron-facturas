@@ -1,0 +1,99 @@
+<button class="back-button" routerLink="/dashboard">Dashboard</button>
+<section class="invoice">
+
+  <!-- Header -->
+  <header class="invoice-header">
+    <div>
+      <h1>Charcutería La Tradición</h1>
+      <p>CIF: B12345678</p>
+      <p>C/ Mayor 12, 28001 Madrid</p>
+    </div>
+
+    <div class="invoice-meta">
+      <p><strong>Factura nº:</strong> 0001</p>
+      <p><strong>Fecha:</strong> {{ today | date:'dd/MM/yyyy' }}</p>
+    </div>
+  </header>
+
+  <!-- Cliente -->
+  <section class="client">
+    <h3>Cliente</h3>
+    <p>Nombre del cliente</p>
+    <p>DNI/CIF: XXXXXXXX</p>
+  </section>
+
+  <!-- Formulario para añadir artículos -->
+  <section class="add-item no-print">
+    <h3>Añadir artículo</h3>
+    <form (ngSubmit)="agregarLinea()">
+      <select [(ngModel)]="articuloSeleccionado" name="articulo">
+        <option [ngValue]="null" disabled selected>Selecciona un artículo</option>
+
+        @for (art of disponibles; track art.codigo) {
+          <option [ngValue]="art">
+            {{ art.nombre }} ({{ art.precio | number:'1.2-2' }} €/kg)
+          </option>
+        }
+      </select>
+
+      <input
+        type="number"
+        step="0.01"
+        min="0"
+        placeholder="Cantidad (kg)"
+        [(ngModel)]="cantidadSeleccionada"
+        name="cantidad"
+        required
+      />
+
+      <button type="submit">Añadir</button>
+    </form>
+  </section>
+
+  <!-- Tabla -->
+  <table class="invoice-table">
+    <thead>
+      <tr>
+        <th>Código</th>
+        <th>Artículo</th>
+        <th>Cant. (kg)</th>
+        <th>€/kg</th>
+        <th>Total €</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      @for (item of lineasFactura; track item.codigo) {
+        <tr>
+          <td>{{ item.codigo }}</td>
+          <td>{{ item.nombre }}</td>
+          <td>{{ item.cantidad | number:'1.2-2' }}</td>
+          <td>{{ item.precio | number:'1.2-2' }}</td>
+          <td class="right">{{ getTotalLinea(item) | number:'1.2-2' }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <!-- Totales -->
+  <section class="totals">
+    <div>
+      <span>Subtotal</span>
+      <span>{{ getTotalFactura() | number:'1.2-2' }} €</span>
+    </div>
+    <div>
+      <span>IVA (10%)</span>
+      <span>{{ getIVA() | number:'1.2-2' }} €</span>
+    </div>
+    <div class="total">
+      <span>Total</span>
+      <span>{{ getTotalConIVA() | number:'1.2-2' }} €</span>
+    </div>
+  </section>
+
+</section>
+
+<!-- Acciones (NO se imprimen) -->
+<div class="actions">
+  <button (click)="generarPDF()">Generar PDF</button>
+</div>
