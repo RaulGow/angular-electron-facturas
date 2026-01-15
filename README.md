@@ -1,59 +1,94 @@
-# AngularElectronFacturas
+# 📄 Angular Electron Facturas
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.5.
+Aplicación de escritorio profesional para la gestión de facturación, construida con **Angular 21** y **Electron**.
 
-## Development server
+---
 
-To start a local development server, run:
+## 🚀 Inicio Rápido
 
+### Requisitos previos
+Para asegurar la compatibilidad con **Angular 21** y **Electron 39**, tu entorno debe cumplir con:
+
+* **Node.js**: Se requiere la versión **v20.19.0**, **v22.12.0** o superior (recomendada v22+).
+* **npm**: Se requiere la versión **v11.6.2** o superior (como se especifica en el `packageManager`).
+* **Sistema Operativo**: 
+    * **Windows**: 10 o superior (para soporte de Electron 39).
+    * **Linux**: Distribuciones modernas con soporte para `AppImage`.
+    * **macOS**: Catalina o superior.
+
+### ⚙️ Instalación
 ```bash
-ng serve
+# Clonar el repositorio
+git clone <url-del-repositorio>
+
+# Entrar en la carpeta
+cd angular-electron-facturas
+
+# Instalar dependencias
+npm install
 ```
+> **Nota**: Se recomienda usar `npm clean-install` (o `npm ci`) para asegurar que se instalen las versiones exactas del `package-lock.json`.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+### 💻 Desarrollo
+El proyecto utiliza concurrently para ejecutar el servidor de desarrollo de Angular y la ventana de Electron de forma simultánea.
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
+## Ejecutar en modo Escritorio (Recomendado)
+Este comando compila la aplicación, levanta el servidor en el puerto 4200 y lanza la ventana de Electron automáticamente:
 ```bash
-ng generate component component-name
+npm run electron:start
 ```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
+## Ejecutar solo en Navegador
+Si deseas trabajar únicamente en la interfaz web sin acceso a las APIs de Electron:
 ```bash
-ng generate --help
+npm start
 ```
+Luego navega a http://localhost:4200/.
 
-## Building
+### 🏗️ Construcción y Empaquetado
+Para generar los instaladores finales, el proyecto utiliza electron-builder.
 
-To build the project run:
-
+## Generar Instalador de Producción
+Este script realiza un build de Angular con la base de rutas relativa (./) y genera los archivos ejecutables en la carpeta /release.
 ```bash
-ng build
+npm run electron:build
 ```
+### Configuración de salida según el Sistema Operativo:
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+* **Windows**: Genera un instalador NSIS (`.exe`).
+* **Mac**: Genera un archivo DMG.
+* **Linux**: Genera un paquete AppImage.
 
-## Running unit tests
+---
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## 🛠️ Scripts del Proyecto
 
-```bash
-ng test
-```
+| Comando | Acción |
+| :--- | :--- |
+| `npm run electron:start` | Lanza el entorno de desarrollo completo (Angular + Electron). |
+| `npm run electron:build` | Compila y empaqueta la aplicación para distribución. |
+| `npm run build` | Genera los archivos de producción de Angular en `/dist`. |
+| `npm test` | Ejecuta las pruebas unitarias con **Vitest**. |
+| `npm run watch` | Compila Angular en modo "watch" para detectar cambios. |
 
-## Running end-to-end tests
+---
 
-For end-to-end (e2e) testing, run:
+## 📁 Estructura Principal
 
-```bash
-ng e2e
-```
+* **`src/`**: Aplicación frontend en Angular (Dashboard, Facturas, Lógica UI).
+* **`electron/main.js`**: Proceso principal de Electron (gestión de ventanas).
+* **`public/`**: Almacén de activos (iconos, imágenes y recursos estáticos).
+* **`release/`**: Carpeta donde se guardan los instaladores finales tras el build.
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+---
 
-## Additional Resources
+## 💅 Calidad de Código
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+El proyecto utiliza **Prettier** para mantener un formato consistente.
+
+* **Single Quote**: `true`
+* **Print Width**: `100`
+* **HTML Parser**: Especializado para Angular.
+
+---
+
+**Desarrollado por [Raúl Martínez](https://github.com/tu-usuario)**
