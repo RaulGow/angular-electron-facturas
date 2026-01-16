@@ -11,43 +11,15 @@
 
     <div class="invoice-meta">
       <p><strong>Factura nº:</strong> 0001</p>
-      <p><strong>Fecha:</strong> {{ today | date:'dd/MM/yyyy' }}</p>
+      <p><strong>Fecha:</strong> {{ (invoiceDate || today) | date:'dd/MM/yyyy' }}</p>
     </div>
   </header>
 
   <!-- Cliente -->
   <section class="client">
     <h3>Cliente</h3>
-    <p>Nombre del cliente</p>
+    <p>{{ customerName }}</p>
     <p>DNI/CIF: XXXXXXXX</p>
-  </section>
-
-  <!-- Formulario para añadir artículos -->
-  <section class="add-item no-print">
-    <h3>Añadir artículo</h3>
-    <form (ngSubmit)="agregarLinea()">
-      <select [(ngModel)]="articuloSeleccionado" name="articulo">
-        <option [ngValue]="null" disabled selected>Selecciona un artículo</option>
-
-        @for (art of disponibles; track art.codigo) {
-          <option [ngValue]="art">
-            {{ art.nombre }} ({{ art.precio | number:'1.2-2' }} €/kg)
-          </option>
-        }
-      </select>
-
-      <input
-        type="number"
-        step="0.01"
-        min="0"
-        placeholder="Cantidad (kg)"
-        [(ngModel)]="cantidadSeleccionada"
-        name="cantidad"
-        required
-      />
-
-      <button type="submit">Añadir</button>
-    </form>
   </section>
 
   <!-- Tabla -->

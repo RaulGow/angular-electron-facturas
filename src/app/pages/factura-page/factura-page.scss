@@ -1,70 +1,106 @@
 :host {
   display: block;
-  background: #f5f5f5;
+  background-color: #f5f5f5;
   padding: 2rem;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  min-height: 100vh;
 }
 
+/* Estilo del contenedor de la factura (Simulación de papel A4) */
 .invoice {
   background: #ffffff;
   max-width: 800px;
   margin: 0 auto;
-  padding: 2rem;
-  color: #000;
+  padding: 3rem;
+  color: #333;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
 }
 
-/* Header */
+/* Botón de volver (fuera de la factura) */
+.back-button {
+  margin-bottom: 1rem;
+  padding: 8px 16px;
+  cursor: pointer;
+  background: #666;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+/* Cabecera */
 .invoice-header {
   display: flex;
   justify-content: space-between;
-  border-bottom: 2px solid #000;
-  padding-bottom: 1rem;
-  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #333;
+  padding-bottom: 1.5rem;
+  margin-bottom: 2rem;
 
   h1 {
     margin: 0;
-    font-size: 1.6rem;
+    font-size: 1.8rem;
+    color: #000;
   }
 
   p {
-    margin: 0.2rem 0;
-    font-size: 0.9rem;
+    margin: 4px 0;
+    font-size: 0.95rem;
+    color: #555;
   }
 }
 
 .invoice-meta {
   text-align: right;
+
+  p {
+    font-weight: 500;
+  }
 }
 
-/* Cliente */
+/* Datos del Cliente */
 .client {
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
 
   h3 {
-    margin-bottom: 0.5rem;
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    color: #777;
+    border-bottom: 1px solid #eee;
+    display: inline-block;
+    padding-right: 2rem;
   }
 
   p {
-    margin: 0.2rem 0;
+    margin: 4px 0;
+    font-size: 1.1rem;
+    font-weight: 500;
   }
 }
 
-/* Tabla */
+/* Tabla de Artículos */
 .invoice-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
+
+  th {
+    background: #f8f9fa;
+    text-align: left;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+  }
 
   th,
   td {
-    border-bottom: 1px solid #ccc;
-    padding: 0.6rem;
-    font-size: 0.9rem;
+    border-bottom: 1px solid #eee;
+    padding: 12px 10px;
   }
 
-  th {
-    background: #eee;
-    text-align: left;
+  td {
+    font-size: 0.875rem;
   }
 
   .right {
@@ -72,44 +108,61 @@
   }
 }
 
-/* Totales */
+/* Bloque de Totales */
 .totals {
-  max-width: 300px;
+  max-width: 250px;
   margin-left: auto;
 
   div {
     display: flex;
     justify-content: space-between;
-    padding: 0.4rem 0;
+    padding: 6px 0;
+    font-size: 1rem;
+
+    span:first-child {
+      color: #666;
+    }
   }
 
   .total {
-    font-size: 1.1rem;
+    font-size: 1.3rem;
     font-weight: bold;
-    border-top: 2px solid #000;
-    margin-top: 0.5rem;
-    padding-top: 0.5rem;
+    color: #000;
+    border-top: 2px solid #333;
+    margin-top: 10px;
+    padding-top: 10px;
+
+    span:first-child {
+      color: #000;
+    }
   }
 }
 
+/* Acciones inferiores */
 .actions {
   text-align: center;
-  margin-top: 1.5rem;
+  margin-top: 2rem;
 
   button {
-    padding: 0.8rem 2rem;
-    font-size: 1rem;
+    padding: 12px 30px;
+    font-size: 1.1rem;
     border: none;
     cursor: pointer;
-    background: #000;
+    background: #2c3e50; // Un azul oscuro profesional
     color: #fff;
+    border-radius: 4px;
+    transition: background 0.3s;
+
+    &:hover {
+      background: #1a252f;
+    }
   }
 }
 
-/* Ocultar botones al imprimir (PDF) */
+/* REGLAS CRÍTICAS PARA IMPRESIÓN / PDF */
 @media print {
-  .actions {
-    display: none;
+  @page {
+    margin: 0; // Controla los márgenes de la página física
   }
 
   :host {
@@ -117,11 +170,16 @@
     padding: 0;
   }
 
-  .no-print {
-    display: none !important;
+  .invoice {
+    box-shadow: none;
+    max-width: 100%;
+    margin: 0;
+    padding: 2cm; // Margen estándar de impresión
   }
 
-  .back-button {
+  .actions,
+  .back-button,
+  .no-print {
     display: none !important;
   }
 }

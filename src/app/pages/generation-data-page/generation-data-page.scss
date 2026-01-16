@@ -1,123 +1,137 @@
-:host {
-  display: block;
-  background: #f5f5f5;
-  padding: 2rem;
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-.invoice {
+.container {
+  max-width: 1000px; // Un poco más ancho para que quepan bien los campos de Material
+  margin: 20px auto;
+  padding: 30px;
   background: #ffffff;
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem;
-  color: #000;
-}
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  font-family: 'Segoe UI', Roboto, sans-serif;
 
-/* Header */
-.invoice-header {
-  display: flex;
-  justify-content: space-between;
-  border-bottom: 2px solid #000;
-  padding-bottom: 1rem;
-  margin-bottom: 1.5rem;
-
-  h1 {
-    margin: 0;
-    font-size: 1.6rem;
+  h2 {
+    color: #2c3e50;
+    margin-bottom: 25px;
+    font-weight: 600;
+    border-bottom: 3px solid #3f51b5; // Color corporativo de Material
+    padding-bottom: 12px;
   }
 
-  p {
-    margin: 0.2rem 0;
-    font-size: 0.9rem;
-  }
-}
+  // Estilo para la cabecera (Cliente y Fecha)
+  .header-fields {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 10px;
 
-.invoice-meta {
-  text-align: right;
-}
-
-/* Cliente */
-.client {
-  margin-bottom: 2rem;
-
-  h3 {
-    margin-bottom: 0.5rem;
+    mat-form-field {
+      flex: 1;
+    }
   }
 
-  p {
-    margin: 0.2rem 0;
-  }
-}
-
-/* Tabla */
-.invoice-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 2rem;
-
-  th,
-  td {
-    border-bottom: 1px solid #ccc;
-    padding: 0.6rem;
-    font-size: 0.9rem;
+  hr {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin: 25px 0;
   }
 
-  th {
-    background: #eee;
-    text-align: left;
+  // Estilo de la fila de artículos (FormArray)
+  .item-row {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start; // Alinea arriba por si hay mensajes de error
+    margin-bottom: 5px;
+    padding: 10px;
+    border-radius: 8px;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #fcfcfc;
+    }
+
+    // Proporciones de las columnas
+    .col-desc {
+      flex: 4;
+    }
+
+    .col-qty {
+      flex: 1;
+    }
+
+    .col-price {
+      flex: 1.5;
+    }
+
+    .col-subtotal {
+      flex: 1.5;
+      text-align: right;
+      padding-top: 10px; // Alineación visual con los inputs
+
+      small {
+        display: block;
+        color: #7f8c8d;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+      }
+
+      span {
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: #27ae60;
+      }
+    }
+
+    // Botón eliminar (icono)
+    .btn-delete {
+      margin-top: 8px;
+      color: #e74c3c;
+      font-size: 1.5rem;
+      border: none;
+      background: none;
+      cursor: pointer;
+      line-height: 1;
+      padding: 5px 10px;
+      border-radius: 50%;
+
+      &:hover {
+        background: rgba(231, 76, 60, 0.1);
+      }
+    }
   }
 
-  .right {
-    text-align: right;
+  // Hint de precio dentro del autocomplete
+  .price-hint {
+    color: #7f8c8d;
+    font-size: 0.85em;
+    margin-left: 8px;
   }
-}
 
-/* Totales */
-.totals {
-  max-width: 300px;
-  margin-left: auto;
-
-  div {
+  // Botones inferiores
+  .footer-actions {
     display: flex;
     justify-content: space-between;
-    padding: 0.4rem 0;
-  }
+    align-items: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
 
-  .total {
-    font-size: 1.1rem;
-    font-weight: bold;
-    border-top: 2px solid #000;
-    margin-top: 0.5rem;
-    padding-top: 0.5rem;
-  }
-}
+    .btn-add {
+      // Estilo heredado de mat-stroked-button en el HTML
+    }
 
-.actions {
-  text-align: center;
-  margin-top: 1.5rem;
-
-  button {
-    padding: 0.8rem 2rem;
-    font-size: 1rem;
-    border: none;
-    cursor: pointer;
-    background: #000;
-    color: #fff;
+    .btn-save {
+      // Estilo heredado de mat-raised-button en el HTML
+      padding: 0 40px;
+      height: 45px;
+      font-size: 1rem;
+    }
   }
 }
 
-/* Ocultar botones al imprimir (PDF) */
-@media print {
-  .actions {
-    display: none;
+// Ajustes globales para que Material se vea bien en Electron
+::ng-deep {
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none; // Oculta el espacio inferior de reserva para errores si no los usas
   }
 
-  :host {
-    background: #fff;
-    padding: 0;
-  }
-
-  .no-print {
-    display: none !important;
+  .mat-mdc-option {
+    font-size: 0.9rem !important;
   }
 }
