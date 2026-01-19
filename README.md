@@ -29,6 +29,15 @@ npm install
 ```
 > **Nota**: Se recomienda usar `npm clean-install` (o `npm ci`) para asegurar que se instalen las versiones exactas del `package-lock.json`.
 
+### 📦 Configuración de Base de Datos (Better-SQLite3)
+
+Al usar un módulo nativo de **C++**, es necesario reconstruirlo para que coincida con la versión interna de Node.js de Electron. Esto evita errores de compatibilidad de binarios:
+
+```bash
+# Reconstruir el módulo nativo para Electron
+npx electron-rebuild -f -w better-sqlite3
+```
+
 ### 💻 Desarrollo
 El proyecto utiliza concurrently para ejecutar el servidor de desarrollo de Angular y la ventana de Electron de forma simultánea.
 
