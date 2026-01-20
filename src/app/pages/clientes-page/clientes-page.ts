@@ -1,15 +1,15 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { formatDate } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
-  selector: 'app-main-page',
+  selector: 'clientes-page',
   standalone: true,
   imports: [RouterLink],
-  templateUrl: './main-page.html',
-  styleUrls: ['./main-page.scss'],
+  templateUrl: './clientes-page.html',
+  styleUrls: ['./clientes-page.scss'],
 })
-export class MainPage implements OnInit, OnDestroy {
+export class ClientesPage implements OnInit, OnDestroy {
 
   today = new Date();
 

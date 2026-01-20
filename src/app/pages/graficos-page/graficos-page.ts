@@ -1,15 +1,15 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { formatDate } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
-  selector: 'app-main-page',
+  selector: 'graficos-page',
   standalone: true,
   imports: [RouterLink],
-  templateUrl: './main-page.html',
-  styleUrls: ['./main-page.scss'],
+  templateUrl: './graficos-page.html',
+  styleUrls: ['./graficos-page.scss'],
 })
-export class MainPage implements OnInit, OnDestroy {
+export class GraficosPage implements OnInit, OnDestroy {
 
   today = new Date();
 

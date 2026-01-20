@@ -12,30 +12,13 @@ import { RouterLink } from '@angular/router';
 export class ArticulosPage implements OnInit, OnDestroy {
 
   today = new Date();
-  horaActual: string = '';
-  private timer: any;
 
   ngOnInit() {
-    this.actualizarHora();
-    // Refrescamos cada minuto (60000ms) es suficiente ahora que no hay segundos
-    this.timer = setInterval(() => {
-      this.actualizarHora();
-    }, 60000);
+    // ngOninit
   }
 
   ngOnDestroy() {
-    // Limpiamos el timer cuando salgamos de la página para evitar fugas de memoria
-    if (this.timer) clearInterval(this.timer);
-  }
-
-  actualizarHora() {
-    const ahora = new Date();
-    // Formato: 17:45
-    this.horaActual = ahora.toLocaleTimeString('es-ES', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false // Cambia a true si prefieres formato AM/PM
-    });
+    //destroy
   }
 
   get fechaFormateada(): string {

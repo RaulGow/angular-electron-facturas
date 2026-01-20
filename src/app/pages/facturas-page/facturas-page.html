@@ -1,46 +1,42 @@
-
-<div class="main-page">
+<div class="facturas-page">
     <div class="header">
         <div class="header-left">
             <h1>Panel de Control</h1>
             <p>Bienvenido al sistema de facturación</p>
         </div>
 
+
         <div class="header-right">
             <p class="date">{{ fechaFormateada }}</p>
+
+
         </div>
     </div>
-    <div class="dashboard-sumary">
-        <button class="card-sumary" routerLink="/articulos">
-            <img src="assets/icons/database-line.svg" alt="Facturas Icon">
-            <div class="card-sumary-content">
-                <span class="card-sumary-content-title">Articulos</span>
-            </div>
-        </button>
-        <button class="card-sumary" routerLink="/clientes">
-            <img src="assets/icons/user-settings-line.svg" alt="Facturas Icon">
-            <div class="card-sumary-content">
-                <span class="card-sumary-content-title">Clientes</span>
-            </div>
-        </button>
-        <button class="card-sumary" routerLink="/facturas">
-            <img src="assets/icons/file-pdf-2-line.svg" alt="Facturas Icon">
-            <div class="card-sumary-content">
-                <span class="card-sumary-content-title">Facturas</span>
-            </div>
-        </button>
-        <button class="card-sumary" routerLink="/graficos">
-            <img src="assets/icons/line-chart-fill.svg" alt="Facturas Icon">
-            <div class="card-sumary-content">
-                <span class="card-sumary-content-title">Graficos</span>
-            </div>
-        </button>
-    </div>
+
+
     <div class="actions">
-        <!-- <button class="actions-button" routerLink="/factura">Generar Factura</button> -->
-        <button class="actions-button" routerLink="/generar">Generar Factura</button>
-        <button class="actions-button actions-button-secondary">Ver Historial</button>
+        <button
+            class="actions-button"
+            routerLink="/dashboard"
+        >
+            <img
+                src="assets/icons/arrow-go-back-fill.svg"
+                alt="back Button"
+                class="back-icon white-icon"
+            >
+            Volver al Panel
+        </button>
+        <button class="actions-button actions-button-secondary">
+            <img
+                src="assets/icons/add-circle-line.svg"
+                alt="back Button"
+                class="back-icon"
+            >
+            Añadir Factura
+        </button>
     </div>
+
+
     <div class="sumary">
         <table class="sumary-table">
             <thead>
