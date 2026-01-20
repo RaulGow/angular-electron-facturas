@@ -5,47 +5,52 @@
             <p>Bienvenido al sistema de facturación</p>
         </div>
 
+
         <div class="header-right">
             <p class="date">{{ fechaFormateada }}</p>
+
 
         </div>
     </div>
 
+
     <div class="actions">
-        <button class="actions-button" routerLink="/dashboard">
-          <img src="assets/icons/arrow-go-back-fill.svg" alt="back Button" class="back-icon white-icon">
-          Volver al Panel
+        <button
+            class="actions-button"
+            routerLink="/dashboard"
+        >
+            <img
+                src="assets/icons/arrow-go-back-fill.svg"
+                alt="back Button"
+                class="back-icon white-icon"
+            >
+            Volver al Panel
         </button>
         <button class="actions-button actions-button-secondary">
-          <img src="assets/icons/add-circle-line.svg" alt="back Button" class="back-icon">
-          Añadir Artículo
+            <img
+                src="assets/icons/add-circle-line.svg"
+                alt="back Button"
+                class="back-icon"
+            >
+            Añadir Artículo
         </button>
     </div>
 
-    <div class="sumary">
-        <table class="sumary-table">
-            <thead>
-                <tr>
-                    <th>Ref.</th>
-                    <th>Descripción</th>
-                    <th>Categoría</th>
-                    <th>Precio</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="sumary-table-number">#00124</td>
-                    <td>Monitor LED 24" UltraWide</td>
-                    <td>Hardware</td>
-                    <td class="sumary-table-price">145.00€</td>
-                    <td>
-                        <div class="table-row-actions">
-                            <button class="edit-btn">Editar</button>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+
+    <div class="grafics">
+        <div class="container">
+
+            <div class="chart-wrapper">
+                <canvas
+                    baseChart
+                    [data]="lineChartData"
+                    [options]="lineChartOptions"
+                    [type]="lineChartType"
+                >
+                </canvas>
+            </div>
+
+            <button routerLink="/home">Volver</button>
+        </div>
     </div>
 </div>

@@ -95,72 +95,12 @@
   }
 }
 
-.sumary {
-  flex: 1;
-  background-color: $white;
-  border-radius: 12px;
-  box-shadow: $shadow;
-  overflow-y: auto; // Permite scroll si hay muchos artículos
-
-  .sumary-table {
-    width: 100%;
-    border-collapse: collapse;
-
-    thead {
-      background-color: #c1c1c1;
-      position: sticky;
-      top: 0;
-
-      th {
-        padding: 1rem;
-        font-size: 1rem;
-        font-weight: 600;
-        border-bottom: 2px solid #eee;
-        text-align: left;
-      }
-    }
-
-    tbody tr {
-      border-bottom: 1px solid #f0f0f0;
-      transition: background 0.2s;
-
-      &:hover {
-        background-color: #f3d1d1;
-      }
-
-      td {
-        font-size: 1rem;
-        padding: 14px 16px;
-        color: #333;
-
-        &.sumary-table-number {
-          font-weight: 600;
-        }
-
-        &.sumary-table-price {
-          font-weight: 600;
-          color: $primary;
-        }
-      }
-    }
-  }
-}
-
-// Estilo para el botón de editar dentro de la tabla
-.table-row-actions {
-  .edit-btn {
-    background: transparent;
-    border: 1px solid $primary;
-    color: $primary;
-    padding: 4px 12px;
-    border-radius: 4px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-
-    &:hover {
-      background-color: $primary;
-      color: white;
-    }
-  }
+.chart-wrapper {
+  display: block;
+  height: 400px; // O la altura que desees para tu dashboard
+  width: 100%;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
