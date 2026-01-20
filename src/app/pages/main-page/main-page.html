@@ -1,16 +1,42 @@
-<!-- <button routerLink="/dashboard">Dashboard</button>
-  <button routerLink="/generar">Generar Datos</button>
-  <button routerLink="/factura">Ver Factura</button> -->
-
-
 
 <div class="main-page">
     <div class="header">
-        <h1>Panel de Control</h1>
-        <p>Bienvenido al sistema de facturación</p>
+        <div class="header-left">
+            <h1>Panel de Control</h1>
+            <p>Bienvenido al sistema de facturación</p>
+        </div>
+
+        <div class="header-right">
+            <p class="date">{{ fechaFormateada }}</p>
+            <p class="time">{{ horaActual }}</p>
+        </div>
     </div>
     <div class="dashboard-sumary">
+        <button class="card-sumary" routerLink="/articulos">
+            <img src="assets/icons/database-line.svg" alt="Facturas Icon">
+            <div class="card-sumary-content">
+                <span class="card-sumary-content-title">Articulos</span>
+            </div>
+        </button>
         <button class="card-sumary">
+            <img src="assets/icons/user-settings-line.svg" alt="Facturas Icon">
+            <div class="card-sumary-content">
+                <span class="card-sumary-content-title">Clientes</span>
+            </div>
+        </button>
+        <button class="card-sumary">
+            <img src="assets/icons/file-pdf-2-line.svg" alt="Facturas Icon">
+            <div class="card-sumary-content">
+                <span class="card-sumary-content-title">Facturas</span>
+            </div>
+        </button>
+        <button class="card-sumary">
+            <img src="assets/icons/line-chart-fill.svg" alt="Facturas Icon">
+            <div class="card-sumary-content">
+                <span class="card-sumary-content-title">Graficos</span>
+            </div>
+        </button>
+        <!-- <button class="card-sumary">
             <img src="assets/icons/factura.png" alt="Facturas Icon">
             <div class="card-sumary-content">
                 <span class="card-sumary-content-title">Última Factura</span>
@@ -25,7 +51,7 @@
                 <span class="card-sumary-content-price">1250.00€</span>
                 <span class="card-sumary-content-data">Cliente</span>
             </div>
-        </button>
+        </button> -->
     </div>
     <div class="actions">
         <!-- <button class="actions-button" routerLink="/factura">Generar Factura</button> -->

@@ -1,0 +1,150 @@
+@use '../../../styles.scss' as *;
+
+.main-page {
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 24px;
+  background-color: $secondary;
+  display: flex;
+  flex-direction: column;
+  gap: 32px; // Un poco menos de gap que el main para que quepa la tabla
+  height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  flex-direction: row; // Los pone en fila
+  justify-content: space-between; // Uno a la izquierda, otro a la derecha
+  align-items: flex-end; // Alinea ambos bloques por la parte de abajo
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1); // Opcional: una línea sutil separadora
+
+  .header-left {
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+      color: #000;
+      line-height: 1.2;
+    }
+
+    p {
+      margin: 4px 0 0;
+      color: #666;
+      font-size: 1.1rem;
+    }
+  }
+
+  .header-right {
+    text-align: right;
+
+    .date {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #333;
+      margin: 0;
+    }
+
+    .time {
+      font-size: 1.1rem; // Un poco más pequeña que la fecha
+      font-weight: 400; // Menos grosor para que no compita
+      color: $primary; // Mantenemos el rojo para darle el toque de identidad
+      margin-top: -2px; // Pegamos un poquito más a la fecha
+    }
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 16px;
+
+  .actions-button {
+    background-color: $primary;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &-secondary {
+      background-color: #8dc5e6;
+      color: #000;
+    }
+
+    &:hover {
+      filter: brightness(1.1);
+      transform: translateY(-2px);
+    }
+  }
+}
+
+.sumary {
+  flex: 1;
+  background-color: $white;
+  border-radius: 12px;
+  box-shadow: $shadow;
+  overflow-y: auto; // Permite scroll si hay muchos artículos
+
+  .sumary-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    thead {
+      background-color: #c1c1c1;
+      position: sticky;
+      top: 0;
+
+      th {
+        padding: 16px;
+        font-weight: 600;
+        border-bottom: 2px solid #eee;
+        text-align: left;
+      }
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #f0f0f0;
+      transition: background 0.2s;
+
+      &:hover {
+        background-color: #f3d1d1;
+      }
+
+      td {
+        padding: 14px 16px;
+        color: #333;
+
+        &.sumary-table-number {
+          font-weight: 600;
+        }
+
+        &.sumary-table-price {
+          font-weight: 600;
+          color: $primary;
+        }
+      }
+    }
+  }
+}
+
+// Estilo para el botón de editar dentro de la tabla
+.table-row-actions {
+  .edit-btn {
+    background: transparent;
+    border: 1px solid $primary;
+    color: $primary;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      background-color: $primary;
+      color: white;
+    }
+  }
+}

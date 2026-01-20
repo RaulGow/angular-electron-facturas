@@ -16,16 +16,44 @@
 
 // Estilos para el Header
 .header {
-  h1 {
-    margin: 0;
-    font-size: 2rem;
-    color: #000000;
+  display: flex;
+  flex-direction: row; // Los pone en fila
+  justify-content: space-between; // Uno a la izquierda, otro a la derecha
+  align-items: flex-end; // Alinea ambos bloques por la parte de abajo
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1); // Opcional: una línea sutil separadora
+
+  .header-left {
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+      color: #000;
+      line-height: 1.2;
+    }
+
+    p {
+      margin: 4px 0 0;
+      color: #666;
+      font-size: 1.1rem;
+    }
   }
 
-  p {
-    font-size: 1rem;
-    margin: 4px 0 0;
-    color: #333;
+  .header-right {
+    text-align: right;
+
+    .date {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #333;
+      margin: 0;
+    }
+
+    .time {
+      font-size: 1.1rem; // Un poco más pequeña que la fecha
+      font-weight: 400; // Menos grosor para que no compita
+      color: $primary; // Mantenemos el rojo para darle el toque de identidad
+      margin-top: -2px; // Pegamos un poquito más a la fecha
+    }
   }
 }
 
@@ -47,32 +75,59 @@
   padding: 24px;
   flex: 1;
   cursor: pointer;
-  border: none; // Al ser un button, quitamos el borde por defecto
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid transparent;
+
+  // Añadimos color a la transición para que el texto también cambie suave
+  transition: transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease;
 
   img {
     width: 62px;
     height: 62px;
-    object-fit: contain; // Evita que la imagen se deforme
+    object-fit: contain;
+    transition: filter 0.3s ease; // Transición suave para el color del icono
+  }
+
+  // Estilos del texto
+  .card-sumary-content-title {
+    font-weight: bold;
+    color: $primary; // O el color que tengas por defecto
   }
 
   &:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    background-color: $primary;
+    border-color: rgba($primary, 0.1);
+
+    // 1. Cambia el color del SVG a blanco (usando filtros)
+    img {
+      filter: brightness(0) invert(1);
+    }
+
+    // 2. Cambia el color de todos los textos dentro de la card a blanco
+    .card-sumary-content-title,
+    span,
+    p,
+    h1 {
+      color: white;
+    }
   }
 }
 
 .card-sumary-content {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
 
   .card-sumary-content-title {
     font-size: 1.2rem;
     font-weight: 600;
     color: #222;
-    padding-bottom: 1rem;
   }
 
   .card-sumary-content-price {
