@@ -8,8 +8,12 @@ export interface Articulo {
 export interface Cliente {
   id?: number;
   nombre: string;
-  dni_cif?: string;
+  nombre_fiscal: string;
+  cif: string;
   telefono?: string;
+  calle?: string;
+  codigo_postal?: string;
+  poblacion?: string;
 }
 
 export interface DetalleFactura {

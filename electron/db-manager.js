@@ -1,11 +1,19 @@
-const Database = require('better-sqlite3');
+const fs = require('fs');
 const path = require('path');
 const { app } = require('electron');
 
 const dbPath = path.join(app.getPath('userData'), 'charcuteria.db');
+
+// BORRAR BBDD ANTIGUA
+if (fs.existsSync(dbPath)) {
+  fs.unlinkSync(dbPath);
+  console.log('🗑 Base de datos antigua eliminada');
+}
+
+const Database = require('better-sqlite3');
 const db = new Database(dbPath);
 
-// Habilitar claves foráneas para integridad de datos
+// Habilitar claves foráneas
 db.pragma('foreign_keys = ON');
 
 // Crear tablas iniciales
@@ -20,8 +28,12 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS clientes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nombre TEXT NOT NULL,
-    dni_cif TEXT,
-    telefono TEXT
+    nombre_fiscal TEXT NOT NULL,
+    cif TEXT NOT NULL,
+    telefono TEXT,
+    calle TEXT,
+    codigo_postal TEXT,
+    poblacion TEXT
   );
 
   CREATE TABLE IF NOT EXISTS facturas (
@@ -36,7 +48,7 @@ db.exec(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     factura_id INTEGER,
     articulo_id INTEGER,
-    cantidad REAL, -- Kilos o unidades
+    cantidad REAL,
     precio_unidad REAL,
     subtotal REAL,
     FOREIGN KEY (factura_id) REFERENCES facturas(id),
@@ -44,4 +56,14 @@ db.exec(`
   );
 `);
 
+// ======= COMPROBAR SI HACE FALTA nombre_fiscal =======
+const info = db.prepare("PRAGMA table_info(clientes);").all();
+const tieneNombreFiscal = info.some(col => col.name === 'nombre_fiscal');
+
+if (!tieneNombreFiscal) {
+  console.log('🛠 Añadiendo columna nombre_fiscal a la tabla clientes...');
+  db.prepare("ALTER TABLE clientes ADD COLUMN nombre_fiscal TEXT NOT NULL DEFAULT '';").run();
+}
+
+// Exportar DB
 module.exports = db;

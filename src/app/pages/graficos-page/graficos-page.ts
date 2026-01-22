@@ -18,16 +18,25 @@ export class GraficosPage implements OnInit, OnDestroy {
 
   // 3. Configuración de los DATOS
   public lineChartData: ChartConfiguration['data'] = {
-    labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo'],
-    datasets: [
-      {
-        data: [65, 59, 80, 81, 56],
-        label: 'Ventas 2026',
-        borderColor: '#42A5F5',
-        backgroundColor: 'rgba(66, 165, 245, 0.2)',
-        fill: 'origin',
-      }
-    ]
+    labels: [
+    'Enero',
+    'Febrero',
+    'Mazo',
+    'Abril',
+    'Mayo',
+  ],
+  datasets: [{
+    label: 'Ventas 2026',
+    data: [750, 350, 300, 350, 400],
+    backgroundColor: [
+      'rgb(255, 99, 132)',
+      'rgb(54, 162, 235)',
+      'rgb(255, 205, 86)',
+      'rgb(111, 255, 86)',
+      'rgb(199, 86, 255)',
+    ],
+    hoverOffset: 4
+  }]
   };
 
   public lineChartOptions: ChartOptions = {
@@ -36,7 +45,7 @@ export class GraficosPage implements OnInit, OnDestroy {
   };
 
   // Forzamos el tipo exacto
-  public lineChartType: ChartType = 'line';
+  public lineChartType: ChartType = 'doughnut';
 
   ngOnInit() { }
   ngOnDestroy() { }

@@ -9,8 +9,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   saveArticulo: (articulo) => ipcRenderer.invoke('save-articulo', articulo),
 
   // Clientes
+  saveCliente: (cliente) => ipcRenderer.invoke('save-cliente', cliente),
   getClientes: () => ipcRenderer.invoke('get-clientes'),
 
   // Facturas
   crearFactura: (datos) => ipcRenderer.invoke('crear-factura', datos),
 });
+console.log('🔥 PRELOAD CARGADO');

@@ -16,11 +16,33 @@
           <img src="assets/icons/arrow-go-back-fill.svg" alt="back Button" class="back-icon white-icon">
           Volver al Panel
         </button>
-        <button class="actions-button actions-button-secondary">
+        <button class="actions-button actions-button-secondary" (click)="mostrarAltaCliente()">
           <img src="assets/icons/add-circle-line.svg" alt="back Button" class="back-icon">
           Añadir Cliente
         </button>
     </div>
+
+    @if(mostrandoFormulario) {
+      <div class="alta-cliente">
+        <h2>Nuevo cliente</h2>
+
+        <div class="form-grid">
+          <input placeholder="Nombre comercial" [(ngModel)]="nuevoCliente.nombre">
+          <input placeholder="Nombre fiscal" [(ngModel)]="nuevoCliente.nombre_fiscal">
+          <input placeholder="CIF" [(ngModel)]="nuevoCliente.cif">
+          <input placeholder="Teléfono" [(ngModel)]="nuevoCliente.telefono">
+          <input placeholder="Calle" [(ngModel)]="nuevoCliente.calle">
+          <input placeholder="Código Postal" [(ngModel)]="nuevoCliente.codigo_postal">
+          <input placeholder="Población" [(ngModel)]="nuevoCliente.poblacion">
+        </div>
+
+        <div class="form-actions">
+          <button class="actions-button" (click)="guardarCliente()">Guardar</button>
+          <button class="actions-button actions-button-secondary" (click)="cancelarAlta()">Cancelar</button>
+        </div>
+      </div>
+    }
+
 
     <div class="sumary">
         <table class="sumary-table">
@@ -34,17 +56,23 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td class="sumary-table-number">#00001</td>
-                    <td>Kronos Pizza</td>
-                    <td>X-14545788</td>
-                    <td class="sumary-table-price">914 897 894</td>
-                    <td>
-                        <div class="table-row-actions">
-                            <button class="edit-btn">Editar</button>
-                        </div>
-                    </td>
-                </tr>
+              <tr *ngFor="let cliente of clientes">
+                <td class="sumary-table-number">#{{ cliente.id }}</td>
+                <td>{{ cliente.nombre }}</td>
+                <td>{{ cliente.cif }}</td>
+                <td class="sumary-table-price">{{ cliente.telefono || '-' }}</td>
+                <td>
+                  <div class="table-row-actions">
+                    <button class="edit-btn">Editar</button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr *ngIf="clientes.length === 0">
+                <td colspan="5" style="text-align:center; padding: 24px;">
+                  No hay clientes registrados
+                </td>
+              </tr>
             </tbody>
         </table>
     </div>

@@ -86,6 +86,7 @@
     .white-icon {
       filter: invert(1);
     }
+
     .back-icon {
       width: 20px;
       height: 20px;
@@ -142,25 +143,38 @@
           color: $primary;
         }
       }
-    }
-  }
-}
 
-// Estilo para el botón de editar dentro de la tabla
-.table-row-actions {
-  .edit-btn {
-    background: transparent;
-    border: 1px solid $primary;
-    color: $primary;
-    padding: 4px 12px;
-    border-radius: 4px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
 
-    &:hover {
-      background-color: $primary;
-      color: white;
+      // Estilo para el botón de editar dentro de la tabla
+      .table-row-actions {
+        .edit-btn {
+          background: transparent;
+          border: 1px solid $primary;
+          color: $primary;
+          padding: 4px 12px;
+          border-radius: 4px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+
+          &:hover {
+            background-color: $primary;
+            color: white;
+          }
+        }
+
+        .white-icon {
+          filter: invert(1);
+        }
+
+        .back-icon {
+          width: 10px;
+          height: 10px;
+          margin-right: 8px;
+          vertical-align: middle;
+        }
+      }
+
     }
   }
 }

@@ -4,17 +4,23 @@ const fs = require('fs');
 const db = require('./db-manager'); // Importamos el gestor que creamos antes
 
 let mainWindow;
+let clientes = [];   // tabla de clientes
+let articulos = [];  // tabla de artículos
+
+const preloadPath = path.join(__dirname, 'preload.js');
+console.log('🧭 preloadPath:', preloadPath);
 
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: preloadPath,
       contextIsolation: true,
       nodeIntegration: false // Por seguridad, mantenemos false
     }
   });
+  mainWindow.webContents.openDevTools()
 
   const isDev = !app.isPackaged;
 
@@ -37,31 +43,68 @@ function createWindow() {
 ================================ */
 
 // Artículos: Obtener todos
-ipcMain.handle('get-articulos', async () => {
+ipcMain.handle('get-articulos', () => {
+  console.log('💾 get-articulos llamado, articulos:', articulos);
   return db.prepare('SELECT * FROM articulos ORDER BY nombre ASC').all();
 });
 
 // Artículos: Guardar o actualizar
 ipcMain.handle('save-articulo', async (event, art) => {
+  if (art.id) {
+    db.prepare(`
+    UPDATE articulos
+    SET nombre = ?, precio_kilo = ?, stock = ?
+    WHERE id = ?
+  `).run(art.nombre, art.precio_kilo, art.stock, art.id);
+    return art.id;
+  }
   const stmt = db.prepare('INSERT INTO articulos (nombre, precio_kilo, stock) VALUES (?, ?, ?)');
   const result = stmt.run(art.nombre, art.precio_kilo, art.stock);
+  articulos.push(articulo);
+  console.log('💾 Artículo guardado:', articulo);
   return result.lastInsertRowid;
 });
 
-// Clientes: Obtener todos
-ipcMain.handle('get-clientes', async () => {
-  return db.prepare('SELECT * FROM clientes ORDER BY nombre ASC').all();
+//*****************************************************
+//****************** Guardar cliente ******************/
+ipcMain.handle('save-cliente', (_event, cliente) => {
+  if (!cliente?.nombre || !cliente?.nombre_fiscal || !cliente?.cif) {
+    throw new Error('Datos de cliente incompletos');
+  }
+  const stmt = db.prepare(`
+    INSERT INTO clientes (
+      nombre,
+      nombre_fiscal,
+      cif,
+      telefono,
+      calle,
+      codigo_postal,
+      poblacion
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `);
+
+  const result = stmt.run(
+    cliente.nombre,
+    cliente.nombre_fiscal,
+    cliente.cif,
+    cliente.telefono,
+    cliente.calle,
+    cliente.codigo_postal,
+    cliente.poblacion
+  );
+  clientes.push(cliente);
+  console.log('💾 Cliente guardado:', cliente);
+
+  return result.lastInsertRowid;
 });
 
-// Añade esto a tu main.js donde están los otros ipcMain.handle
-ipcMain.handle('save-cliente', async (event, cliente) => {
-  // Buscamos si el cliente ya existe para no duplicarlo, o lo creamos
-  const existing = db.prepare('SELECT id FROM clientes WHERE nombre = ?').get(cliente.nombre);
-  if (existing) return existing.id;
-
-  const stmt = db.prepare('INSERT INTO clientes (nombre) VALUES (?)');
-  const result = stmt.run(cliente.nombre);
-  return result.lastInsertRowid;
+//******************************************************
+//****************** Obtener clientes ******************/
+ipcMain.handle('get-clientes', async  () => {
+  const stmt = db.prepare('SELECT * FROM clientes ORDER BY id DESC');
+  console.log('💾 get-clientes llamado, clientes:', clientes);
+  return stmt.all();
 });
 
 // Facturación: Crear factura y sus detalles (Transacción)
