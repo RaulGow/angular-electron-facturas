@@ -13,57 +13,37 @@
         </div>
     </div>
     <div class="dashboard-sumary">
-        <button
-            class="card-sumary"
-            routerLink="/articulos"
-        >
-            <img
-                src="assets/icons/database-line.svg"
-                alt="Facturas Icon"
-            >
-            <div class="card-sumary-content">
-                <span class="card-sumary-content-title">Articulos</span>
-            </div>
-        </button>
-        <button
-            class="card-sumary"
-            routerLink="/clientes"
-        >
-            <img
-                src="assets/icons/user-settings-line.svg"
-                alt="Facturas Icon"
-            >
-            <div class="card-sumary-content">
-                <span class="card-sumary-content-title">Clientes</span>
-            </div>
-        </button>
-        <button
-            class="card-sumary"
-            routerLink="/facturas"
-        >
-            <img
-                src="assets/icons/file-pdf-2-line.svg"
-                alt="Facturas Icon"
-            >
-            <div class="card-sumary-content">
-                <span class="card-sumary-content-title">Facturas</span>
-            </div>
-        </button>
-        <button
-            class="card-sumary"
-            routerLink="/graficos"
-        >
-            <img
-                src="assets/icons/line-chart-fill.svg"
-                alt="Facturas Icon"
-            >
-            <div class="card-sumary-content">
-                <span class="card-sumary-content-title">Graficos</span>
-            </div>
-        </button>
+        <app-card-summary
+          link="/articulos"
+          iconSrc="assets/icons/database-line.svg"
+          title="Artículos">
+        </app-card-summary>
+
+        <app-card-summary
+          link="/clientes"
+          iconSrc="assets/icons/user-settings-line.svg"
+          title="Clientes">
+        </app-card-summary>
+
+        <app-card-summary
+          link="/facturas"
+          iconSrc="assets/icons/file-pdf-2-line.svg"
+          title="Facturas">
+        </app-card-summary>
+
+        <app-card-summary
+          link="/graficos"
+          iconSrc="assets/icons/line-chart-fill.svg"
+          title="Gráficos">
+        </app-card-summary>
+
+        <app-card-summary
+          link="/graficos"
+          iconSrc="assets/icons/currency-line.svg"
+          title="Caja">
+        </app-card-summary>
     </div>
     <div class="actions">
-        <!-- <button class="actions-button" routerLink="/factura">Generar Factura</button> -->
         <button
             class="actions-button"
             routerLink="/generar"

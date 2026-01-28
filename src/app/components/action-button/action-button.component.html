@@ -1,0 +1,16 @@
+<button
+  class="actions-button"
+  [class]="'actions-button-' + variant()"
+  [routerLink]="link() ? link() : null"
+  (click)="handleAction()"
+>
+  @if (icon()) {
+    <img
+      [src]="icon()"
+      [alt]="label()"
+      class="back-icon"
+      [class.white-icon]="isWhiteIcon()"
+    >
+  }
+  {{ label() }}
+</button>

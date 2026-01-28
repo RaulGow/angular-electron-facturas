@@ -1,8 +1,8 @@
 <div class="articulos-page">
     <div class="header">
         <div class="header-left">
-            <h1>Panel de Control</h1>
-            <p>Bienvenido al sistema de facturación</p>
+            <h1>Articulos</h1>
+            <p>Edicion de articulos del sistema.</p>
         </div>
 
         <div class="header-right">
@@ -12,40 +12,79 @@
     </div>
 
     <div class="actions">
-        <button class="actions-button" routerLink="/dashboard">
-          <img src="assets/icons/arrow-go-back-fill.svg" alt="back Button" class="back-icon white-icon">
-          Volver al Panel
-        </button>
-        <button class="actions-button actions-button-secondary">
-          <img src="assets/icons/add-circle-line.svg" alt="back Button" class="back-icon">
-          Añadir Artículo
-        </button>
+        <app-action-button
+          label="Volver al Panel"
+          icon="assets/icons/arrow-go-back-fill.svg"
+          variant="primary"
+          link="/dashboard"
+          [isWhiteIcon]="true">
+        </app-action-button>
+
+        <app-action-button
+          label="Añadir Artículo"
+          icon="assets/icons/add-circle-line.svg"
+          variant="secondary"
+          (onClick)="miFuncionParaAbrirModal()">
+        </app-action-button>
+
+        <app-action-button
+          label="Modificar Artículo"
+          icon="assets/icons/draft-line.svg"
+          variant="secondary"
+          (onClick)="miFuncionParaAbrirModal()">
+        </app-action-button>
     </div>
 
     <div class="sumary">
-        <table class="sumary-table">
-            <thead>
-                <tr>
-                    <th>Ref.</th>
-                    <th>Descripción</th>
-                    <th>Categoría</th>
-                    <th>Precio</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="sumary-table-number">#00124</td>
-                    <td>Monitor LED 24" UltraWide</td>
-                    <td>Hardware</td>
-                    <td class="sumary-table-price">145.00€</td>
-                    <td>
-                        <div class="table-row-actions">
-                            <button class="edit-btn">Editar</button>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+      <table class="sumary-table">
+        <thead>
+          <tr>
+            <th>Ref.</th>
+            <th>Descripción</th>
+            <th>Categoría</th>
+            <th>Stock</th>
+            <th>Precio</th>
+            <th>IVA</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (art of articulos; track art.id) {
+            <tr>
+              <td class="sumary-table-number">#{{ art.id.toString().padStart(4, '0') }}</td>
+
+              <td>{{ art.nombre }}</td>
+
+              <td>
+                <span class="badge-categoria" [ngClass]="getCategoryClass(art.categoria)">{{ art.categoria }}</span>
+              </td>
+
+              <td>{{ art.stock }} <small>{{ art.unidadMedida }}</small></td>
+
+              <td class="sumary-table-price">
+                <span>{{ art.precio_venta.toFixed(2) }}€</span>
+
+              </td>
+              <td>
+                <span class="iva-info">({{ art.iva }}% IVA)</span>
+              </td>
+
+              <td>
+                <div class="table-row-actions">
+                  <button class="edit-btn" (click)="miFuncionParaAbrirModal()">
+                    Editar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" style="text-align: center; padding: 2rem;">
+                No hay artículos disponibles.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </div>
 </div>
