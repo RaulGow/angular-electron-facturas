@@ -52,23 +52,17 @@
           @for (art of articulos; track art.id) {
             <tr>
               <td class="sumary-table-number">#{{ art.id.toString().padStart(4, '0') }}</td>
-
               <td class="sumary-table-description">{{ art.nombre }}</td>
-
               <td>
                 <span class="badge-categoria" [ngClass]="getCategoryClass(art.categoria)">{{ art.categoria }}</span>
               </td>
-
               <td>{{ art.stock }} <small>{{ art.unidadMedida }}</small></td>
-
               <td class="sumary-table-price">
                 <span>{{ art.precio_venta.toFixed(2) }}€</span>
-
               </td>
               <td>
                 <span class="iva-info">({{ art.iva }}% IVA)</span>
               </td>
-
               <td>
                 <div class="table-row-actions">
                   <button class="edit-btn" (click)="miFuncionParaAbrirModal()">
