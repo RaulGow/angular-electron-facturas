@@ -73,9 +73,21 @@
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    display: flex;      // Convertimos la tabla en flex para separar zonas
+    display: flex; // Convertimos la tabla en flex para separar zonas
     flex-direction: column;
     height: 100%;
+
+    th:first-child,
+    td:first-child {
+      width: 100px;
+      font-weight: 600;
+    }
+
+    /* 2️⃣ Descripción más ancha */
+    th:nth-child(2),
+    td:nth-child(2) {
+      width: 30%;
+    }
 
     thead {
       background-color: $primary;
@@ -89,24 +101,30 @@
         padding: 1rem;
         font-size: 1rem;
         font-weight: 600;
-        text-align: left;
+        text-align: center;
         border-bottom: 2px solid #eee;
 
-        &:first-child { border-top-left-radius: 12px; }
-        &:last-child { border-top-right-radius: 12px; }
+        &:first-child {
+          border-top-left-radius: 12px;
+        }
+
+        &:last-child {
+          border-top-right-radius: 12px;
+        }
       }
     }
 
     tbody {
       flex: 1; // Toma todo el espacio restante
       overflow-y: auto; // EL SCROLL SOLO AQUÍ
-      display: block;   // Permite que el scroll funcione
+      display: block; // Permite que el scroll funcione
       width: 100%;
 
       // Estilo de la barra de scroll exclusivo para el cuerpo
       &::-webkit-scrollbar {
         width: 8px;
       }
+
       &::-webkit-scrollbar-thumb {
         background: #ccc;
         border-radius: 10px;
@@ -125,44 +143,64 @@
 
         td {
           font-size: 1rem;
-          padding: 14px 16px;
+          padding: 12px 16px;
           color: #333;
+          text-align: center;
           word-break: break-word; // Evita que el texto rompa el layout
 
-          &.sumary-table-number { font-weight: 600; }
+          &.iva-info {
+            font-size: 0.7rem;
+            color: #888;
+            display: block; // Para que salga debajo del precio si hay poco espacio
+          }
+
+          &.sumary-table-price {
+            font-weight: bold;
+            color: #2c3e50;
+          }
+
+          &.sumary-table-number {
+            font-weight: 600;
+          }
+
+          &.sumary-table-description {
+            text-align: left;
+          }
+
           &.sumary-table-price {
             font-weight: 600;
             color: $primary;
           }
+
           // Estilo para el botón de editar dentro de la tabla
-      .table-row-actions {
-        .edit-btn {
-          background: transparent;
-          border: 1px solid $primary;
-          color: $primary;
-          padding: 4px 12px;
-          border-radius: 4px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s;
+          .table-row-actions {
+            .edit-btn {
+              background: transparent;
+              border: 1px solid $primary;
+              color: $primary;
+              padding: 4px 12px;
+              border-radius: 4px;
+              font-weight: 600;
+              cursor: pointer;
+              transition: all 0.2s;
 
-          &:hover {
-            background-color: $primary;
-            color: white;
+              &:hover {
+                background-color: $primary;
+                color: white;
+              }
+            }
+
+            .white-icon {
+              filter: invert(1);
+            }
+
+            .back-icon {
+              width: 10px;
+              height: 10px;
+              margin-right: 8px;
+              vertical-align: middle;
+            }
           }
-        }
-
-        .white-icon {
-          filter: invert(1);
-        }
-
-        .back-icon {
-          width: 10px;
-          height: 10px;
-          margin-right: 8px;
-          vertical-align: middle;
-        }
-      }
         }
       }
     }
@@ -229,15 +267,4 @@
     color: #0277bd;
     border-color: #b3e5fc;
   }
-}
-
-.iva-info {
-  font-size: 0.7rem;
-  color: #888;
-  display: block; // Para que salga debajo del precio si hay poco espacio
-}
-
-.sumary-table-price {
-  font-weight: bold;
-  color: #2c3e50;
 }
