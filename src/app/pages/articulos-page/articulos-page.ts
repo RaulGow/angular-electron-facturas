@@ -1,21 +1,34 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { formatDate } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { CommonModule, formatDate } from '@angular/common';
+import { ActionButtonComponent } from '../../components/action-button/action-button.component';
+import { DatabaseService } from '../../services/database.service';
+import { Articulo } from '../../models/charcuteria.models';
 
 @Component({
   selector: 'articulos-page',
   standalone: true,
-  imports: [RouterLink],
+  imports: [ActionButtonComponent, CommonModule],
   templateUrl: './articulos-page.html',
   styleUrls: ['./articulos-page.scss'],
 })
 export class ArticulosPage implements OnInit, OnDestroy {
 
   today = new Date();
+  articulos: Articulo[] = [];
 
-  ngOnInit() {
-    // ngOninit
+  constructor(
+    private db: DatabaseService,
+    private cdr: ChangeDetectorRef
+  ) {
+    console.log('¿Electron?', !!(window as any).charcuteriaAPI);
   }
+
+  async ngOnInit() {
+    console.log('🧪 Cargando articulos...');
+    await this.cargarArticulos();
+    console.log('📦 Articulos:', this.articulos);
+  }
+
 
   ngOnDestroy() {
     //destroy
@@ -33,6 +46,35 @@ export class ArticulosPage implements OnInit, OnDestroy {
       // Para las demás, ponemos la primera letra en mayúscula
       return palabra.charAt(0).toUpperCase() + palabra.slice(1);
     }).join(' ');
+  }
+
+  miFuncionParaAbrirModal() {
+    console.log('Botón de agregar artículo clickeado');
+  }
+
+  async cargarArticulos() {
+    try {
+      const articulosDb = await this.db.getArticulos();
+
+      // Asignamos los articulos
+      this.articulos = articulosDb
+
+      // Forzamos que Angular actualice la vista
+      this.cdr.detectChanges();
+
+      console.log('📦 Articulos actualizados:', this.articulos);
+    } catch (error) {
+      console.error('❌ Error cargando articulos', error);
+      alert('Error cargando articulos (ver consola)');
+    }
+  }
+
+  // estilos de categorias:
+  getCategoryClass(categoria: string): string {
+    if (!categoria) return 'cat-generico';
+
+    // Convertimos "Embutidos Frescos" -> "cat-embutidos-frescos"
+    return 'cat-' + categoria.toLowerCase().replace(/\s+/g, '-');
   }
 
 }

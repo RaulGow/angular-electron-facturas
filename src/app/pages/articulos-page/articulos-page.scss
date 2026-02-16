@@ -58,42 +58,6 @@
 .actions {
   display: flex;
   gap: 16px;
-
-  .actions-button {
-    background-color: $primary;
-    color: white;
-    border: none;
-    padding: 8px 24px;
-    line-height: 1.5rem;
-    font-size: 1rem;
-    border-radius: 8px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-
-    &-secondary {
-      background-color: #8dc5e6;
-      color: #000;
-    }
-
-    &:hover {
-      filter: brightness(1.1);
-      transform: translateY(-2px);
-    }
-
-    .white-icon {
-      filter: invert(1);
-    }
-
-    .back-icon {
-      width: 20px;
-      height: 20px;
-      margin-right: 8px;
-      vertical-align: middle;
-    }
-  }
 }
 
 .sumary {
@@ -101,80 +65,206 @@
   background-color: $white;
   border-radius: 12px;
   box-shadow: $shadow;
-  overflow-y: auto; // Permite scroll si hay muchos artículos
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; // Evita scroll doble
 
   .sumary-table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
+    display: flex; // Convertimos la tabla en flex para separar zonas
+    flex-direction: column;
+    height: 100%;
+
+    th:first-child,
+    td:first-child {
+      width: 100px;
+      font-weight: 600;
+    }
+
+    /* 2️⃣ Descripción más ancha */
+    th:nth-child(2),
+    td:nth-child(2) {
+      width: 30%;
+    }
 
     thead {
-      background-color: #c1c1c1;
-      position: sticky;
-      top: 0;
+      background-color: $primary;
+      color: $white;
+      flex-shrink: 0; // El cabezal no se encoge
+      display: table; // Mantiene comportamiento de tabla interna
+      width: 100%;
+      table-layout: fixed; // Asegura que las columnas midan lo mismo
 
       th {
         padding: 1rem;
         font-size: 1rem;
         font-weight: 600;
+        text-align: center;
         border-bottom: 2px solid #eee;
-        text-align: left;
+
+        &:first-child {
+          border-top-left-radius: 12px;
+        }
+
+        &:last-child {
+          border-top-right-radius: 12px;
+        }
       }
     }
 
-    tbody tr {
-      border-bottom: 1px solid #f0f0f0;
-      transition: background 0.2s;
+    tbody {
+      flex: 1; // Toma todo el espacio restante
+      overflow-y: auto; // EL SCROLL SOLO AQUÍ
+      display: block; // Permite que el scroll funcione
+      width: 100%;
 
-      &:hover {
-        background-color: #f3d1d1;
+      // Estilo de la barra de scroll exclusivo para el cuerpo
+      &::-webkit-scrollbar {
+        width: 8px;
       }
 
-      td {
-        font-size: 1rem;
-        padding: 14px 16px;
-        color: #333;
-
-        &.sumary-table-number {
-          font-weight: 600;
-        }
-
-        &.sumary-table-price {
-          font-weight: 600;
-          color: $primary;
-        }
+      &::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 10px;
       }
 
+      tr {
+        display: table; // Mantiene las celdas alineadas
+        width: 100%;
+        table-layout: fixed;
+        border-bottom: 1px solid #f0f0f0;
+        transition: background 0.2s;
 
-      // Estilo para el botón de editar dentro de la tabla
-      .table-row-actions {
-        .edit-btn {
-          background: transparent;
-          border: 1px solid $primary;
-          color: $primary;
-          padding: 4px 12px;
-          border-radius: 4px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s;
+        &:hover {
+          background-color: #e7e7e7;
+        }
 
-          &:hover {
-            background-color: $primary;
-            color: white;
+        td {
+          font-size: 1rem;
+          padding: 12px 16px;
+          color: #333;
+          text-align: center;
+          word-break: break-word; // Evita que el texto rompa el layout
+
+          &.iva-info {
+            font-size: 0.7rem;
+            color: #888;
+            display: block; // Para que salga debajo del precio si hay poco espacio
+          }
+
+          &.sumary-table-price {
+            font-weight: bold;
+            color: #2c3e50;
+          }
+
+          &.sumary-table-number {
+            font-weight: 600;
+          }
+
+          &.sumary-table-description {
+            text-align: left;
+          }
+
+          &.sumary-table-price {
+            font-weight: 600;
+            color: $primary;
+          }
+
+          // Estilo para el botón de editar dentro de la tabla
+          .table-row-actions {
+            .edit-btn {
+              background: transparent;
+              border: 1px solid $primary;
+              color: $primary;
+              padding: 4px 12px;
+              border-radius: 4px;
+              font-weight: 600;
+              cursor: pointer;
+              transition: all 0.2s;
+
+              &:hover {
+                background-color: $primary;
+                color: white;
+              }
+            }
+
+            .white-icon {
+              filter: invert(1);
+            }
+
+            .back-icon {
+              width: 10px;
+              height: 10px;
+              margin-right: 8px;
+              vertical-align: middle;
+            }
           }
         }
-
-        .white-icon {
-          filter: invert(1);
-        }
-
-        .back-icon {
-          width: 10px;
-          height: 10px;
-          margin-right: 8px;
-          vertical-align: middle;
-        }
       }
-
     }
+  }
+}
+
+
+.badge-categoria {
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: Arial, Helvetica, sans-serif;
+  text-transform: uppercase;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  display: inline-block;
+
+  // Estilos específicos por categoría
+  &.cat-jamones {
+    background-color: #ffebee; // Rojo suave
+    color: #c62828;
+    border-color: #ffcdd2;
+  }
+
+  &.cat-embutidos {
+    background-color: #fff3e0; // Naranja suave
+    color: #ef6c00;
+    border-color: #ffe0b2;
+  }
+
+  &.cat-quesos {
+    background-color: #fffde7; // Amarillento (queso)
+    color: #fbc02d;
+    border-color: #fff9c4;
+  }
+
+  &.cat-cocidos {
+    background-color: #fce4ec; // Rosa suave
+    color: #ad1457;
+    border-color: #f8bbd0;
+  }
+
+  &.cat-gourmet {
+    background-color: #f3e5f5; // Púrpura elegante
+    color: #7b1fa2;
+    border-color: #e1bee7;
+  }
+
+  &.cat-aceites {
+    background-color: #f1f8e9; // Verde oliva
+    color: #33691e;
+    border-color: #dcedc8;
+  }
+
+  &.cat-especias {
+    background-color: #efebe9; // Marrón especia
+    color: #4e342e;
+    border-color: #d7ccc8;
+  }
+
+  &.cat-precocinados,
+  &.cat-varios {
+    background-color: #e1f5fe; // Azul suave
+    color: #0277bd;
+    border-color: #b3e5fc;
   }
 }

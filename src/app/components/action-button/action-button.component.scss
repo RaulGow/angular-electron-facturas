@@ -1,0 +1,47 @@
+@use '../../../styles.scss' as *;
+
+.actions-button {
+  // 1. Estilos estructurales (Sin transiciones aquí)
+  border: none;
+  padding: 8px 24px;
+  line-height: 1.5rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+
+  // 2. Definimos qué queremos animar y cuándo
+  // Solo animamos transform y filter para el hover
+  transition: transform 0.2s ease, filter 0.2s ease, background-color 0.2s ease;
+
+  &-primary {
+    color: white;
+    background-color: $primary;
+  }
+
+  &-secondary {
+    background-color: #8dc5e6;
+    color: #000;
+  }
+
+  // 3. Al hacer hover, las transiciones definidas arriba harán su magia
+  &:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+  }
+
+  // Si quieres que el color de fondo también cambie suavemente al hacer hover
+  // pero NO al cargar, esta es la forma correcta.
+
+  .white-icon {
+    filter: invert(1);
+  }
+
+  .back-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+  }
+}

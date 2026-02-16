@@ -1,7 +1,10 @@
 export interface Articulo {
-  id?: number;
+  id: number;
   nombre: string;
-  precio_kilo: number;
+  categoria: string;
+  precio_venta: number;
+  unidadMedida: string;
+  iva: number;
   stock: number;
 }
 

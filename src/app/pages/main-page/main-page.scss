@@ -60,89 +60,92 @@
 // Resumen de tarjetas
 .dashboard-sumary {
   display: flex;
+  flex-wrap: wrap;
+  width: 100%;
   flex-direction: row;
   gap: 24px;
+  box-sizing: border-box;
 }
 
-.card-sumary {
-  display: flex;
-  flex-direction: row;
-  gap: 24px;
-  align-items: center;
-  background-color: $white;
-  box-shadow: $shadow;
-  border-radius: 12px;
-  padding: 24px;
-  flex: 1;
-  cursor: pointer;
-  border: 1px solid transparent;
+// .card-sumary {
+//   display: flex;
+//   flex-direction: row;
+//   gap: 24px;
+//   align-items: center;
+//   background-color: $white;
+//   box-shadow: $shadow;
+//   border-radius: 12px;
+//   padding: 24px;
+//   flex: 1;
+//   cursor: pointer;
+//   border: 1px solid transparent;
 
-  // Añadimos color a la transición para que el texto también cambie suave
-  transition: transform 0.2s ease,
-    box-shadow 0.2s ease,
-    background-color 0.3s ease,
-    border-color 0.3s ease,
-    color 0.3s ease;
+//   // Añadimos color a la transición para que el texto también cambie suave
+//   transition: transform 0.2s ease,
+//     box-shadow 0.2s ease,
+//     background-color 0.3s ease,
+//     border-color 0.3s ease,
+//     color 0.3s ease;
 
-  img {
-    width: 62px;
-    height: 62px;
-    object-fit: contain;
-    transition: filter 0.3s ease; // Transición suave para el color del icono
-  }
+//   img {
+//     width: 62px;
+//     height: 62px;
+//     object-fit: contain;
+//     transition: filter 0.3s ease; // Transición suave para el color del icono
+//   }
 
-  // Estilos del texto
-  .card-sumary-content-title {
-    font-weight: bold;
-    color: $primary; // O el color que tengas por defecto
-  }
+//   // Estilos del texto
+//   .card-sumary-content-title {
+//     font-weight: bold;
+//     color: $primary; // O el color que tengas por defecto
+//   }
 
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-    background-color: $primary;
-    border-color: rgba($primary, 0.1);
+//   &:hover {
+//     transform: translateY(-4px);
+//     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+//     background-color: $primary;
+//     border-color: rgba($primary, 0.1);
 
-    // 1. Cambia el color del SVG a blanco (usando filtros)
-    img {
-      filter: brightness(0) invert(1);
-    }
+//     // 1. Cambia el color del SVG a blanco (usando filtros)
+//     img {
+//       filter: brightness(0) invert(1);
+//     }
 
-    // 2. Cambia el color de todos los textos dentro de la card a blanco
-    .card-sumary-content-title,
-    span,
-    p,
-    h1 {
-      color: white;
-    }
-  }
-}
+//     // 2. Cambia el color de todos los textos dentro de la card a blanco
+//     .card-sumary-content-title,
+//     span,
+//     p,
+//     h1 {
+//       color: white;
+//     }
+//   }
+// }
 
-.card-sumary-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
+// .card-sumary-content {
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   gap: 8px;
 
-  .card-sumary-content-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #222;
-  }
+//   .card-sumary-content-title {
+//     font-size: 1.2rem;
+//     font-weight: 600;
+//     color: #222;
+//   }
 
-  .card-sumary-content-price {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: $primary;
-  }
+//   .card-sumary-content-price {
+//     font-size: 1.5rem;
+//     font-weight: bold;
+//     color: $primary;
+//   }
 
-  .card-sumary-content-data {
-    font-size: 1rem;
-    font-weight: 500;
-    color: #444;
-  }
+//   .card-sumary-content-data {
+//     font-size: 1rem;
+//     font-weight: 500;
+//     color: #444;
+//   }
 
-}
+// }
 
 // Sección de Botones de Acción Principales
 .actions {
