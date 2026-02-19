@@ -24,7 +24,7 @@
           label="Añadir Artículo"
           icon="assets/icons/add-circle-line.svg"
           variant="secondary"
-          (onClick)="miFuncionParaAbrirModal()">
+          (onClick)="showModal.set(true)">
         </app-action-button>
 
         <app-action-button
@@ -82,3 +82,36 @@
       </table>
     </div>
 </div>
+
+<!-- modal -->
+<app-custom-modal
+  title="Añadir a Charcutería"
+  [isOpen]="showModal()"
+  btnPrimaryLabel="Guardar Producto"
+  btnSecondaryLabel="Volver"
+  btnExtraLabel="Ayuda"
+  (onPrimary)="guardarArticulo()"
+  (onSecondary)="showModal.set(false)"
+  (onClose)="showModal.set(false)"
+>
+  <div class="formulario-charcuteria">
+  <p class="form-instruction">Introduce los datos del nuevo embutido:</p>
+  
+  <div class="input-group">
+    <label>Nombre del Producto</label>
+    <input type="text" placeholder="Ej. Jamón Serrano Reserva..." class="custom-input">
+  </div>
+
+  <div class="input-group">
+    <label>Categoría</label>
+    <div class="select-wrapper">
+      <select class="custom-select">
+        <option value="" disabled selected>Selecciona una categoría</option>
+        <option>Quesos</option>
+        <option>Embutidos Frescos</option>
+        <option>Embutidos Curados</option>
+      </select>
+    </div>
+  </div>
+</div>
+</app-custom-modal>

@@ -1,0 +1,53 @@
+dialog {
+  border: none;
+  border-radius: 16px;
+  padding: 0;
+  width: 90%;
+  max-width: 700px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+
+  &::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px); // Efecto moderno de desenfoque
+    transition: all 1.3s ease;
+  }
+}
+
+.modal-container {
+  display: flex;
+  flex-direction: column;
+  background: white;
+}
+
+.modal-header {
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  h2 { margin: 0; font-size: 1.25rem; }
+}
+
+.modal-body {
+  padding: 1.5rem;
+  min-height: 100px;
+}
+
+.modal-footer {
+  padding: 1.5rem;
+  background: #f9f9f9;
+  display: flex;
+  justify-content: space-between; // El botón extra a la izquierda, los otros a la derecha
+  align-items: center;
+}
+
+.main-actions {
+  display: flex;
+}
+
+.close-x {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}

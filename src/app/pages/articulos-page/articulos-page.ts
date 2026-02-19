@@ -1,20 +1,24 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, inject, ViewEncapsulation, signal } from '@angular/core';
 import { CommonModule, formatDate } from '@angular/common';
 import { ActionButtonComponent } from '../../components/action-button/action-button.component';
 import { DatabaseService } from '../../services/database.service';
+import { } from '@angular/material/dialog';
 import { Articulo } from '../../models/charcuteria.models';
+import { CustomModalComponent } from '../../components/custom-modal/custom-modal.component';
 
 @Component({
   selector: 'articulos-page',
   standalone: true,
-  imports: [ActionButtonComponent, CommonModule],
+  imports: [ActionButtonComponent, CommonModule, CustomModalComponent],
   templateUrl: './articulos-page.html',
   styleUrls: ['./articulos-page.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class ArticulosPage implements OnInit, OnDestroy {
 
   today = new Date();
   articulos: Articulo[] = [];
+  showModal = signal(false);
 
   constructor(
     private db: DatabaseService,
@@ -32,6 +36,11 @@ export class ArticulosPage implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     //destroy
+  }
+
+  guardarArticulo() {
+    console.log('Guardando...');
+    this.showModal.set(false);
   }
 
   get fechaFormateada(): string {
