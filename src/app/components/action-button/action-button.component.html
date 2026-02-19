@@ -1,6 +1,6 @@
 <button
   class="actions-button"
-  [class]="'actions-button-' + variant()"
+  [ngClass]="buttonClasses()"
   [routerLink]="link() ? link() : null"
   (click)="handleAction()"
 >

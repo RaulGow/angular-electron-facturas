@@ -1,0 +1,41 @@
+<dialog #modalElement (cancel)="closeModal()">
+  <div class="modal-container">
+    <header class="modal-header">
+      <h2>{{ title() }}</h2>
+      <button class="close-x" (click)="closeModal()">×</button>
+    </header>
+
+    <section class="modal-body">
+      <ng-content></ng-content>
+    </section>
+
+    <footer class="modal-footer">
+      @if (btnExtraLabel()) {
+        <app-action-button 
+          [label]="btnExtraLabel()" 
+          [variant]="btnExtraVariant()" 
+          (onClick)="onExtra.emit()">
+        </app-action-button>
+      }
+
+      <div class="main-actions">
+        @if (btnSecondaryLabel()) {
+          <app-action-button 
+            [label]="btnSecondaryLabel()" 
+            [variant]="btnSecondaryVariant()" 
+            (onClick)="onSecondary.emit()">
+          </app-action-button>
+        }
+
+        @if (btnPrimaryLabel()) {
+          <app-action-button 
+            [label]="btnPrimaryLabel()" 
+            [variant]="btnPrimaryVariant()" 
+            [marginLeft]="true"
+            (onClick)="onPrimary.emit()">
+          </app-action-button>
+        }
+      </div>
+    </footer>
+  </div>
+</dialog>

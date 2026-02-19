@@ -25,6 +25,26 @@
     background-color: #8dc5e6;
     color: #000;
   }
+  &-secondary {
+    background-color: $secondary;
+    color: #000;
+  }
+
+  &-tertiary {
+    background-color: $tertiary;
+    color: #333;
+    border: 1px solid #ddd;
+  }
+
+  &-success {
+    background-color: $success;
+    color: white;
+  }
+
+  &-danger {
+    background-color: $danger;
+    color: white;
+  }
 
   // 3. Al hacer hover, las transiciones definidas arriba harán su magia
   &:hover {
@@ -45,3 +65,11 @@
     margin-right: 8px;
   }
 }
+
+  .margin-left {
+    margin-left: 16px;
+  }
+
+  .margin-right {
+    margin-right: 16px;
+  }
