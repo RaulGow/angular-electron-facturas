@@ -17,6 +17,8 @@ export class ActionButtonComponent {
   icon = input<string>('');
   link = input<string | null>(null);
   variant = input<ButtonVariant>('primary');
+  type = input<'button' | 'submit' | 'reset'>('button'); // Por defecto 'button'
+  disabled = input<boolean>(false); // Para manejar el estado del formulario
   //opcionales
   isWhiteIcon = input<boolean>(false);
   marginLeft = input<boolean>(false);
@@ -28,13 +30,16 @@ export class ActionButtonComponent {
       // Usamos la variante para generar la clase dinámica (ej: actions-button-success)
       [`actions-button-${this.variant()}`]: true,
       'margin-left': this.marginLeft(),
-      'margin-right': this.marginRight()
+      'margin-right': this.marginRight(),
+      'is-disabled': this.disabled()
     };
   });
 
   onClick = output<void>();
 
   handleAction() {
+    // Si está deshabilitado, no hacemos nada
+    if (this.disabled()) return;
     if (!this.link()) this.onClick.emit();
   }
 }

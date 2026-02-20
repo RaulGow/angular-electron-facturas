@@ -1,15 +1,22 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef, inject, ViewEncapsulation, signal } from '@angular/core';
 import { CommonModule, formatDate } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActionButtonComponent } from '../../components/action-button/action-button.component';
 import { DatabaseService } from '../../services/database.service';
-import { } from '@angular/material/dialog';
 import { Articulo } from '../../models/charcuteria.models';
 import { CustomModalComponent } from '../../components/custom-modal/custom-modal.component';
+import { InputGenericComponent } from '../../components/input-generic/input-generic.component'
 
 @Component({
   selector: 'articulos-page',
   standalone: true,
-  imports: [ActionButtonComponent, CommonModule, CustomModalComponent],
+  imports: [
+    ActionButtonComponent,
+    CommonModule,
+    CustomModalComponent,
+    InputGenericComponent,
+    ReactiveFormsModule
+  ],
   templateUrl: './articulos-page.html',
   styleUrls: ['./articulos-page.scss'],
   encapsulation: ViewEncapsulation.None,
@@ -19,12 +26,23 @@ export class ArticulosPage implements OnInit, OnDestroy {
   today = new Date();
   articulos: Articulo[] = [];
   showModal = signal(false);
+  articuloForm: FormGroup;
 
   constructor(
     private db: DatabaseService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private fb: FormBuilder // 4. Inyectar FormBuilder
   ) {
     console.log('¿Electron?', !!(window as any).charcuteriaAPI);
+
+    // 5. Inicializar el formulario con validaciones básicas
+    this.articuloForm = this.fb.group({
+      nombre: ['', [Validators.required, Validators.minLength(3)]],
+      precio: [null, [Validators.required, Validators.min(0)]],
+      categoria: ['General', Validators.required],
+      stock: [0, [Validators.required, Validators.min(0)]], // Asegúrate de que esté aquí
+      iva: [21, [Validators.required, Validators.min(0)]]   // <--- AÑADE ESTA LÍNEA
+    });
   }
 
   async ngOnInit() {
@@ -39,8 +57,20 @@ export class ArticulosPage implements OnInit, OnDestroy {
   }
 
   guardarArticulo() {
-    console.log('Guardando...');
-    this.showModal.set(false);
+    if (this.articuloForm.valid) {
+      const nuevoArticulo = this.articuloForm.value;
+
+      console.log('✅ Datos capturados del formulario:', nuevoArticulo);
+
+      // Aquí iría la llamada a tu db:
+      // await this.db.createArticulo(nuevoArticulo);
+
+      this.showModal.set(false);
+      this.articuloForm.reset({ categoria: 'General', stock: 0 }); // Limpiar después de guardar
+    } else {
+      console.error('❌ El formulario no es válido');
+      this.articuloForm.markAllAsTouched(); // Para mostrar errores visuales
+    }
   }
 
   get fechaFormateada(): string {

@@ -19,6 +19,7 @@ export class CustomModalComponent {
   // Botón Principal (Guardar/Aceptar)
   btnPrimaryLabel = input<string>('');
   btnPrimaryVariant = input<ButtonVariant>('secondary');
+  btnPrimaryDisabled = input<boolean>(false);
   
   // Botón Secundario (Cancelar)
   btnSecondaryLabel = input<string>('');

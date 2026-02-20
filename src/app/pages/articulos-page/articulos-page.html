@@ -85,33 +85,63 @@
 
 <!-- modal -->
 <app-custom-modal
-  title="Añadir a Charcutería"
+  title="Añadir nuevo Artículo"
   [isOpen]="showModal()"
-  btnPrimaryLabel="Guardar Producto"
+  btnPrimaryLabel="Guardar Artículo"
   btnSecondaryLabel="Volver"
   btnExtraLabel="Ayuda"
+  [btnPrimaryDisabled]="articuloForm.invalid"
   (onPrimary)="guardarArticulo()"
   (onSecondary)="showModal.set(false)"
   (onClose)="showModal.set(false)"
 >
-  <div class="formulario-charcuteria">
-  <p class="form-instruction">Introduce los datos del nuevo embutido:</p>
+  <h3>Rellena todos los campos requeridos</h3>
+  <br/>
+  <br/>
   
-  <div class="input-group">
-    <label>Nombre del Producto</label>
-    <input type="text" placeholder="Ej. Jamón Serrano Reserva..." class="custom-input">
-  </div>
+  <form [formGroup]="articuloForm" (ngSubmit)="guardarArticulo()">
+  
+    <app-input-generic 
+      label="Nombre del Producto"
+      formControlName="nombre"
+      placeholder="Ej: Jamón Ibérico de Bellota"
+      [error]="articuloForm.get('nombre')?.touched && articuloForm.get('nombre')?.invalid ? 'El nombre debe tener al menos 3 caracteres' : null"
+    />
 
-  <div class="input-group">
-    <label>Categoría</label>
-    <div class="select-wrapper">
-      <select class="custom-select">
-        <option value="" disabled selected>Selecciona una categoría</option>
-        <option>Quesos</option>
-        <option>Embutidos Frescos</option>
-        <option>Embutidos Curados</option>
-      </select>
+    <div class="form-row">
+      <app-input-generic 
+        label="Precio de Venta"
+        type="number"
+        formControlName="precio"
+        suffix="€/Kg"
+        placeholder="0.00"
+        [error]="articuloForm.get('precio')?.touched && articuloForm.get('precio')?.invalid ? 'Precio requerido' : null"
+      />
+
+      <app-input-generic 
+        label="IVA Aplicado"
+        type="number"
+        formControlName="iva"
+        suffix="%"
+        placeholder="21"
+      />
     </div>
-  </div>
-</div>
+
+    <div class="form-row">
+      <app-input-generic 
+        label="Stock Actual"
+        type="number"
+        formControlName="stock"
+        suffix="Kg"
+        placeholder="0"
+      />
+
+      <app-input-generic 
+        label="Categoría"
+        formControlName="categoria"
+        placeholder="Ej: Embutidos"
+      />
+    </div>
+
+  </form>
 </app-custom-modal>
