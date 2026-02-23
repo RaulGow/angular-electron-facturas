@@ -1,7 +1,9 @@
 <button
+  [type]="type()"
   class="actions-button"
   [ngClass]="buttonClasses()"
   [routerLink]="link() ? link() : null"
+  [disabled]="disabled()"
   (click)="handleAction()"
 >
   @if (icon()) {

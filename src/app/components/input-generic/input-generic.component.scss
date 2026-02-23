@@ -1,0 +1,112 @@
+:host {
+    --input-radius: 12px;
+    --input-height: 56px;
+    --font-size-main: 1.05rem;
+    --primary: #2563eb;
+    --danger: #ef4444;
+    --border-base: #cbd5e1;
+    --text-dark: #1e293b;
+
+    display: block;
+    width: 100%;
+    margin-bottom: 1.25rem;
+}
+
+.field-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+
+    .label-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #475569;
+            letter-spacing: -0.01em;
+        }
+
+        .error-badge {
+            font-size: 0.7rem;
+            background: #fee2e2;
+            color: var(--danger);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+    }
+
+    .input-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+
+        .input-control {
+            width: 100%;
+            height: var(--input-height);
+            padding: 0 16px;
+            font-size: var(--font-size-main);
+            color: var(--text-dark);
+            background-color: #ffffff;
+            border: 2px solid var(--border-base);
+            border-radius: var(--input-radius);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+            &::placeholder {
+                color: #94a3b8;
+            }
+
+            &:hover:not(:disabled):not(:focus) {
+                border-color: #94a3b8;
+            }
+
+            &:focus {
+                outline: none;
+                border-color: var(--primary);
+                box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+            }
+
+            &:disabled {
+                background-color: #f1f5f9;
+                cursor: not-allowed;
+                color: #64748b;
+                border-color: #e2e8f0;
+            }
+        }
+
+        .suffix-addon {
+            position: absolute;
+            right: 16px;
+            font-weight: 600;
+            color: #64748b;
+            font-size: 1rem;
+            pointer-events: none; // Permite clicks a través del texto
+            user-select: none;
+        }
+    }
+
+    &.has-error {
+        .label-row label {
+            color: var(--danger);
+        }
+
+        .input-control {
+            border-color: var(--danger);
+
+            &:focus {
+                box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+            }
+        }
+
+        .error-text {
+            font-size: 0.85rem;
+            color: var(--danger);
+            font-weight: 500;
+            margin: 0;
+        }
+    }
+}

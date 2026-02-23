@@ -1,7 +1,7 @@
 @use '../../../styles.scss' as *;
 
 .actions-button {
-  // 1. Estilos estructurales (Sin transiciones aquí)
+  // 1. Estilos estructurales
   border: none;
   padding: 8px 24px;
   line-height: 1.5rem;
@@ -12,53 +12,34 @@
   align-items: center;
   cursor: pointer;
 
-  // 2. Definimos qué queremos animar y cuándo
-  // Solo animamos transform y filter para el hover
-  transition: transform 0.2s ease, filter 0.2s ease, background-color 0.2s ease;
+  // 2. Transiciones
+  transition: transform 0.2s ease, filter 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
 
-  &-primary {
-    color: white;
-    background-color: $primary;
+  &-primary { background-color: $primary; color: white; }
+  &-secondary { background-color: $secondary; color: #000; }
+  &-tertiary { background-color: $tertiary; color: #333; border: 1px solid #ddd; }
+  &-success { background-color: $success; color: white; }
+  &-danger { background-color: $danger; color: white; }
+
+  // 3. Estado Disabled (Nativo y Clase)
+  // Lo ponemos antes del hover para que el hover no afecte si está disabled
+  &:disabled, 
+  &.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.5; // Se vuelve translúcido
+    filter: grayscale(0.6); // Pierde saturación para verse "apagado"
+    pointer-events: none; // Evita cualquier interacción
+    transform: none !important; // Evita que se mueva hacia arriba
   }
 
-  &-secondary {
-    background-color: #8dc5e6;
-    color: #000;
-  }
-  &-secondary {
-    background-color: $secondary;
-    color: #000;
-  }
-
-  &-tertiary {
-    background-color: $tertiary;
-    color: #333;
-    border: 1px solid #ddd;
-  }
-
-  &-success {
-    background-color: $success;
-    color: white;
-  }
-
-  &-danger {
-    background-color: $danger;
-    color: white;
-  }
-
-  // 3. Al hacer hover, las transiciones definidas arriba harán su magia
-  &:hover {
+  // 4. Hover (Solo si NO está disabled)
+  &:not(:disabled):not(.is-disabled):hover {
     filter: brightness(1.1);
     transform: translateY(-2px);
   }
 
-  // Si quieres que el color de fondo también cambie suavemente al hacer hover
-  // pero NO al cargar, esta es la forma correcta.
-
-  .white-icon {
-    filter: invert(1);
-  }
-
+  // Iconos
+  .white-icon { filter: invert(1); }
   .back-icon {
     width: 20px;
     height: 20px;
@@ -66,10 +47,5 @@
   }
 }
 
-  .margin-left {
-    margin-left: 16px;
-  }
-
-  .margin-right {
-    margin-right: 16px;
-  }
+.margin-left { margin-left: 16px; }
+.margin-right { margin-right: 16px; }

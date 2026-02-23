@@ -2,7 +2,7 @@
   <div class="modal-container">
     <header class="modal-header">
       <h2>{{ title() }}</h2>
-      <button class="close-x" (click)="closeModal()">×</button>
+      <button class="close-x" (click)="closeModal()">X</button>
     </header>
 
     <section class="modal-body">
@@ -23,6 +23,7 @@
           <app-action-button 
             [label]="btnSecondaryLabel()" 
             [variant]="btnSecondaryVariant()" 
+            [type]="'button'"
             (onClick)="onSecondary.emit()">
           </app-action-button>
         }
@@ -30,7 +31,9 @@
         @if (btnPrimaryLabel()) {
           <app-action-button 
             [label]="btnPrimaryLabel()" 
-            [variant]="btnPrimaryVariant()" 
+            [variant]="btnPrimaryVariant()"
+            [disabled]="btnPrimaryDisabled()" 
+            [type]="'submit'"
             [marginLeft]="true"
             (onClick)="onPrimary.emit()">
           </app-action-button>

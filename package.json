@@ -57,7 +57,7 @@
   },
   "build": {
     "appId": "com.miempresa.facturas",
-    "productName": "Angular Electron Facturas",
+    "productName": "AngularElectronFacturas",
     "directories": {
       "output": "release",
       "buildResources": "assets"

@@ -41,7 +41,7 @@ function createWindow() {
 ================================ */
 
 // Obtener todos los artículos ordenados por nombre
-ipcMain.handle('get-articulos', () => {
+ipcMain.handle('get-articulos', async () => {
   return db.prepare('SELECT * FROM articulos ORDER BY nombre ASC').all();
 });
 
