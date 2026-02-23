@@ -18,6 +18,12 @@ db.pragma('foreign_keys = ON');
 
 // Crear tablas iniciales
 db.exec(`
+
+  CREATE TABLE IF NOT EXISTS categorias (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre TEXT NOT NULL
+  );
+
   CREATE TABLE IF NOT EXISTS articulos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nombre TEXT NOT NULL,
@@ -61,8 +67,43 @@ db.exec(`
 
 /* ==========================================================
     PROCESO DE SEMBRADO (SEEDING)
-    Inserta los artículos automáticamente si la tabla está vacía
    ========================================================== */
+
+// 1. Verificamos si la tabla categorías está vacía
+const countCategorias = db.prepare('SELECT COUNT(*) as total FROM categorias').get();
+
+if (countCategorias.total === 0) {
+  console.log('🌱 Sembrando categorías iniciales...');
+
+  // Extraemos las categorías únicas de tu lista de artículos para que coincidan perfectamente
+  const categoriasDemo = [
+    { nombre: 'Jamones', descripcion: 'Jamones ibéricos, serranos y paletas' },
+    { nombre: 'Cocidos', descripcion: 'Jamones cocidos, fiambres y pavos' },
+    { nombre: 'Embutidos', descripcion: 'Lomos, chorizos, salchichones y curados' },
+    { nombre: 'Precocinados', descripcion: 'Productos listos para consumir o troceados' },
+    { nombre: 'Especias', descripcion: 'Sazonadores y condimentos' },
+    { nombre: 'Gourmet', descripcion: 'Productos selectos y delicatessen' },
+    { nombre: 'Quesos', descripcion: 'Quesos nacionales e internacionales' },
+    { nombre: 'Embutidos Frescos', descripcion: 'Chistorras y productos de matanza fresca' },
+    { nombre: 'Aceites', descripcion: 'Aceites de oliva y grasas vegetales' },
+    { nombre: 'Varios', descripcion: 'Otros productos de tienda' }
+  ];
+
+  // Preparamos el insert para categorías
+  const insertCat = db.prepare(`
+    INSERT INTO categorias (nombre)
+    VALUES (@nombre)
+  `);
+
+  const insertManyCats = db.transaction((categorias) => {
+    for (const categoria of categorias) insertCat.run(categoria);
+  });
+
+  insertManyCats(categoriasDemo);
+  console.log('✅ Tabla de categorías poblada con éxito.');
+}
+
+// 2. inserta los artículos automáticamente si la tabla está vacía
 
 const countArticulos = db.prepare('SELECT COUNT(*) as total FROM articulos').get();
 
