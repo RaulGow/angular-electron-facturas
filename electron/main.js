@@ -41,6 +41,11 @@ function createWindow() {
 ================================ */
 
 // Obtener todos los artículos ordenados por nombre
+ipcMain.handle('get-categorias', async () => {
+  return db.prepare('SELECT * FROM categorias ORDER BY nombre ASC').all();
+});
+
+// Obtener todos los artículos ordenados por nombre
 ipcMain.handle('get-articulos', async () => {
   return db.prepare('SELECT * FROM articulos ORDER BY nombre ASC').all();
 });
@@ -50,17 +55,17 @@ ipcMain.handle('save-articulo', async (event, art) => {
   if (art.id) {
     db.prepare(`
       UPDATE articulos
-      SET nombre = ?, categoria = ?, precio_venta = ?, unidadMedida = ?, iva = ?, stock = ?
+      SET nombre = ?, categoria_id = ?, precio_venta = ?, unidadMedida = ?, iva = ?, stock = ?
       WHERE id = ?
-    `).run(art.nombre, art.categoria, art.precio_venta, art.unidadMedida, art.iva, art.stock, art.id);
+    `).run(art.nombre, art.categoria_id, art.precio_venta, art.unidadMedida, art.iva, art.stock, art.id);
     return art.id;
   }
 
   const stmt = db.prepare(`
-    INSERT INTO articulos (nombre, categoria, precio_venta, unidadMedida, iva, stock)
+    INSERT INTO articulos (nombre, categoria_id, precio_venta, unidadMedida, iva, stock)
     VALUES (?, ?, ?, ?, ?, ?)
   `);
-  const result = stmt.run(art.nombre, art.categoria, art.precio_venta, art.unidadMedida, art.iva, art.stock);
+  const result = stmt.run(art.nombre, art.categoria_id, art.precio_venta, art.unidadMedida, art.iva, art.stock);
   return result.lastInsertRowid;
 });
 

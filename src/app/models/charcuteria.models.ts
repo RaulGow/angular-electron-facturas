@@ -1,7 +1,11 @@
+export interface Categoria {
+  id: number;
+  nombre: string;
+}
 export interface Articulo {
   id: number;
   nombre: string;
-  categoria: string;
+  categoria_id: number;
   precio_venta: number;
   unidadMedida: string;
   iva: number;

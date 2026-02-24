@@ -4,6 +4,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Función para generar PDFs
   generatePDF: () => ipcRenderer.invoke('generate-pdf'),
 
+  // categorias
+  getCategorias: () => ipcRenderer.invoke('get-categorias'),
+
   // Artículos
   getArticulos: () => ipcRenderer.invoke('get-articulos'),
   saveArticulo: (articulo) => ipcRenderer.invoke('save-articulo', articulo),

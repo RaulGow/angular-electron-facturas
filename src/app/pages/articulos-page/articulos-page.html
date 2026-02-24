@@ -54,7 +54,10 @@
               <td class="sumary-table-number">#{{ art.id.toString().padStart(4, '0') }}</td>
               <td class="sumary-table-description">{{ art.nombre }}</td>
               <td>
-                <span class="badge-categoria" [ngClass]="getCategoryClass(art.categoria)">{{ art.categoria }}</span>
+                @let nombreCat = getNombreCategoria(art.categoria_id);
+                <span class="badge-categoria" [ngClass]="getCategoryClass(nombreCat)">
+                  {{ nombreCat }}
+                </span>
               </td>
               <td>{{ art.stock }} <small>{{ art.unidadMedida }}</small></td>
               <td class="sumary-table-price">
@@ -136,11 +139,13 @@
         placeholder="0"
       />
 
-      <app-input-generic 
-        label="Categoría"
-        formControlName="categoria"
-        placeholder="Ej: Embutidos"
-      />
+      <app-select-generic
+        label="Categoría del artículo"
+        [options]="categoriasOpciones" 
+        formControlName="categoriaId"
+        placeholder="Elige una categoría..."
+        [error]="articuloForm.get('categoriaId')?.invalid && articuloForm.get('categoriaId')?.touched ? 'Campo obligatorio' : null"
+      ></app-select-generic>
     </div>
 
   </form>
