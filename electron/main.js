@@ -47,7 +47,7 @@ ipcMain.handle('get-categorias', async () => {
 
 // Obtener todos los artículos ordenados por nombre
 ipcMain.handle('get-articulos', async () => {
-  return db.prepare('SELECT * FROM articulos ORDER BY nombre ASC').all();
+  return db.prepare('SELECT * FROM articulos ORDER BY nombre COLLATE NOCASE ASC').all();
 });
 
 // Guardar o actualizar artículos
