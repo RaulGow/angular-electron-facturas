@@ -6,7 +6,6 @@ const db = require('./db-manager'); // Importamos el gestor que creamos antes
 let mainWindow;
 
 const preloadPath = path.join(__dirname, 'preload.js');
-console.log('🧭 preloadPath:', preloadPath);
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -25,7 +24,8 @@ function createWindow() {
   if (isDev) {
     mainWindow.loadURL('http://localhost:4200');
   } else {
-    const indexPath = path.join(__dirname, '..', 'dist', 'angular-electron-facturas', 'browser', 'index.html');
+    // Antes era '../dist/...', ahora es './dist/...' porque ya estamos en la raíz
+    const indexPath = path.join(__dirname, 'dist', 'index.html');
     if (!fs.existsSync(indexPath)) {
       console.error('❌ index.html NO encontrado en:', indexPath);
       return;
