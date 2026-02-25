@@ -49,21 +49,10 @@ export class ArticulosPage implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
-    try {
-      // 1. Cargamos categorías y ESPERAMOS a que Electron termine del todo
-      const cats = await this.db.getCategorias();
-      this.categorias = cats;
-      console.log('✅ Categorías cargadas');
-
-      // 2. Solo cuando la anterior ha vuelto, pedimos artículos
-      const arts = await this.db.getArticulos();
-      this.articulos = arts;
-      console.log('✅ Artículos cargados');
-
-      this.cdr.detectChanges();
-    } catch (error) {
-      console.error("Error en IPC:", error);
-    }
+    // Simplemente llamamos a los métodos que ya tienes
+    // El orden es importante para que el helper de categorías funcione bien
+    await this.cargarCategorias();
+    await this.cargarArticulos();
   }
 
 
@@ -107,11 +96,11 @@ export class ArticulosPage implements OnInit, OnDestroy {
    */
   getNombreCategoria(id: any): string {
     if (!this.categorias || this.categorias.length === 0) return 'Cargando...';
-    
+
     // Forzamos a que ambos sean números para comparar
     const buscado = Number(id);
     const categoria = this.categorias.find(c => Number(c.id) === buscado);
-    
+
     if (!categoria) {
       console.log('❌ Fallo con ID:', id, 'en artículos:', this.articulos[0]);
       return 'Varios';
@@ -166,10 +155,10 @@ export class ArticulosPage implements OnInit, OnDestroy {
   }
 
   get categoriasOpciones() {
-  return this.categorias.map(cat => ({
-    id: cat.id,      // Asegúrate de que tu modelo Categoria tenga id
-    nombre: cat.nombre
-  }));
-}
+    return this.categorias.map(cat => ({
+      id: cat.id,      // Asegúrate de que tu modelo Categoria tenga id
+      nombre: cat.nombre
+    }));
+  }
 
 }
