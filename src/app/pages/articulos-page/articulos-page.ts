@@ -3,9 +3,10 @@ import { CommonModule, formatDate } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActionButtonComponent } from '../../components/action-button/action-button.component';
 import { DatabaseService } from '../../services/database.service';
-import { Articulo } from '../../models/charcuteria.models';
+import { Articulo, Categoria } from '../../models/charcuteria.models';
 import { CustomModalComponent } from '../../components/custom-modal/custom-modal.component';
 import { InputGenericComponent } from '../../components/input-generic/input-generic.component'
+import { SelectGenericComponent } from '../../components/select-generic/select-generic.component';
 
 @Component({
   selector: 'articulos-page',
@@ -15,6 +16,7 @@ import { InputGenericComponent } from '../../components/input-generic/input-gene
     CommonModule,
     CustomModalComponent,
     InputGenericComponent,
+    SelectGenericComponent,
     ReactiveFormsModule
   ],
   templateUrl: './articulos-page.html',
@@ -25,6 +27,7 @@ export class ArticulosPage implements OnInit, OnDestroy {
 
   today = new Date();
   articulos: Articulo[] = [];
+  categorias: Categoria[] = [];
   showModal = signal(false);
   articuloForm: FormGroup;
 
@@ -39,16 +42,28 @@ export class ArticulosPage implements OnInit, OnDestroy {
     this.articuloForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3)]],
       precio: [null, [Validators.required, Validators.min(0)]],
-      categoria: ['General', Validators.required],
+      categoriaId: ['', Validators.required],
       stock: [0, [Validators.required, Validators.min(0)]], // Asegúrate de que esté aquí
       iva: [21, [Validators.required, Validators.min(0)]]   // <--- AÑADE ESTA LÍNEA
     });
   }
 
   async ngOnInit() {
-    console.log('🧪 Cargando articulos...');
-    await this.cargarArticulos();
-    console.log('📦 Articulos:', this.articulos);
+    try {
+      // 1. Cargamos categorías y ESPERAMOS a que Electron termine del todo
+      const cats = await this.db.getCategorias();
+      this.categorias = cats;
+      console.log('✅ Categorías cargadas');
+
+      // 2. Solo cuando la anterior ha vuelto, pedimos artículos
+      const arts = await this.db.getArticulos();
+      this.articulos = arts;
+      console.log('✅ Artículos cargados');
+
+      this.cdr.detectChanges();
+    } catch (error) {
+      console.error("Error en IPC:", error);
+    }
   }
 
 
@@ -87,6 +102,23 @@ export class ArticulosPage implements OnInit, OnDestroy {
     }).join(' ');
   }
 
+  /**
+   * Busca el nombre de la categoría basándose en su ID
+   */
+  getNombreCategoria(id: any): string {
+    if (!this.categorias || this.categorias.length === 0) return 'Cargando...';
+    
+    // Forzamos a que ambos sean números para comparar
+    const buscado = Number(id);
+    const categoria = this.categorias.find(c => Number(c.id) === buscado);
+    
+    if (!categoria) {
+      console.log('❌ Fallo con ID:', id, 'en artículos:', this.articulos[0]);
+      return 'Varios';
+    }
+    return categoria.nombre;
+  }
+
   miFuncionParaAbrirModal() {
     console.log('Botón de agregar artículo clickeado');
   }
@@ -108,6 +140,23 @@ export class ArticulosPage implements OnInit, OnDestroy {
     }
   }
 
+  async cargarCategorias() {
+    try {
+      const categoriasDb = await this.db.getCategorias();
+
+      // Asignamos los articulos
+      this.categorias = categoriasDb
+
+      // Forzamos que Angular actualice la vista
+      this.cdr.detectChanges();
+
+      console.log('📦 Categorias actualizados:', this.categorias);
+    } catch (error) {
+      console.error('❌ Error cargando categorias', error);
+      alert('Error cargando categorias (ver consola)');
+    }
+  }
+
   // estilos de categorias:
   getCategoryClass(categoria: string): string {
     if (!categoria) return 'cat-generico';
@@ -115,5 +164,12 @@ export class ArticulosPage implements OnInit, OnDestroy {
     // Convertimos "Embutidos Frescos" -> "cat-embutidos-frescos"
     return 'cat-' + categoria.toLowerCase().replace(/\s+/g, '-');
   }
+
+  get categoriasOpciones() {
+  return this.categorias.map(cat => ({
+    id: cat.id,      // Asegúrate de que tu modelo Categoria tenga id
+    nombre: cat.nombre
+  }));
+}
 
 }

@@ -18,14 +18,21 @@ db.pragma('foreign_keys = ON');
 
 // Crear tablas iniciales
 db.exec(`
+
+  CREATE TABLE IF NOT EXISTS categorias (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre TEXT NOT NULL
+  );
+
   CREATE TABLE IF NOT EXISTS articulos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nombre TEXT NOT NULL,
-    categoria TEXT,
+    categoria_id INTEGER,
     precio_venta REAL,
     unidadMedida TEXT,
     iva INTEGER,
-    stock REAL
+    stock REAL,
+    FOREIGN KEY (categoria_id) REFERENCES categorias(id)
   );
 
   CREATE TABLE IF NOT EXISTS clientes (
@@ -61,60 +68,112 @@ db.exec(`
 
 /* ==========================================================
     PROCESO DE SEMBRADO (SEEDING)
-    Inserta los artículos automáticamente si la tabla está vacía
    ========================================================== */
+
+// 1. Verificamos si la tabla categorías está vacía
+const countCategorias = db.prepare('SELECT COUNT(*) as total FROM categorias').get();
+
+if (countCategorias.total === 0) {
+  console.log('🌱 Sembrando categorías iniciales...');
+
+  // Extraemos las categorías únicas de tu lista de artículos para que coincidan perfectamente
+  const categoriasDemo = [
+    { nombre: 'Jamones'},
+    { nombre: 'Cocidos'},
+    { nombre: 'Embutidos' },
+    { nombre: 'Precocinados'},
+    { nombre: 'Especias'},
+    { nombre: 'Gourmet'},
+    { nombre: 'Quesos'},
+    { nombre: 'Embutidos Frescos'},
+    { nombre: 'Aceites'},
+    { nombre: 'Varios'}
+  ];
+
+  // Preparamos el insert para categorías
+  const insertCat = db.prepare(`
+    INSERT INTO categorias (nombre)
+    VALUES (@nombre)
+  `);
+
+  const insertManyCats = db.transaction((categorias) => {
+    for (const categoria of categorias) insertCat.run(categoria);
+  });
+
+  insertManyCats(categoriasDemo);
+  console.log('✅ Tabla de categorías poblada con éxito.');
+}
+
+// 2. inserta los artículos automáticamente si la tabla está vacía
 
 const countArticulos = db.prepare('SELECT COUNT(*) as total FROM articulos').get();
 
 if (countArticulos.total === 0) {
   console.log('🌱 Sembrando artículos iniciales en la base de datos...');
 
+  // 1. Obtenemos todas las categorías para saber sus IDs
+  const catsInDb = db.prepare('SELECT id, nombre FROM categorias').all();
+  
+  // Creamos un mapa rápido: { 'Jamones': 1, 'Cocidos': 2 ... }
+  const catMap = {};
+  catsInDb.forEach(c => catMap[c.nombre] = c.id);
+
   const articulosDemo = [
-    { nombre: 'Jamón Serrano Gran Reserva (+15 meses)', categoria: 'Jamones', precio_venta: 18.50, unidadMedida: 'kg', iva: 10, stock: 45 },
-    { nombre: 'Jamón Serrano Bodega', categoria: 'Jamones', precio_venta: 14.20, unidadMedida: 'kg', iva: 10, stock: 60 },
-    { nombre: 'Jamón Ibérico Cebo (50% Raza Ibérica)', categoria: 'Jamones', precio_venta: 42.00, unidadMedida: 'kg', iva: 10, stock: 12 },
-    { nombre: 'Jamón Ibérico Cebo Campo (75% Raza Ibérica)', categoria: 'Jamones', precio_venta: 58.00, unidadMedida: 'kg', iva: 10, stock: 8 },
-    { nombre: 'Jamón Ibérico Bellota (100% Pata Negra)', categoria: 'Jamones', precio_venta: 95.00, unidadMedida: 'kg', iva: 10, stock: 5 },
-    { nombre: 'Jamón 5J 100% Ibérico Bellota', categoria: 'Jamones', precio_venta: 125.00, unidadMedida: 'kg', iva: 10, stock: 3 },
-    { nombre: 'Paleta Ibérica de Bellota (100% Raza Ibérica)', categoria: 'Jamones', precio_venta: 48.00, unidadMedida: 'kg', iva: 10, stock: 10 },
-    { nombre: 'Jamón York Extra (90% carne)', categoria: 'Cocidos', precio_venta: 16.90, unidadMedida: 'kg', iva: 10, stock: 25 },
-    { nombre: 'Jamón Cocido Calidad Suprema', categoria: 'Cocidos', precio_venta: 12.50, unidadMedida: 'kg', iva: 10, stock: 30 },
-    { nombre: 'Fiambre de Jamón (55% carne)', categoria: 'Cocidos', precio_venta: 7.90, unidadMedida: 'kg', iva: 10, stock: 50 },
-    { nombre: 'Lomo Ibérico de Bellota', categoria: 'Embutidos', precio_venta: 44.50, unidadMedida: 'kg', iva: 10, stock: 15 },
-    { nombre: 'Lomo Ibérico de Cebo', categoria: 'Embutidos', precio_venta: 32.00, unidadMedida: 'kg', iva: 10, stock: 20 },
-    { nombre: 'Lomito Ibérico de Presa', categoria: 'Embutidos', precio_venta: 52.00, unidadMedida: 'kg', iva: 10, stock: 10 },
-    { nombre: 'Chorizo Ibérico de Bellota Vela', categoria: 'Embutidos', precio_venta: 19.50, unidadMedida: 'kg', iva: 10, stock: 25 },
-    { nombre: 'Chorizo de Cantimpalo', categoria: 'Embutidos', precio_venta: 13.80, unidadMedida: 'kg', iva: 10, stock: 40 },
-    { nombre: 'Chorizo Picante de León', categoria: 'Embutidos', precio_venta: 14.50, unidadMedida: 'kg', iva: 10, stock: 35 },
-    { nombre: 'Fuet dOlot Artesano', categoria: 'Embutidos', precio_venta: 16.20, unidadMedida: 'ud', iva: 10, stock: 100 },
-    { nombre: 'Salami Milano', categoria: 'Embutidos', precio_venta: 15.40, unidadMedida: 'kg', iva: 10, stock: 20 },
-    { nombre: 'Salami con Pimienta', categoria: 'Embutidos', precio_venta: 16.80, unidadMedida: 'kg', iva: 10, stock: 18 },
-    { nombre: 'Salchichón de Vic', categoria: 'Embutidos', precio_venta: 21.00, unidadMedida: 'kg', iva: 10, stock: 15 },
-    { nombre: 'Taquitos de Jamón Ibérico (150g)', categoria: 'Precocinados', precio_venta: 6.50, unidadMedida: 'ud', iva: 10, stock: 80 },
-    { nombre: 'Jamón Ibérico Picado', categoria: 'Precocinados', precio_venta: 12.90, unidadMedida: 'kg', iva: 10, stock: 10 },
-    { nombre: 'Hueso de Jamón Ibérico', categoria: 'Varios', precio_venta: 1.50, unidadMedida: 'ud', iva: 10, stock: 200 },
-    { nombre: 'Orégano Seco en Hoja (50g)', categoria: 'Especias', precio_venta: 2.20, unidadMedida: 'ud', iva: 10, stock: 50 },
-    { nombre: 'Pimentón Dulce de la Vera', categoria: 'Especias', precio_venta: 3.75, unidadMedida: 'ud', iva: 10, stock: 40 },
-    { nombre: 'Pimentón Picante de la Vera', categoria: 'Especias', precio_venta: 3.75, unidadMedida: 'ud', iva: 10, stock: 30 },
-    { nombre: 'Pasta de Trufa Negra (Tarro)', categoria: 'Gourmet', precio_venta: 12.40, unidadMedida: 'ud', iva: 10, stock: 15 },
-    { nombre: 'Queso Manchego DOP (12 meses)', categoria: 'Quesos', precio_venta: 26.90, unidadMedida: 'kg', iva: 10, stock: 12 },
-    { nombre: 'Pechuga de Pavo Natural', categoria: 'Cocidos', precio_venta: 14.90, unidadMedida: 'kg', iva: 10, stock: 22 },
-    { nombre: 'Chistorra de Navarra', categoria: 'Embutidos Frescos', precio_venta: 9.50, unidadMedida: 'kg', iva: 10, stock: 40 },
-    { nombre: 'Sobrasada de Mallorca', categoria: 'Embutidos', precio_venta: 18.20, unidadMedida: 'kg', iva: 10, stock: 15 },
-    { nombre: 'Mortadela de Bologna IGP', categoria: 'Cocidos', precio_venta: 13.50, unidadMedida: 'kg', iva: 10, stock: 20 },
-    { nombre: 'Paté de Campaña al Armagnac', categoria: 'Gourmet', precio_venta: 19.00, unidadMedida: 'kg', iva: 10, stock: 8 },
-    { nombre: 'Cabeza de Jabalí', categoria: 'Cocidos', precio_venta: 11.40, unidadMedida: 'kg', iva: 10, stock: 12 },
-    { nombre: 'Aceite de Oliva VE (5L)', categoria: 'Aceites', precio_venta: 45.00, unidadMedida: 'ud', iva: 10, stock: 100 }
+    { nombre: 'Jamón Serrano Gran Reserva (+15 meses)', categoria_id: 1, precio_venta: 18.50, unidadMedida: 'kg', iva: 10, stock: 45 },
+    { nombre: 'Jamón Serrano Bodega', categoria_id: 1, precio_venta: 14.20, unidadMedida: 'kg', iva: 10, stock: 60 },
+    { nombre: 'Jamón Ibérico Cebo (50% Raza Ibérica)', categoria_id: 1, precio_venta: 42.00, unidadMedida: 'kg', iva: 10, stock: 12 },
+    { nombre: 'Jamón Ibérico Cebo Campo (75% Raza Ibérica)', categoria_id: 1, precio_venta: 58.00, unidadMedida: 'kg', iva: 10, stock: 8 },
+    { nombre: 'Jamón Ibérico Bellota (100% Pata Negra)', categoria_id: 1, precio_venta: 95.00, unidadMedida: 'kg', iva: 10, stock: 5 },
+    { nombre: 'Jamón 5J 100% Ibérico Bellota', categoria_id: 1, precio_venta: 125.00, unidadMedida: 'kg', iva: 10, stock: 3 },
+    { nombre: 'Paleta Ibérica de Bellota (100% Raza Ibérica)', categoria_id: 1, precio_venta: 48.00, unidadMedida: 'kg', iva: 10, stock: 10 },
+    { nombre: 'Jamón York Extra (90% carne)', categoria_id: 2, precio_venta: 16.90, unidadMedida: 'kg', iva: 10, stock: 25 },
+    { nombre: 'Jamón Cocido Calidad Suprema', categoria_id: 2, precio_venta: 12.50, unidadMedida: 'kg', iva: 10, stock: 30 },
+    { nombre: 'Fiambre de Jamón (55% carne)', categoria_id: 2, precio_venta: 7.90, unidadMedida: 'kg', iva: 10, stock: 50 },
+    { nombre: 'Lomo Ibérico de Bellota', categoria_id: 3, precio_venta: 44.50, unidadMedida: 'kg', iva: 10, stock: 15 },
+    { nombre: 'Lomo Ibérico de Cebo', categoria_id: 3, precio_venta: 32.00, unidadMedida: 'kg', iva: 10, stock: 20 },
+    { nombre: 'Lomito Ibérico de Presa', categoria_id: 3, precio_venta: 52.00, unidadMedida: 'kg', iva: 10, stock: 10 },
+    { nombre: 'Chorizo Ibérico de Bellota Vela', categoria_id: 3, precio_venta: 19.50, unidadMedida: 'kg', iva: 10, stock: 25 },
+    { nombre: 'Chorizo de Cantimpalo', categoria_id: 3, precio_venta: 13.80, unidadMedida: 'kg', iva: 10, stock: 40 },
+    { nombre: 'Chorizo Picante de León', categoria_id: 3, precio_venta: 14.50, unidadMedida: 'kg', iva: 10, stock: 35 },
+    { nombre: 'Fuet dOlot Artesano', categoria_id: 3, precio_venta: 16.20, unidadMedida: 'ud', iva: 10, stock: 100 },
+    { nombre: 'Salami Milano', categoria_id: 3, precio_venta: 15.40, unidadMedida: 'kg', iva: 10, stock: 20 },
+    { nombre: 'Salami con Pimienta', categoria_id: 3, precio_venta: 16.80, unidadMedida: 'kg', iva: 10, stock: 18 },
+    { nombre: 'Salchichón de Vic', categoria_id: 3, precio_venta: 21.00, unidadMedida: 'kg', iva: 10, stock: 15 },
+    { nombre: 'Taquitos de Jamón Ibérico (150g)', categoria_id: 4, precio_venta: 6.50, unidadMedida: 'ud', iva: 10, stock: 80 },
+    { nombre: 'Jamón Ibérico Picado', categoria_id: 4, precio_venta: 12.90, unidadMedida: 'kg', iva: 10, stock: 10 },
+    { nombre: 'Hueso de Jamón Ibérico', categoria_id: 10, precio_venta: 1.50, unidadMedida: 'ud', iva: 10, stock: 200 },
+    { nombre: 'Orégano Seco en Hoja (50g)', categoria_id: 5, precio_venta: 2.20, unidadMedida: 'ud', iva: 10, stock: 50 },
+    { nombre: 'Pimentón Dulce de la Vera', categoria_id: 5, precio_venta: 3.75, unidadMedida: 'ud', iva: 10, stock: 40 },
+    { nombre: 'Pimentón Picante de la Vera', categoria_id: 5, precio_venta: 3.75, unidadMedida: 'ud', iva: 10, stock: 30 },
+    { nombre: 'Pasta de Trufa Negra (Tarro)', categoria_id: 6, precio_venta: 12.40, unidadMedida: 'ud', iva: 10, stock: 15 },
+    { nombre: 'Queso Manchego DOP (12 meses)', categoria_id: 7, precio_venta: 26.90, unidadMedida: 'kg', iva: 10, stock: 12 },
+    { nombre: 'Pechuga de Pavo Natural', categoria_id: 2, precio_venta: 14.90, unidadMedida: 'kg', iva: 10, stock: 22 },
+    { nombre: 'Chistorra de Navarra', categoria_id: 8, precio_venta: 9.50, unidadMedida: 'kg', iva: 10, stock: 40 },
+    { nombre: 'Sobrasada de Mallorca', categoria_id: 3, precio_venta: 18.20, unidadMedida: 'kg', iva: 10, stock: 15 },
+    { nombre: 'Mortadela de Bologna IGP', categoria_id: 2, precio_venta: 13.50, unidadMedida: 'kg', iva: 10, stock: 20 },
+    { nombre: 'Paté de Campaña al Armagnac', categoria_id: 6, precio_venta: 19.00, unidadMedida: 'kg', iva: 10, stock: 8 },
+    { nombre: 'Cabeza de Jabalí', categoria_id: 2, precio_venta: 11.40, unidadMedida: 'kg', iva: 10, stock: 12 },
+    { nombre: 'Aceite de Oliva VE (5L)', categoria_id: 9, precio_venta: 45.00, unidadMedida: 'ud', iva: 10, stock: 100 }
   ];
 
   // Usamos db.transaction para una inserción masiva eficiente
   const insert = db.prepare(`
-    INSERT INTO articulos (nombre, categoria, precio_venta, unidadMedida, iva, stock)
-    VALUES (@nombre, @categoria, @precio_venta, @unidadMedida, @iva, @stock)
+    INSERT INTO articulos (nombre, categoria_id, precio_venta, unidadMedida, iva, stock)
+    VALUES (@nombre, @categoria_id, @precio_venta, @unidadMedida, @iva, @stock)
   `);
 
   const insertMany = db.transaction((articulos) => {
-    for (const art of articulos) insert.run(art);
+    for (const art of articulos) {
+      // 2. Ejecutamos pasando un objeto cuyas llaves coincidan con el SQL de arriba
+      insert.run({
+        nombre: art.nombre,
+        categoria_id: art.categoria_id,
+        precio_venta: art.precio_venta,
+        unidadMedida: art.unidadMedida, // <-- Esta llave debe ser IGUAL a @unidadMedida
+        iva: art.iva,
+        stock: art.stock
+      });
+    }
   });
 
   insertMany(articulosDemo);
