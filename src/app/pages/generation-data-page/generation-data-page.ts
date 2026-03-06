@@ -17,7 +17,9 @@ import { MatIconModule } from '@angular/material/icon';
 
 // mis componentes
 import { ActionButtonComponent } from '../../components/action-button/action-button.component';
-import { InputGenericComponent } from '../../components/input-generic/input-generic.component'
+import { InputGenericComponent } from '../../components/input-generic/input-generic.component';
+import { SelectGenericComponent } from '../../components/select-generic/select-generic.component';
+import { DatabaseService } from '../../services/database.service';
 
 @Component({
   selector: 'app-generation-data-page',
@@ -33,7 +35,8 @@ import { InputGenericComponent } from '../../components/input-generic/input-gene
     MatNativeDateModule,
     MatIconModule,
     ActionButtonComponent,
-    InputGenericComponent
+    InputGenericComponent,
+    SelectGenericComponent
   ],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'es-ES' }
@@ -44,9 +47,12 @@ import { InputGenericComponent } from '../../components/input-generic/input-gene
 export class GenerationDataPage implements OnInit {
   invoiceForm: FormGroup;
   disponibles: any[] = [];
+  today: Date = new Date();
+  articulos: any[] = [];
 
   constructor(
     private fb: FormBuilder,
+    private db: DatabaseService,
     private http: HttpClient,
     private invoiceService: InvoiceService,
     private router: Router,
@@ -59,7 +65,7 @@ export class GenerationDataPage implements OnInit {
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.http.get<any[]>('assets/data/articulos.json').subscribe({
       next: (data) => {
         this.disponibles = data;
@@ -68,6 +74,7 @@ export class GenerationDataPage implements OnInit {
       error: (err) => console.error('Error cargando artículos', err)
     });
     this.addItem();
+    await this.cargarArticulos();
   }
 
   get items() {
@@ -167,6 +174,17 @@ export class GenerationDataPage implements OnInit {
       this.router.navigate(['/factura']);
     } else {
       console.warn("El formulario no es válido. Revisa los campos obligatorios.");
+    }
+  }
+
+  async cargarArticulos() {
+    try {
+      // Ahora este método devuelve los artículos con 'unidad_abreviatura' gracias al JOIN
+      this.articulos = await this.db.getArticulos();
+      this.cdr.detectChanges();
+      console.log('Artículos cargados:', this.articulos);
+    } catch (error) {
+      console.error('❌ Error cargando articulos', error);
     }
   }
 

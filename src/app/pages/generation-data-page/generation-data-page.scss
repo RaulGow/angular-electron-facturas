@@ -39,7 +39,7 @@
   .item-row {
     display: flex;
     gap: 15px;
-    align-items: flex-start; // Alinea arriba por si hay mensajes de error
+    align-items: center; // Alinea arriba por si hay mensajes de error
     margin-bottom: 5px;
     padding: 10px;
     border-radius: 8px;
@@ -51,33 +51,35 @@
 
     // Proporciones de las columnas
     .col-desc {
-      flex: 4;
+      flex: 6;
     }
 
     .col-qty {
       flex: 1;
+      min-width: 60px;
     }
 
     .col-price {
-      flex: 1.5;
+      flex: 2;
     }
 
     .col-subtotal {
       flex: 1.5;
       text-align: right;
-      padding-top: 10px; // Alineación visual con los inputs
 
       small {
         display: block;
-        color: #7f8c8d;
-        font-size: 0.75rem;
+        color: #727879;
+        font-size: 1rem;
+        font-weight: 600;
         text-transform: uppercase;
       }
 
-      span {
-        font-weight: 600;
-        font-size: 1.1rem;
-        color: #27ae60;
+      p {
+        font-size: 1.25rem;
+        color: #000000;
+        margin-top: 8px;
+        font-weight: 800;
       }
     }
 
@@ -85,7 +87,7 @@
     .btn-delete {
       margin-top: 8px;
       color: #e74c3c;
-      font-size: 1.5rem;
+      font-size: 3rem;
       border: none;
       background: none;
       cursor: pointer;

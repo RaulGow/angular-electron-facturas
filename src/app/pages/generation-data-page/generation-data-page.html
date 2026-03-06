@@ -9,17 +9,22 @@
         placeholder="Nombre del Cliente"
         [error]="invoiceForm.get('customer')?.touched && invoiceForm.get('customer')?.invalid ? 'Nombre obligatorio' : null"
       />
-      <!-- <mat-form-field appearance="outline">
-        <mat-label>Cliente</mat-label>
-        <input matInput formControlName="customer" placeholder="Nombre del Cliente">
-      </mat-form-field> -->
 
-      <mat-form-field appearance="outline">
-        <mat-label>Fecha</mat-label>
-        <input matInput [matDatepicker]="picker" formControlName="date">
-        <mat-hint>DD/MM/YYYY</mat-hint>
-        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
+      <mat-form-field appearance="outline" color="accent">
+        <mat-label>Fecha de emisión</mat-label>
+        <input matInput 
+              [matDatepicker]="picker" 
+              formControlName="date"
+              [min]="today"
+              placeholder="Seleccione fecha">
+        <mat-hint>Formato sugerido: DD/MM/YYYY</mat-hint>
+        <mat-datepicker-toggle matIconSuffix [for]="picker">
+          <mat-icon matDatepickerToggleIcon>event</mat-icon>
+        </mat-datepicker-toggle>
+        <mat-datepicker
+          #picker 
+          startView="month">
+        </mat-datepicker>
       </mat-form-field>
     </div>
 
@@ -28,39 +33,41 @@
     <div formArrayName="items">
       <div *ngFor="let item of items.controls; let i=index" [formGroupName]="i" class="item-row">
 
-        <mat-form-field appearance="fill" class="col-desc">
-          <mat-label>Artículo / Producto</mat-label>
-          <input type="text"
-                 matInput
-                 formControlName="description"
-                 [matAutocomplete]="auto">
-          <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onProductSelect(i)">
-            @for (option of getFilteredOptions(i); track option.codigo) {
-              <mat-option [value]="option.nombre">
-                {{ option.nombre }} <span class="price-hint">({{ option.precio }}€)</span>
-              </mat-option>
-            }
-          </mat-autocomplete>
-        </mat-form-field>
-
-        <mat-form-field appearance="fill" class="col-qty">
-          <mat-label>Cant.</mat-label>
-          <input type="number" matInput formControlName="quantity">
-        </mat-form-field>
-
-        <mat-form-field appearance="fill" class="col-price">
-          <mat-label>Precio €</mat-label>
-          <input type="number" matInput formControlName="price">
-        </mat-form-field>
+        <app-select-generic
+          class="col-desc"
+          label="Unidad de Medida"
+          [options]="articulos" 
+          formControlName="description"
+          placeholder="Kg, g, ud..."
+          [error]="invoiceForm.get('description')?.invalid && invoiceForm.get('description')?.touched ? 'Obligatorio' : null">
+        </app-select-generic>
+        <app-input-generic 
+        class="col-qty"
+          label="Cantidad"
+          type="number"
+          formControlName="quantity"
+          placeholder="1"
+        />
+        <app-input-generic 
+          class="col-subtotal"
+          label="Precio €"
+          type="number"
+          formControlName="price"
+          placeholder="0"
+        />
 
         <div class="col-subtotal">
           <small>Subtotal</small>
           <p>{{ (item.get('quantity')?.value * item.get('price')?.value) | currency:'EUR' }}</p>
         </div>
 
-        <button type="button" mat-icon-button color="warn" (click)="removeItem(i)" class="btn-delete">
-          <span>×</span>
-        </button>
+        <app-action-button
+          type="submit"
+          [isWhiteIcon]="true"
+          icon="assets/icons/close-large-line.svg"
+          variant="primary"
+          (onClick)="removeItem(i)">
+        </app-action-button>
       </div>
     </div>
 

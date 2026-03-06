@@ -1,0 +1,30 @@
+<div class="field-wrapper" [class.has-error]="error()" [class.is-disabled]="isDisabled()">
+  <div class="label-row">
+    <label [for]="inputId">{{ label() }}</label>
+    @if (error()) {
+      <span class="error-badge">Requerido</span>
+    }
+  </div>
+  
+  <div class="input-container">
+    <input
+      [id]="inputId"
+      [type]="type()"
+      [value]="internalValue()"
+      [placeholder]="placeholder()"
+      [disabled]="isDisabled()"
+      (input)="handleInput($event)"
+      (blur)="onTouched()"
+      class="input-control"
+      [style.padding-right]="suffix() ? '48px' : '16px'"
+    />
+    
+    @if (suffix()) {
+      <span class="suffix-addon">{{ suffix() }}</span>
+    }
+  </div>
+
+  @if (error()) {
+    <p class="error-text" role="alert">{{ error() }}</p>
+  }
+</div>

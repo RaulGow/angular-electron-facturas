@@ -13,7 +13,7 @@ export type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'success' | '
 })
 export class ActionButtonComponent {
 
-  label = input.required<string>();
+  label = input<string>();
   icon = input<string>('');
   link = input<string | null>(null);
   variant = input<ButtonVariant>('primary');
