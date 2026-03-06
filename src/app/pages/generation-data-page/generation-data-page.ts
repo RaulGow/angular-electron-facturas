@@ -15,6 +15,9 @@ import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 // Importa también MatIconModule si quieres el icono del calendario
 import { MatIconModule } from '@angular/material/icon';
 
+// mis componentes
+import { ActionButtonComponent } from '../../components/action-button/action-button.component';
+
 @Component({
   selector: 'app-generation-data-page',
   standalone: true,
@@ -27,7 +30,8 @@ import { MatIconModule } from '@angular/material/icon';
     MatButtonModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatIconModule
+    MatIconModule,
+    ActionButtonComponent
   ],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'es-ES' }
@@ -162,5 +166,10 @@ export class GenerationDataPage implements OnInit {
     } else {
       console.warn("El formulario no es válido. Revisa los campos obligatorios.");
     }
+  }
+
+  volverAlDashboard() {
+    // Navegación directa. Al no ser un submit, ignora si el formulario es inválido.
+    this.router.navigate(['/dashboard']);
   }
 }

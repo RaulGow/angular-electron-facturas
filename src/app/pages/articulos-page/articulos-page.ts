@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef, inject, ViewEncapsulation, signal } from '@angular/core';
 import { CommonModule, formatDate } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { ActionButtonComponent } from '../../components/action-button/action-button.component';
 import { DatabaseService } from '../../services/database.service';
 import { Articulo, Categoria } from '../../models/charcuteria.models';
+import { ActionButtonComponent } from '../../components/action-button/action-button.component';
 import { CustomModalComponent } from '../../components/custom-modal/custom-modal.component';
 import { InputGenericComponent } from '../../components/input-generic/input-generic.component'
 import { SelectGenericComponent } from '../../components/select-generic/select-generic.component';

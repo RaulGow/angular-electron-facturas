@@ -59,8 +59,30 @@
     </div>
 
     <div class="footer-actions">
-      <button type="button" mat-stroked-button color="primary" (click)="addItem()">+ Añadir Línea</button>
-      <button type="submit" mat-raised-button color="primary" [disabled]="invoiceForm.invalid">Generar Factura</button>
+      <!-- <button type="button" mat-stroked-button color="primary" (click)="addItem()">+ Añadir Línea</button>
+      <button type="submit" mat-raised-button color="primary" [disabled]="invoiceForm.invalid">Generar Factura</button> -->
+      <app-action-button
+        type="submit"
+        label="Añadir Línea"
+        icon="assets/icons/add-large-line.svg"
+        variant="success"
+        [isWhiteIcon]="true"
+        (onClick)="addItem()">
+      </app-action-button>
+      <app-action-button
+        type="submit"
+        [isWhiteIcon]="true"
+        [disabled]="invoiceForm.invalid"
+        label="Generar Factura"
+        icon="assets/icons/file-pdf-2-line.svg"
+        variant="primary">
+      </app-action-button>
+      <app-action-button
+        label="Volver al Panel"
+        icon="assets/icons/arrow-go-back-fill.svg"
+        variant="secondary"
+        (onClick)="volverAlDashboard()">
+      </app-action-button>
     </div>
   </form>
 </div>
