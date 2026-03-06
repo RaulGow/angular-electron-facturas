@@ -1,3 +1,5 @@
+@use '../../../styles.scss' as *;
+
 .container {
   max-width: 1000px; // Un poco más ancho para que quepan bien los campos de Material
   margin: 20px auto;
@@ -18,6 +20,7 @@
   // Estilo para la cabecera (Cliente y Fecha)
   .header-fields {
     display: flex;
+    flex-direction: column;
     gap: 20px;
     margin-bottom: 10px;
 

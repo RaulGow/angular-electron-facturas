@@ -3,10 +3,16 @@
   <form [formGroup]="invoiceForm" (ngSubmit)="onSubmit()">
 
     <div class="header-fields">
-      <mat-form-field appearance="outline">
+      <app-input-generic 
+        label="Nombre del Cliente"
+        formControlName="customer"
+        placeholder="Nombre del Cliente"
+        [error]="invoiceForm.get('customer')?.touched && invoiceForm.get('customer')?.invalid ? 'Nombre obligatorio' : null"
+      />
+      <!-- <mat-form-field appearance="outline">
         <mat-label>Cliente</mat-label>
         <input matInput formControlName="customer" placeholder="Nombre del Cliente">
-      </mat-form-field>
+      </mat-form-field> -->
 
       <mat-form-field appearance="outline">
         <mat-label>Fecha</mat-label>
@@ -59,8 +65,7 @@
     </div>
 
     <div class="footer-actions">
-      <!-- <button type="button" mat-stroked-button color="primary" (click)="addItem()">+ Añadir Línea</button>
-      <button type="submit" mat-raised-button color="primary" [disabled]="invoiceForm.invalid">Generar Factura</button> -->
+
       <app-action-button
         type="submit"
         label="Añadir Línea"

@@ -17,6 +17,7 @@ import { MatIconModule } from '@angular/material/icon';
 
 // mis componentes
 import { ActionButtonComponent } from '../../components/action-button/action-button.component';
+import { InputGenericComponent } from '../../components/input-generic/input-generic.component'
 
 @Component({
   selector: 'app-generation-data-page',
@@ -31,7 +32,8 @@ import { ActionButtonComponent } from '../../components/action-button/action-but
     MatDatepickerModule,
     MatNativeDateModule,
     MatIconModule,
-    ActionButtonComponent
+    ActionButtonComponent,
+    InputGenericComponent
   ],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'es-ES' }

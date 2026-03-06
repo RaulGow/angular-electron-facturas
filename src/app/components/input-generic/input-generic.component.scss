@@ -15,7 +15,7 @@
 .field-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: 0.5rem;
 
     .label-row {
         display: flex;
@@ -23,14 +23,14 @@
         align-items: center;
 
         label {
-            font-size: 0.95rem;
+            font-size: 0.875rem;
             font-weight: 600;
             color: #475569;
             letter-spacing: -0.01em;
         }
 
         .error-badge {
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             background: #fee2e2;
             color: var(--danger);
             padding: 2px 8px;
@@ -103,7 +103,7 @@
         }
 
         .error-text {
-            font-size: 0.85rem;
+            font-size: 0.875rem;
             color: var(--danger);
             font-weight: 500;
             margin: 0;
