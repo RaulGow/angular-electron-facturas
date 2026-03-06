@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
-const db = require('./db-manager'); // Importamos el gestor que creamos antes
+const db = require('./db-manager'); // Importamos el gestor que configuramos antes
 
 let mainWindow;
 
@@ -14,17 +14,17 @@ function createWindow() {
     webPreferences: {
       preload: preloadPath,
       contextIsolation: true,
-      nodeIntegration: false // Por seguridad, mantenemos false
+      nodeIntegration: false 
     }
   });
-  mainWindow.webContents.openDevTools()
+  
+  mainWindow.webContents.openDevTools();
 
   const isDev = !app.isPackaged;
 
   if (isDev) {
     mainWindow.loadURL('http://localhost:4200');
   } else {
-    // Antes era '../dist/...', ahora es './dist/...' porque ya estamos en la raíz
     const indexPath = path.join(__dirname, 'dist', 'index.html');
     if (!fs.existsSync(indexPath)) {
       console.error('❌ index.html NO encontrado en:', indexPath);
@@ -36,41 +36,57 @@ function createWindow() {
   mainWindow.setMenu(null);
 }
 
-/* ==============================
-    DATABASE LOGIC (IPC Handlers)
-================================ */
+/* ==========================================================
+    DATABASE LOGIC (IPC Handlers) - ACTUALIZADO
+   ========================================================== */
 
-// Obtener todos los artículos ordenados por nombre
+// Obtener todas las categorías
 ipcMain.handle('get-categorias', async () => {
   return db.prepare('SELECT * FROM categorias ORDER BY nombre ASC').all();
 });
 
-// Obtener todos los artículos ordenados por nombre
-ipcMain.handle('get-articulos', async () => {
-  return db.prepare('SELECT * FROM articulos ORDER BY nombre COLLATE NOCASE ASC').all();
+// NUEVO: Obtener todas las unidades de medida (Para tus selects en Angular)
+ipcMain.handle('get-unidades', async () => {
+  return db.prepare('SELECT * FROM unidades_medida ORDER BY descripcion ASC').all();
 });
 
-// Guardar o actualizar artículos
+// Obtener artículos con JOIN (Para ver 'kg' en lugar de un ID en la tabla)
+ipcMain.handle('get-articulos', async () => {
+  return db.prepare(`
+    SELECT 
+      a.*, 
+      c.nombre AS categoria_nombre, 
+      u.abreviatura AS unidad_abreviatura 
+    FROM articulos a
+    LEFT JOIN categorias c ON a.categoria_id = c.id
+    LEFT JOIN unidades_medida u ON a.unidad_id = u.id
+    ORDER BY a.nombre COLLATE NOCASE ASC
+  `).all();
+});
+
+// Guardar o actualizar artículos (Actualizado a unidad_id)
 ipcMain.handle('save-articulo', async (event, art) => {
   if (art.id) {
     db.prepare(`
       UPDATE articulos
-      SET nombre = ?, categoria_id = ?, precio_venta = ?, unidadMedida = ?, iva = ?, stock = ?
+      SET nombre = ?, categoria_id = ?, precio_venta = ?, unidad_id = ?, iva = ?, stock = ?
       WHERE id = ?
-    `).run(art.nombre, art.categoria_id, art.precio_venta, art.unidadMedida, art.iva, art.stock, art.id);
+    `).run(art.nombre, art.categoria_id, art.precio_venta, art.unidad_id, art.iva, art.stock, art.id);
     return art.id;
   }
 
   const stmt = db.prepare(`
-    INSERT INTO articulos (nombre, categoria_id, precio_venta, unidadMedida, iva, stock)
+    INSERT INTO articulos (nombre, categoria_id, precio_venta, unidad_id, iva, stock)
     VALUES (?, ?, ?, ?, ?, ?)
   `);
-  const result = stmt.run(art.nombre, art.categoria_id, art.precio_venta, art.unidadMedida, art.iva, art.stock);
+  const result = stmt.run(art.nombre, art.categoria_id, art.precio_venta, art.unidad_id, art.iva, art.stock);
   return result.lastInsertRowid;
 });
 
-//*****************************************************
-//****************** Guardar cliente ******************/
+/* ==============================
+    CLIENTES Y FACTURACIÓN
+   ============================== */
+
 ipcMain.handle('save-cliente', (_event, cliente) => {
   if (!cliente?.nombre || !cliente?.nombre_fiscal || !cliente?.cif) {
     throw new Error('Datos de cliente incompletos');
@@ -93,13 +109,10 @@ ipcMain.handle('save-cliente', (_event, cliente) => {
   return result.lastInsertRowid;
 });
 
-//******************************************************
-//****************** Obtener clientes ******************/
 ipcMain.handle('get-clientes', async () => {
   return db.prepare('SELECT * FROM clientes ORDER BY id DESC').all();
 });
 
-// Facturación: Crear factura y sus detalles (Transacción)
 ipcMain.handle('crear-factura', async (event, { clienteId, items, total }) => {
   const insertFactura = db.prepare('INSERT INTO facturas (cliente_id, total) VALUES (?, ?)');
   const insertDetalle = db.prepare('INSERT INTO factura_detalles (factura_id, articulo_id, cantidad, precio_unidad, subtotal) VALUES (?, ?, ?, ?, ?)');
@@ -124,7 +137,7 @@ ipcMain.handle('crear-factura', async (event, { clienteId, items, total }) => {
 
 /* ==============================
     PDF GENERATION
-================================ */
+   ============================== */
 ipcMain.handle('generate-pdf', async () => {
   const { filePath } = await dialog.showSaveDialog({
     title: 'Guardar factura',
@@ -145,7 +158,7 @@ ipcMain.handle('generate-pdf', async () => {
 
 /* ==============================
     APP LIFECYCLE
-================================ */
+   ============================== */
 app.whenReady().then(createWindow);
 
 app.on('window-all-closed', () => {

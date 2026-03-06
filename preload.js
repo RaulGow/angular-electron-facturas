@@ -4,8 +4,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Función para generar PDFs
   generatePDF: () => ipcRenderer.invoke('generate-pdf'),
 
-  // categorias
+  // Categorías
   getCategorias: () => ipcRenderer.invoke('get-categorias'),
+
+  // Unidades de Medida (NUEVO)
+  // Úsala en Angular para llenar el select del formulario de productos
+  getUnidades: () => ipcRenderer.invoke('get-unidades'),
 
   // Artículos
   getArticulos: () => ipcRenderer.invoke('get-articulos'),
@@ -18,4 +22,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Facturas
   crearFactura: (datos) => ipcRenderer.invoke('crear-factura', datos),
 });
-console.log('🔥 PRELOAD CARGADO');
+
+console.log('🔥 PRELOAD CARGADO CON SOPORTE PARA UNIDADES');

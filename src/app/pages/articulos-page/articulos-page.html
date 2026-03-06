@@ -4,10 +4,8 @@
             <h1>Articulos</h1>
             <p>Edicion de articulos del sistema.</p>
         </div>
-
         <div class="header-right">
             <p class="date">{{ fechaFormateada }}</p>
-
         </div>
     </div>
 
@@ -23,13 +21,6 @@
         <app-action-button
           label="Añadir Artículo"
           icon="assets/icons/add-circle-line.svg"
-          variant="secondary"
-          (onClick)="showModal.set(true)">
-        </app-action-button>
-
-        <app-action-button
-          label="Modificar Artículo"
-          icon="assets/icons/draft-line.svg"
           variant="secondary"
           (onClick)="miFuncionParaAbrirModal()">
         </app-action-button>
@@ -59,7 +50,7 @@
                   {{ nombreCat }}
                 </span>
               </td>
-              <td>{{ art.stock }} <small>{{ art.unidadMedida }}</small></td>
+              <td>{{ art.stock }} <small>{{ art.unidad_abreviatura }}</small></td>
               <td class="sumary-table-price">
                 <span>{{ art.precio_venta.toFixed(2) }}€</span>
               </td>
@@ -76,7 +67,7 @@
             </tr>
           } @empty {
             <tr>
-              <td colspan="6" style="text-align: center; padding: 2rem;">
+              <td colspan="7" style="text-align: center; padding: 2rem;">
                 No hay artículos disponibles.
               </td>
             </tr>
@@ -86,20 +77,17 @@
     </div>
 </div>
 
-<!-- modal -->
 <app-custom-modal
-  title="Añadir nuevo Artículo"
+  title="Gestionar Artículo"
   [isOpen]="showModal()"
   btnPrimaryLabel="Guardar Artículo"
   btnSecondaryLabel="Volver"
-  btnExtraLabel="Ayuda"
   [btnPrimaryDisabled]="articuloForm.invalid"
   (onPrimary)="guardarArticulo()"
   (onSecondary)="showModal.set(false)"
   (onClose)="showModal.set(false)"
 >
-  <h3>Rellena todos los campos requeridos</h3>
-  <br/>
+  <h3>Detalles del producto</h3>
   <br/>
   
   <form [formGroup]="articuloForm" (ngSubmit)="guardarArticulo()">
@@ -108,17 +96,16 @@
       label="Nombre del Producto"
       formControlName="nombre"
       placeholder="Ej: Jamón Ibérico de Bellota"
-      [error]="articuloForm.get('nombre')?.touched && articuloForm.get('nombre')?.invalid ? 'El nombre debe tener al menos 3 caracteres' : null"
+      [error]="articuloForm.get('nombre')?.touched && articuloForm.get('nombre')?.invalid ? 'Nombre obligatorio' : null"
     />
 
     <div class="form-row">
       <app-input-generic 
         label="Precio de Venta"
         type="number"
-        formControlName="precio"
-        suffix="€/Kg"
+        formControlName="precio_venta"
+        suffix="€"
         placeholder="0.00"
-        [error]="articuloForm.get('precio')?.touched && articuloForm.get('precio')?.invalid ? 'Precio requerido' : null"
       />
 
       <app-input-generic 
@@ -126,7 +113,7 @@
         type="number"
         formControlName="iva"
         suffix="%"
-        placeholder="21"
+        placeholder="10"
       />
     </div>
 
@@ -135,17 +122,26 @@
         label="Stock Actual"
         type="number"
         formControlName="stock"
-        suffix="Kg"
         placeholder="0"
       />
 
       <app-select-generic
+        label="Unidad de Medida"
+        [options]="unidadesOpciones" 
+        formControlName="unidad_id"
+        placeholder="Kg, g, ud..."
+        [error]="articuloForm.get('unidad_id')?.invalid && articuloForm.get('unidad_id')?.touched ? 'Obligatorio' : null">
+      </app-select-generic>
+    </div>
+
+    <div class="form-row">
+      <app-select-generic
         label="Categoría del artículo"
         [options]="categoriasOpciones" 
-        formControlName="categoriaId"
+        formControlName="categoria_id"
         placeholder="Elige una categoría..."
-        [error]="articuloForm.get('categoriaId')?.invalid && articuloForm.get('categoriaId')?.touched ? 'Campo obligatorio' : null"
-      ></app-select-generic>
+        [error]="articuloForm.get('categoria_id')?.invalid && articuloForm.get('categoria_id')?.touched ? 'Obligatorio' : null">
+      </app-select-generic>
     </div>
 
   </form>

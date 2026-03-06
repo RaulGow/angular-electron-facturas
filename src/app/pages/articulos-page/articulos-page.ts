@@ -26,139 +26,118 @@ import { SelectGenericComponent } from '../../components/select-generic/select-g
 export class ArticulosPage implements OnInit, OnDestroy {
 
   today = new Date();
-  articulos: Articulo[] = [];
+  articulos: any[] = []; // Usamos any o un modelo extendido porque ahora viene con 'unidad_abreviatura'
   categorias: Categoria[] = [];
+  unidades: any[] = []; // <--- NUEVA PROPIEDAD PARA LAS UNIDADES
   showModal = signal(false);
   articuloForm: FormGroup;
 
   constructor(
     private db: DatabaseService,
     private cdr: ChangeDetectorRef,
-    private fb: FormBuilder // 4. Inyectar FormBuilder
+    private fb: FormBuilder 
   ) {
-    console.log('¿Electron?', !!(window as any).charcuteriaAPI);
-
-    // 5. Inicializar el formulario con validaciones básicas
+    // Inicializar el formulario con unidadId en lugar de unidad_medida
     this.articuloForm = this.fb.group({
+      id: [null],
       nombre: ['', [Validators.required, Validators.minLength(3)]],
-      precio: [null, [Validators.required, Validators.min(0)]],
-      categoriaId: ['', Validators.required],
-      stock: [0, [Validators.required, Validators.min(0)]], // Asegúrate de que esté aquí
-      iva: [21, [Validators.required, Validators.min(0)]]   // <--- AÑADE ESTA LÍNEA
+      precio_venta: [null, [Validators.required, Validators.min(0)]], // <--- Asegúrate que se llame así
+      categoria_id: ['', Validators.required],                      // <--- Y este así
+      unidad_id: ['', Validators.required],
+      stock: [0, [Validators.required, Validators.min(0)]], 
+      iva: [10, [Validators.required, Validators.min(0)]]   
     });
   }
 
   async ngOnInit() {
-    // Simplemente llamamos a los métodos que ya tienes
-    // El orden es importante para que el helper de categorías funcione bien
     await this.cargarCategorias();
+    await this.cargarUnidades(); // <--- CARGAR UNIDADES AL INICIAR
     await this.cargarArticulos();
   }
 
+  ngOnDestroy() { }
 
-  ngOnDestroy() {
-    //destroy
-  }
-
-  guardarArticulo() {
+  async guardarArticulo() {
     if (this.articuloForm.valid) {
-      const nuevoArticulo = this.articuloForm.value;
-
-      console.log('✅ Datos capturados del formulario:', nuevoArticulo);
-
-      // Aquí iría la llamada a tu db:
-      // await this.db.createArticulo(nuevoArticulo);
-
-      this.showModal.set(false);
-      this.articuloForm.reset({ categoria: 'General', stock: 0 }); // Limpiar después de guardar
+      try {
+        const articuloData = this.articuloForm.value;
+        
+        // Llamada a la base de datos a través del servicio
+        await this.db.saveArticulo(articuloData);
+        
+        console.log('✅ Artículo guardado con éxito');
+        this.showModal.set(false);
+        this.articuloForm.reset({ stock: 0, iva: 10 });
+        await this.cargarArticulos(); // Recargar la lista
+      } catch (error) {
+        console.error('❌ Error al guardar:', error);
+      }
     } else {
-      console.error('❌ El formulario no es válido');
-      this.articuloForm.markAllAsTouched(); // Para mostrar errores visuales
+      this.articuloForm.markAllAsTouched();
     }
   }
 
+  // Formateo de fecha (Tu lógica original intacta)
   get fechaFormateada(): string {
-    // 1. Obtenemos la fecha en formato: "martes, 20 de enero de 2026"
     let fecha = formatDate(this.today, "EEEE, d 'de' MMMM 'de' y", 'es-ES');
-
-    // 2. Dividimos por espacios y procesamos cada palabra
     return fecha.split(' ').map(palabra => {
-      // Si la palabra es "de", la dejamos en minúscula
       if (palabra.toLowerCase() === 'de') return palabra.toLowerCase();
-
-      // Para las demás, ponemos la primera letra en mayúscula
       return palabra.charAt(0).toUpperCase() + palabra.slice(1);
     }).join(' ');
   }
 
-  /**
-   * Busca el nombre de la categoría basándose en su ID
-   */
   getNombreCategoria(id: any): string {
     if (!this.categorias || this.categorias.length === 0) return 'Cargando...';
-
-    // Forzamos a que ambos sean números para comparar
     const buscado = Number(id);
     const categoria = this.categorias.find(c => Number(c.id) === buscado);
-
-    if (!categoria) {
-      console.log('❌ Fallo con ID:', id, 'en artículos:', this.articulos[0]);
-      return 'Varios';
-    }
-    return categoria.nombre;
-  }
-
-  miFuncionParaAbrirModal() {
-    console.log('Botón de agregar artículo clickeado');
+    return categoria ? categoria.nombre : 'Varios';
   }
 
   async cargarArticulos() {
     try {
-      const articulosDb = await this.db.getArticulos();
-
-      // Asignamos los articulos
-      this.articulos = articulosDb
-
-      // Forzamos que Angular actualice la vista
+      // Ahora este método devuelve los artículos con 'unidad_abreviatura' gracias al JOIN
+      this.articulos = await this.db.getArticulos();
       this.cdr.detectChanges();
-
-      console.log('📦 Articulos actualizados:', this.articulos);
     } catch (error) {
       console.error('❌ Error cargando articulos', error);
-      alert('Error cargando articulos (ver consola)');
     }
   }
 
   async cargarCategorias() {
     try {
-      const categoriasDb = await this.db.getCategorias();
-
-      // Asignamos los articulos
-      this.categorias = categoriasDb
-
-      // Forzamos que Angular actualice la vista
+      this.categorias = await this.db.getCategorias();
       this.cdr.detectChanges();
-
-      console.log('📦 Categorias actualizados:', this.categorias);
     } catch (error) {
       console.error('❌ Error cargando categorias', error);
-      alert('Error cargando categorias (ver consola)');
     }
   }
 
-  // estilos de categorias:
+  // --- NUEVO MÉTODO PARA CARGAR UNIDADES ---
+  async cargarUnidades() {
+    try {
+      this.unidades = await this.db.getUnidades();
+      this.cdr.detectChanges();
+    } catch (error) {
+      console.error('❌ Error cargando unidades', error);
+    }
+  }
+
   getCategoryClass(categoria: string): string {
     if (!categoria) return 'cat-generico';
-
-    // Convertimos "Embutidos Frescos" -> "cat-embutidos-frescos"
     return 'cat-' + categoria.toLowerCase().replace(/\s+/g, '-');
   }
 
+  // Helpers para los select
   get categoriasOpciones() {
-    return this.categorias.map(cat => ({
-      id: cat.id,      // Asegúrate de que tu modelo Categoria tenga id
-      nombre: cat.nombre
-    }));
+    return this.categorias.map(cat => ({ id: cat.id, nombre: cat.nombre }));
   }
 
+  get unidadesOpciones() {
+    return this.unidades.map(u => ({ id: u.id, nombre: `${u.descripcion} (${u.abreviatura})` }));
+  }
+
+  miFuncionParaAbrirModal() {
+    this.articuloForm.reset({ stock: 0, iva: 10 });
+    this.showModal.set(true);
+  }
 }

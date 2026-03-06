@@ -7,7 +7,7 @@ export interface Articulo {
   nombre: string;
   categoria_id: number;
   precio_venta: number;
-  unidadMedida: string;
+  unidad_medida: string;
   iva: number;
   stock: number;
 }
