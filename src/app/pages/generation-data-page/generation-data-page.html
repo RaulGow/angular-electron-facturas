@@ -31,44 +31,38 @@
     <hr>
 
     <div formArrayName="items">
-      <div *ngFor="let item of items.controls; let i=index" [formGroupName]="i" class="item-row">
+      @for (item of items.controls; track item; let i = $index) {
+        <div [formGroupName]="i" class="item-row">
+          
+          <app-select-generic
+            class="col-desc"
+            label="Artículo"
+            [options]="articulos()"  formControlName="description"
+            placeholder="Selecciona producto..."
+            (change)="onProductSelect(i)" [error]="item.get('description')?.invalid && item.get('description')?.touched ? 'Obligatorio' : null">
+          </app-select-generic>
 
-        <app-select-generic
-          class="col-desc"
-          label="Unidad de Medida"
-          [options]="articulos" 
-          formControlName="description"
-          placeholder="Kg, g, ud..."
-          [error]="invoiceForm.get('description')?.invalid && invoiceForm.get('description')?.touched ? 'Obligatorio' : null">
-        </app-select-generic>
-        <app-input-generic 
-        class="col-qty"
-          label="Cantidad"
-          type="number"
-          formControlName="quantity"
-          placeholder="1"
-        />
-        <app-input-generic 
-          class="col-subtotal"
-          label="Precio €"
-          type="number"
-          formControlName="price"
-          placeholder="0"
-        />
+          <app-input-generic 
+            class="col-qty"
+            label="Cantidad"
+            type="number"
+            formControlName="quantity"
+          />
 
-        <div class="col-subtotal">
-          <small>Subtotal</small>
-          <p>{{ (item.get('quantity')?.value * item.get('price')?.value) | currency:'EUR' }}</p>
-        </div>
+          <app-input-generic 
+            class="col-subtotal"
+            label="Precio €"
+            type="number"
+            formControlName="price"
+          />
 
-        <app-action-button
-          type="submit"
-          [isWhiteIcon]="true"
-          icon="assets/icons/close-large-line.svg"
-          variant="primary"
-          (onClick)="removeItem(i)">
-        </app-action-button>
-      </div>
+          <div class="col-subtotal">
+            <small>Subtotal</small>
+            <p>{{ (item.get('quantity')?.value * item.get('price')?.value) | currency:'EUR' }}</p>
+          </div>
+
+          </div>
+      }
     </div>
 
     <div class="footer-actions">

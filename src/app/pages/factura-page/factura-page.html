@@ -1,7 +1,7 @@
 <button class="back-button" routerLink="/dashboard">Dashboard</button>
+
 <section class="invoice">
 
-  <!-- Header -->
   <header class="invoice-header">
     <div>
       <h1>Charcutería La Tradición</h1>
@@ -11,18 +11,16 @@
 
     <div class="invoice-meta">
       <p><strong>Factura nº:</strong> 0001</p>
-      <p><strong>Fecha:</strong> {{ (invoiceDate || today) | date:'dd/MM/yyyy' }}</p>
+      <p><strong>Fecha:</strong> {{ (invoiceDate() || today) | date:'dd/MM/yyyy' }}</p>
     </div>
   </header>
 
-  <!-- Cliente -->
   <section class="client">
     <h3>Cliente</h3>
-    <p>{{ customerName }}</p>
+    <p>{{ customerName() }}</p>
     <p>DNI/CIF: XXXXXXXX</p>
   </section>
 
-  <!-- Tabla -->
   <table class="invoice-table">
     <thead>
       <tr>
@@ -35,19 +33,22 @@
     </thead>
 
     <tbody>
-      @for (item of lineasFactura; track item.codigo) {
+      @for (item of lineasFactura(); track item.codigo) {
         <tr>
           <td>{{ item.codigo }}</td>
           <td>{{ item.nombre }}</td>
           <td>{{ item.cantidad | number:'1.2-2' }}</td>
           <td>{{ item.precio | number:'1.2-2' }}</td>
-          <td class="right">{{ getTotalLinea(item) | number:'1.2-2' }}</td>
+          <td class="right">{{ getTotalLinea(item) | number:'1.2-2' }} €</td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="5" style="text-align: center;">No hay artículos en la factura</td>
         </tr>
       }
     </tbody>
   </table>
 
-  <!-- Totales -->
   <section class="totals">
     <div>
       <span>Subtotal</span>
@@ -65,7 +66,6 @@
 
 </section>
 
-<!-- Acciones (NO se imprimen) -->
 <div class="actions">
   <button (click)="generarPDF()">Generar PDF</button>
 </div>

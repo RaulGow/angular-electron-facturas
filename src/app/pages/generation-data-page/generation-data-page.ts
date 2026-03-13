@@ -1,21 +1,16 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { InvoiceService } from '../../services/invoice.service';
 
-// Material Design Modules
+// Material & Componentes
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
-// Importa también MatIconModule si quieres el icono del calendario
 import { MatIconModule } from '@angular/material/icon';
-
-// mis componentes
 import { ActionButtonComponent } from '../../components/action-button/action-button.component';
 import { InputGenericComponent } from '../../components/input-generic/input-generic.component';
 import { SelectGenericComponent } from '../../components/select-generic/select-generic.component';
@@ -25,39 +20,31 @@ import { DatabaseService } from '../../services/database.service';
   selector: 'app-generation-data-page',
   standalone: true,
   imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatAutocompleteModule,
-    MatButtonModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatIconModule,
-    ActionButtonComponent,
-    InputGenericComponent,
-    SelectGenericComponent
+    CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule,
+    MatAutocompleteModule, MatDatepickerModule, MatNativeDateModule,
+    MatIconModule, ActionButtonComponent, InputGenericComponent, SelectGenericComponent
   ],
-  providers: [
-    { provide: MAT_DATE_LOCALE, useValue: 'es-ES' }
-  ],
+  providers: [{ provide: MAT_DATE_LOCALE, useValue: 'es-ES' }],
   templateUrl: './generation-data-page.html',
   styleUrls: ['./generation-data-page.scss'],
 })
 export class GenerationDataPage implements OnInit {
-  invoiceForm: FormGroup;
-  disponibles: any[] = [];
-  today: Date = new Date();
-  articulos: any[] = [];
+  // --- NUEVA NOMENCLATURA: Inyección con inject() ---
+  private fb = inject(FormBuilder);
+  private db = inject(DatabaseService);
+  private invoiceService = inject(InvoiceService);
+  private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
-  constructor(
-    private fb: FormBuilder,
-    private db: DatabaseService,
-    private http: HttpClient,
-    private invoiceService: InvoiceService,
-    private router: Router,
-    private cdr: ChangeDetectorRef // Inyectado para corregir error de detección
-  ) {
+  // --- VARIABLES COMO SIGNALS ---
+  // Mantenemos los nombres: 'disponibles' para el filtro y 'articulos' para el select
+  disponibles = signal<any[]>([]);
+  articulos = signal<any[]>([]);
+  today = new Date();
+
+  invoiceForm: FormGroup;
+
+  constructor() {
     this.invoiceForm = this.fb.group({
       customer: ['', Validators.required],
       date: [new Date(), Validators.required],
@@ -66,25 +53,32 @@ export class GenerationDataPage implements OnInit {
   }
 
   async ngOnInit() {
-    this.http.get<any[]>('assets/data/articulos.json').subscribe({
-      next: (data) => {
-        this.disponibles = data;
-        this.cdr.detectChanges(); // Corrige el error NG0100
-      },
-      error: (err) => console.error('Error cargando artículos', err)
-    });
+    await this.cargarArticulosDeBBDD();
     this.addItem();
-    await this.cargarArticulos();
   }
 
   get items() {
     return this.invoiceForm.get('items') as FormArray;
   }
 
+  // --- CARGA DESDE BBDD (Sin JSON) ---
+  async cargarArticulosDeBBDD() {
+    try {
+      const data = await this.db.getArticulos();
+      // Actualizamos los signals
+      this.disponibles.set(data);
+      this.articulos.set(data);
+      this.cdr.detectChanges();
+    } catch (error) {
+      console.error('❌ Error cargando articulos desde BBDD', error);
+    }
+  }
+
   addItem() {
     const itemForm = this.fb.group({
+      id: [null],
       description: ['', Validators.required],
-      quantity: [1, [Validators.required, Validators.min(1)]],
+      quantity: [1, [Validators.required, Validators.min(0.1)]],
       price: [0, [Validators.required, Validators.min(0)]]
     });
     this.items.push(itemForm);
@@ -97,32 +91,42 @@ export class GenerationDataPage implements OnInit {
     }
   }
 
-  // Función para filtrar los productos según lo que se escribe en cada fila
+  // Ajustado para Signals
   getFilteredOptions(index: number): any[] {
     const control = this.items.at(index).get('description');
     const filterValue = (control?.value || '').toLowerCase();
 
-    // Si no hay nada escrito, devolvemos los primeros 5 o toda la lista (opcional)
-    if (!filterValue) return this.disponibles;
+    if (!filterValue) return this.disponibles(); // Acceso al signal con ()
 
-    // Filtramos la lista original 'disponibles'
-    return this.disponibles.filter(option =>
+    return this.disponibles().filter(option =>
       option.nombre.toLowerCase().includes(filterValue)
     );
   }
 
+  // Sincroniza el precio cuando seleccionas un producto
   onProductSelect(index: number) {
     const row = this.items.at(index);
-
-    // Usamos un pequeño timeout para asegurar que el valor del autocomplete ya está en el control
+    
     setTimeout(() => {
-      const valorInput = row.get('description')?.value;
-      const producto = this.disponibles.find(p =>
-        p.nombre.toLowerCase() === valorInput.toLowerCase()
+      const valorSeleccionado = row.get('description')?.value;
+      
+      // Buscamos el producto
+      const producto = this.articulos().find(p => 
+        p.id === Number(valorSeleccionado) || p.nombre === valorSeleccionado
       );
 
       if (producto) {
-        row.patchValue({ price: producto.precio });
+        // 1. Actualizamos los valores
+        row.patchValue({ 
+          id: producto.id,
+          description: producto.nombre, 
+          price: producto.precio_venta 
+        }, { emitEvent: false });
+
+        // 2. ¡CLAVE! Forzamos a Angular a reconocer el cambio de 0 a X inmediatamente
+        this.cdr.detectChanges(); 
+        
+        console.log(`✅ Producto detectado y vista actualizada: ${producto.nombre}`);
       }
     });
   }
@@ -131,65 +135,29 @@ export class GenerationDataPage implements OnInit {
     if (this.invoiceForm.valid) {
       const formValue = this.invoiceForm.value;
 
-      // 1. Calculamos el total
-      const totalAmount = formValue.items.reduce((acc: number, item: any) =>
-        acc + (item.quantity * item.price), 0
-      );
-
-      // --- NUEVO: Mapeamos para incluir los CÓDIGOS antes de imprimir y enviar ---
       const itemsConDetalle = formValue.items.map((item: any) => {
-        const productoEncontrado = this.disponibles.find(p => p.nombre === item.description);
+        // Buscamos el producto usando el ID que guardamos en el patchValue
+        const productoBBDD = this.articulos().find(p => p.id === item.id);
+
         return {
-          ...item,
-          codigo: productoEncontrado ? productoEncontrado.codigo : 'S/C'
+          codigo: item.id || (productoBBDD ? productoBBDD.id : 'S/C'),
+          // PRIORIDAD: 1. Nombre de BBDD, 2. Lo que haya escrito el usuario
+          nombre: productoBBDD ? productoBBDD.nombre : item.description, 
+          quantity: item.quantity,
+          price: item.price
         };
       });
 
-      // --- CONSOLE LOG DE RESUMEN ---
-      console.log("%c--- RESUMEN DE FACTURA ---", "color: blue; font-weight: bold; font-size: 14px;");
-      console.log(`Cliente: ${formValue.customer}`);
-      console.log(`Fecha: ${formValue.date}`);
-      console.log(`Número de artículos: ${formValue.items.length}`);
-
-      // Imprime la tabla (ahora con Código incluido en la consola también)
-      console.table(itemsConDetalle.map((item: any) => ({
-        Código: item.codigo, // <--- Ahora se verá en el log
-        Descripción: item.description,
-        Cantidad: item.quantity,
-        Precio: `${item.price} €`,
-        Subtotal: `${(item.quantity * item.price).toFixed(2)} €`
-      })));
-
-      console.log(`%cTOTAL A PAGAR: ${totalAmount.toFixed(2)} €`, "color: green; font-weight: bold;");
-      // ------------------------------
-
-      // Enviar datos al servicio (usamos itemsConDetalle en lugar de formValue.items)
       this.invoiceService.setInvoiceData({
         ...formValue,
-        items: itemsConDetalle,
-        totalAmount
+        items: itemsConDetalle
       });
 
-      // Navegamos por código a la página de la factura
       this.router.navigate(['/factura']);
-    } else {
-      console.warn("El formulario no es válido. Revisa los campos obligatorios.");
-    }
-  }
-
-  async cargarArticulos() {
-    try {
-      // Ahora este método devuelve los artículos con 'unidad_abreviatura' gracias al JOIN
-      this.articulos = await this.db.getArticulos();
-      this.cdr.detectChanges();
-      console.log('Artículos cargados:', this.articulos);
-    } catch (error) {
-      console.error('❌ Error cargando articulos', error);
     }
   }
 
   volverAlDashboard() {
-    // Navegación directa. Al no ser un submit, ignora si el formulario es inválido.
     this.router.navigate(['/dashboard']);
   }
 }
