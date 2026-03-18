@@ -14,10 +14,10 @@ function createWindow() {
     webPreferences: {
       preload: preloadPath,
       contextIsolation: true,
-      nodeIntegration: false 
+      nodeIntegration: false
     }
   });
-  
+
   mainWindow.webContents.openDevTools();
 
   const isDev = !app.isPackaged;
@@ -64,6 +64,34 @@ ipcMain.handle('get-articulos', async () => {
   `).all();
 });
 
+// Obtener historial de facturas de un cliente específico
+ipcMain.handle('get-facturas-cliente', async (event, clienteId) => {
+  return db.prepare(`
+    SELECT * FROM facturas 
+    WHERE cliente_id = ? 
+    ORDER BY fecha DESC
+  `).all(clienteId);
+});
+
+// Obtener una factura detallada (para ver sus productos)
+ipcMain.handle('get-factura-detalle', async (event, facturaId) => {
+  const cabecera = db.prepare(`
+    SELECT f.*, c.nombre, c.cif, c.poblacion 
+    FROM facturas f 
+    JOIN clientes c ON f.cliente_id = c.id 
+    WHERE f.id = ?
+  `).get(facturaId);
+
+  const lineas = db.prepare(`
+    SELECT fd.*, a.nombre as articulo_nombre 
+    FROM factura_detalles fd
+    JOIN articulos a ON fd.articulo_id = a.id
+    WHERE fd.factura_id = ?
+  `).all(facturaId);
+
+  return { cabecera, lineas };
+});
+
 // Guardar o actualizar artículos (Actualizado a unidad_id)
 ipcMain.handle('save-articulo', async (event, art) => {
   if (art.id) {
@@ -84,51 +112,145 @@ ipcMain.handle('save-articulo', async (event, art) => {
 });
 
 /* ==============================
-    CLIENTES Y FACTURACIÓN
+    CLIENTES
    ============================== */
 
-ipcMain.handle('save-cliente', (_event, cliente) => {
-  if (!cliente?.nombre || !cliente?.nombre_fiscal || !cliente?.cif) {
-    throw new Error('Datos de cliente incompletos');
+// Obtener todos los clientes
+ipcMain.handle('get-clientes', async () => {
+  return db.prepare('SELECT * FROM clientes ORDER BY nombre_comercial ASC').all();
+});
+
+// Obtener un solo cliente por ID (útil para editar)
+ipcMain.handle('get-cliente-by-id', async (event, id) => {
+  return db.prepare('SELECT * FROM clientes WHERE id = ?').get(id);
+});
+
+// Guardar o Actualizar cliente
+ipcMain.handle('save-cliente', async (_event, cliente) => {
+  if (!cliente?.nombre_comercial || !cliente?.nombre_fiscal || !cliente?.cif) {
+    throw new Error('Nombre, Nombre Fiscal y CIF son obligatorios');
   }
-  const stmt = db.prepare(`
-    INSERT INTO clientes (nombre, nombre_fiscal, cif, telefono, calle, codigo_postal, poblacion)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+
+  if (cliente.id) {
+    // MODODO EDICIÓN
+    const stmt = db.prepare(`
+      UPDATE clientes 
+      SET nombre_comercial = ?, nombre_fiscal = ?, cif = ?, telefono = ?, 
+          email = ?, direccion = ?, codigo_postal = ?, poblacion = ?, 
+          provincia = ?, notas = ?
+      WHERE id = ?
+    `);
+
+    stmt.run(
+      cliente.nombre_comercial,
+      cliente.nombre_fiscal,
+      cliente.cif,
+      cliente.telefono,
+      cliente.email,
+      cliente.direccion,
+      cliente.codigo_postal,
+      cliente.poblacion,
+      cliente.provincia,
+      cliente.notas,
+      cliente.id
+    );
+    return cliente.id;
+  } else {
+    // MODO CREACIÓN
+    const stmt = db.prepare(`
+      INSERT INTO clientes (
+        nombre_comercial, nombre_fiscal, cif, telefono, 
+        email, direccion, codigo_postal, poblacion, provincia, notas
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    const result = stmt.run(
+      cliente.nombre_comercial,
+      cliente.nombre_fiscal,
+      cliente.cif,
+      cliente.telefono,
+      cliente.email,
+      cliente.direccion,
+      cliente.codigo_postal,
+      cliente.poblacion,
+      cliente.provincia,
+      cliente.notas
+    );
+    return result.lastInsertRowid;
+  }
+});
+
+// Eliminar cliente (Opcional, ten cuidado si tiene facturas)
+ipcMain.handle('delete-cliente', async (event, id) => {
+  // Nota: SQLite impedirá esto si hay facturas asociadas por la Foreign Key
+  return db.prepare('DELETE FROM clientes WHERE id = ?').run(id);
+});
+
+/* ==============================
+    FACTURAS
+   ============================== */
+
+ipcMain.handle('crear-factura', async (event, { clienteId, items, totales }) => {
+  // 1. Preparamos los inserts con los nuevos campos de IVA y numero_factura
+  const insertFactura = db.prepare(`
+    INSERT INTO facturas (
+      numero_factura, cliente_id, 
+      base_4, cuota_4, 
+      base_10, cuota_10, 
+      total
+    ) VALUES (?, ?, ?, ?, ?, ?, ?)
   `);
 
-  const result = stmt.run(
-    cliente.nombre,
-    cliente.nombre_fiscal,
-    cliente.cif,
-    cliente.telefono,
-    cliente.calle,
-    cliente.codigo_postal,
-    cliente.poblacion
-  );
+  const insertDetalle = db.prepare(`
+    INSERT INTO factura_detalles (
+      factura_id, articulo_id, cantidad, precio_unidad, iva_aplicado, subtotal
+    ) VALUES (?, ?, ?, ?, ?, ?)
+  `);
 
-  return result.lastInsertRowid;
-});
+  const transaction = db.transaction((cId, t) => {
+    // Generar un número de factura básico (Ej: FAC-2024-ID)
+    // Nota: Para algo más pro, podrías consultar el último ID antes de insertar
+    const fecha = new Date();
+    const prefijo = `FAC-${fecha.getFullYear()}-`;
 
-ipcMain.handle('get-clientes', async () => {
-  return db.prepare('SELECT * FROM clientes ORDER BY id DESC').all();
-});
+    // Insertamos la cabecera
+    const res = insertFactura.run(
+      null, // Temporalmente null para luego actualizar con el ID real si quieres
+      cId,
+      t.base_4 || 0,
+      t.cuota_4 || 0,
+      t.base_10 || 0,
+      t.cuota_10 || 0,
+      t.total
+    );
 
-ipcMain.handle('crear-factura', async (event, { clienteId, items, total }) => {
-  const insertFactura = db.prepare('INSERT INTO facturas (cliente_id, total) VALUES (?, ?)');
-  const insertDetalle = db.prepare('INSERT INTO factura_detalles (factura_id, articulo_id, cantidad, precio_unidad, subtotal) VALUES (?, ?, ?, ?, ?)');
-
-  const transaction = db.transaction((cId, totalVenta, lista) => {
-    const res = insertFactura.run(cId, totalVenta);
     const facturaId = res.lastInsertRowid;
 
-    for (const item of lista) {
-      insertDetalle.run(facturaId, item.id, item.cantidad, item.precio, item.subtotal);
+    // Actualizamos el número de factura con el ID real para que sea único
+    db.prepare("UPDATE facturas SET numero_factura = ? WHERE id = ?")
+      .run(`${prefijo}${facturaId.toString().padStart(4, '0')}`, facturaId);
+
+    // Insertamos los detalles guardando el IVA de cada artículo
+    for (const item of items) {
+      insertDetalle.run(
+        facturaId,
+        item.id,
+        item.cantidad,
+        item.precio_venta,
+        item.iva, // Guardamos el % de IVA que tenía el artículo al venderse
+        item.subtotal
+      );
+
+      // EXTRA: Actualizar stock automáticamente
+      db.prepare('UPDATE articulos SET stock = stock - ? WHERE id = ?')
+        .run(item.cantidad, item.id);
     }
+
     return facturaId;
   });
 
   try {
-    return transaction(clienteId, total, items);
+    return transaction(clienteId, totales);
   } catch (error) {
     console.error("Error en la transacción:", error);
     throw error;

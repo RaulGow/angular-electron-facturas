@@ -1,111 +1,124 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, signal } from '@angular/core';
 import { CommonModule, formatDate } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { DatabaseService } from '../../services/database.service';
 import { Cliente } from '../../models/charcuteria.models';
+import { CustomModalComponent } from '../../components/custom-modal/custom-modal.component';
+import { ActionButtonComponent } from '../../components/action-button/action-button.component';
+import { InputGenericComponent } from '../../components/input-generic/input-generic.component';
 
 @Component({
   selector: 'clientes-page',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [
+    CommonModule,
+    RouterLink,
+    ReactiveFormsModule,
+    CustomModalComponent,
+    ActionButtonComponent,
+    InputGenericComponent
+  ],
   templateUrl: './clientes-page.html',
   styleUrls: ['./clientes-page.scss'],
 })
 export class ClientesPage implements OnInit {
-
   today = new Date();
-
   clientes: Cliente[] = [];
-
-  // Control formulario
-  mostrandoFormulario = false;
-
-  nuevoCliente: Cliente = {
-    nombre: '',
-    nombre_fiscal: '',  // ahora coincide con la DB
-    cif: '',
-    telefono: '',
-    calle: '',
-    codigo_postal: '',  // ahora coincide con la DB
-    poblacion: ''
-  };
+  showModal = signal(false);
+  clienteForm: FormGroup;
 
   constructor(
     private db: DatabaseService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private fb: FormBuilder
   ) {
-    console.log('¿Electron?', !!(window as any).charcuteriaAPI);
+    this.clienteForm = this.fb.group({
+      id: [null],
+      nombre_comercial: ['', [Validators.required, Validators.minLength(3)]],
+      nombre_fiscal: ['', [Validators.required]],
+      cif: ['', [Validators.required]],
+      telefono: [''],
+      email: [''],
+      direccion: ['', [Validators.required]],
+      codigo_postal: [''],
+      poblacion: [''],
+      provincia: ['Madrid'],
+      notas: ['']
+    });
   }
 
   async ngOnInit() {
-    console.log('🧪 Cargando clientes...');
+    // Al cargar el componente, traeremos al Cliente General + el resto
     await this.cargarClientes();
-    console.log('📦 Clientes:', this.clientes);
   }
 
   async cargarClientes() {
     try {
-      const clientes = await this.db.getClientes();
-
-      // Asignamos los clientes
-      this.clientes = clientes;
-
-      // Forzamos que Angular actualice la vista
+      // Esta llamada obtiene los datos reales del archivo charcuteria.db
+      this.clientes = await this.db.getClientes();
       this.cdr.detectChanges();
-
-      console.log('📦 Clientes actualizados:', this.clientes);
     } catch (error) {
-      console.error('❌ Error cargando clientes', error);
-      alert('Error cargando clientes (ver consola)');
+      console.error('❌ Error cargando clientes desde la DB', error);
     }
   }
 
-  mostrarAltaCliente() {
-    this.mostrandoFormulario = true;
+  showModalClientes() {
+    // Limpiamos el formulario para un alta nueva
+    this.clienteForm.reset({ 
+      provincia: 'Madrid', 
+      poblacion: 'Móstoles' 
+    });
+    this.showModal.set(true);
   }
 
-  cancelarAlta() {
-    this.mostrandoFormulario = false;
-    this.resetFormulario();
+  async editarCliente(cliente: Cliente) {
+    // Cargamos los datos del cliente seleccionado en el formulario
+    this.clienteForm.patchValue(cliente);
+    this.showModal.set(true);
   }
 
   async guardarCliente() {
-    if (!this.nuevoCliente.nombre || !this.nuevoCliente.nombre_fiscal || !this.nuevoCliente.cif) {
-      alert('Nombre, Nombre fiscal y CIF son obligatorios');
+    if (this.clienteForm.invalid) {
+      this.clienteForm.markAllAsTouched();
       return;
     }
 
-    await this.db.saveCliente(this.nuevoCliente);
-    await this.cargarClientes();
+    try {
+      const datosCliente = this.clienteForm.value;
+      // saveCliente en el main.js detectará si tiene ID (UPDATE) o no (INSERT)
+      await this.db.saveCliente(datosCliente);
 
-    this.cancelarAlta();
+      this.showModal.set(false);
+      await this.cargarClientes(); // Refrescamos la lista
+    } catch (error) {
+      console.error('Error al guardar cliente:', error);
+      alert('Error: El CIF debe ser único o los campos están incompletos.');
+    }
   }
 
-  resetFormulario() {
-    this.nuevoCliente = {
-      nombre: '',
-      nombre_fiscal: '',
-      cif: '',
-      telefono: '',
-      calle: '',
-      codigo_postal: '',
-      poblacion: ''
-    };
+  async borrarCliente(id: number) {
+    // Protección: El cliente con ID 1 es el genérico y no debe borrarse
+    if (id === 1) {
+      alert('El Cliente General no puede ser eliminado del sistema.');
+      return;
+    }
+
+    if (confirm('¿Estás seguro de que quieres eliminar este cliente?')) {
+      try {
+        await this.db.deleteCliente(id);
+        await this.cargarClientes();
+      } catch (error) {
+        console.error('Error al borrar:', error);
+        alert('No se puede eliminar: Este cliente ya tiene facturas registradas.');
+      }
+    }
   }
 
   get fechaFormateada(): string {
-    // 1. Obtenemos la fecha en formato: "martes, 20 de enero de 2026"
     let fecha = formatDate(this.today, "EEEE, d 'de' MMMM 'de' y", 'es-ES');
-
-    // 2. Dividimos por espacios y procesamos cada palabra
-    return fecha.split(' ').map(palabra => {
-      // Si la palabra es "de", la dejamos en minúscula
-      if (palabra.toLowerCase() === 'de') return palabra.toLowerCase();
-
-      // Para las demás, ponemos la primera letra en mayúscula
-      return palabra.charAt(0).toUpperCase() + palabra.slice(1);
-    }).join(' ');
+    return fecha.split(' ').map(palabra =>
+      palabra.toLowerCase() === 'de' ? palabra : palabra.charAt(0).toUpperCase() + palabra.slice(1)
+    ).join(' ');
   }
-
 }

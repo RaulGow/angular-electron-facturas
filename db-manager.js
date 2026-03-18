@@ -36,7 +36,7 @@ db.exec(`
     nombre TEXT NOT NULL,
     categoria_id INTEGER,
     precio_venta REAL,
-    unidad_id INTEGER, -- RELACIÓN CON unidades_medida
+    unidad_id INTEGER,
     iva INTEGER,
     stock REAL,
     FOREIGN KEY (categoria_id) REFERENCES categorias(id),
@@ -45,19 +45,27 @@ db.exec(`
 
   CREATE TABLE IF NOT EXISTS clientes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nombre TEXT NOT NULL,
+    nombre_comercial TEXT NOT NULL,
     nombre_fiscal TEXT NOT NULL,
-    cif TEXT NOT NULL,
+    cif TEXT UNIQUE NOT NULL,
     telefono TEXT,
-    calle TEXT,
+    email TEXT,
+    direccion TEXT,
     codigo_postal TEXT,
-    poblacion TEXT
+    poblacion TEXT,
+    provincia TEXT,
+    notas TEXT
   );
 
   CREATE TABLE IF NOT EXISTS facturas (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    numero_factura TEXT UNIQUE,
     cliente_id INTEGER,
     fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+    base_4 REAL DEFAULT 0,
+    cuota_4 REAL DEFAULT 0,
+    base_10 REAL DEFAULT 0,
+    cuota_10 REAL DEFAULT 0,
     total REAL DEFAULT 0,
     FOREIGN KEY (cliente_id) REFERENCES clientes(id)
   );
@@ -68,6 +76,7 @@ db.exec(`
     articulo_id INTEGER,
     cantidad REAL,
     precio_unidad REAL,
+    iva_aplicado INTEGER,
     subtotal REAL,
     FOREIGN KEY (factura_id) REFERENCES facturas(id),
     FOREIGN KEY (articulo_id) REFERENCES articulos(id)
@@ -179,10 +188,13 @@ if (countArticulos.total === 0) {
   console.log('✅ Base de datos poblada con éxito.');
 }
 
-// 3. VERIFICAR COLUMNA nombre_fiscal (Migración manual)
-const info = db.prepare("PRAGMA table_info(clientes);").all();
-if (!info.some(col => col.name === 'nombre_fiscal')) {
-  db.prepare("ALTER TABLE clientes ADD COLUMN nombre_fiscal TEXT NOT NULL DEFAULT '';").run();
+// --- D. CLIENTE POR DEFECTO ---
+const countClientes = db.prepare('SELECT COUNT(*) as total FROM clientes').get();
+if (countClientes.total === 0) {
+  db.prepare(`
+    INSERT INTO clientes (nombre_comercial, nombre_fiscal, cif, poblacion) 
+    VALUES ('Cliente General', 'CLIENTE MENUDEO', '000000000', 'Móstoles')
+  `).run();
 }
 
 module.exports = db;

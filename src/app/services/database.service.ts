@@ -140,6 +140,16 @@ export class DatabaseService {
     }
   }
 
+  async deleteCliente(id: number): Promise<boolean> {
+    if (!this.api) return false;
+    try {
+      return await this.api.deleteCliente(id);
+    } catch (error) {
+      console.error('❌ Error eliminando cliente', error);
+      return false;
+    }
+  }
+
   // ==========================================
   // FACTURACIÓN
   // ==========================================

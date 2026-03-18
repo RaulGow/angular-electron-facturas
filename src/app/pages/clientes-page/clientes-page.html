@@ -1,47 +1,31 @@
 <div class="clientes-page">
+    <!-- ... tu header y botones se mantienen igual ... -->
     <div class="header">
         <div class="header-left">
-            <h1>Panel de Control</h1>
-            <p>Bienvenido al sistema de facturación</p>
+            <h1>Panel de Clientes</h1>
+            <p>Gestión de cartera de clientes</p>
         </div>
-
         <div class="header-right">
             <p class="date">{{ fechaFormateada }}</p>
-
         </div>
     </div>
+
 
     <div class="actions">
-        <button class="actions-button" routerLink="/dashboard">
-          <img src="assets/icons/arrow-go-back-fill.svg" alt="back Button" class="back-icon white-icon">
-          Volver al Panel
-        </button>
-        <button class="actions-button actions-button-secondary" (click)="mostrarAltaCliente()">
-          <img src="assets/icons/add-circle-line.svg" alt="back Button" class="back-icon">
-          Añadir Cliente
-        </button>
+        <app-action-button
+            label="Volver al Panel"
+            icon="assets/icons/arrow-go-back-fill.svg"
+            variant="primary"
+            link="/dashboard"
+            [isWhiteIcon]="true"
+        ></app-action-button>
+        <app-action-button
+            label="Añadir Cliente"
+            icon="assets/icons/add-circle-line.svg"
+            variant="secondary"
+            (onClick)="showModalClientes()"
+        ></app-action-button>
     </div>
-
-    @if(mostrandoFormulario) {
-      <div class="alta-cliente">
-        <h2>Nuevo cliente</h2>
-
-        <div class="form-grid">
-          <input placeholder="Nombre comercial" [(ngModel)]="nuevoCliente.nombre">
-          <input placeholder="Nombre fiscal" [(ngModel)]="nuevoCliente.nombre_fiscal">
-          <input placeholder="CIF" [(ngModel)]="nuevoCliente.cif">
-          <input placeholder="Teléfono" [(ngModel)]="nuevoCliente.telefono">
-          <input placeholder="Calle" [(ngModel)]="nuevoCliente.calle">
-          <input placeholder="Código Postal" [(ngModel)]="nuevoCliente.codigo_postal">
-          <input placeholder="Población" [(ngModel)]="nuevoCliente.poblacion">
-        </div>
-
-        <div class="form-actions">
-          <button class="actions-button" (click)="guardarCliente()">Guardar</button>
-          <button class="actions-button actions-button-secondary" (click)="cancelarAlta()">Cancelar</button>
-        </div>
-      </div>
-    }
 
 
     <div class="sumary">
@@ -49,31 +33,159 @@
             <thead>
                 <tr>
                     <th>Ref.</th>
-                    <th>Nombre</th>
-                    <th>CIF</th>
-                    <th>Telefono</th>
+                    <th>Nombre Comercial</th>
+                    <th>CIF / NIF</th>
+                    <th>Teléfono</th>
+                    <th>Población / Prov.</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let cliente of clientes">
-                <td class="sumary-table-number">#{{ cliente.id }}</td>
-                <td>{{ cliente.nombre }}</td>
-                <td>{{ cliente.cif }}</td>
-                <td class="sumary-table-price">{{ cliente.telefono || '-' }}</td>
-                <td>
-                  <div class="table-row-actions">
-                    <button class="edit-btn">Editar</button>
-                  </div>
-                </td>
-              </tr>
+                <tr *ngFor="let cliente of clientes">
+                    <!-- ID con formato #0001 -->
+                    <td class="sumary-table-number">
+                        #{{ cliente.id?.toString()?.padStart(4, '0') }}
+                    </td>
 
-              <tr *ngIf="clientes.length === 0">
-                <td colspan="5" style="text-align:center; padding: 24px;">
-                  No hay clientes registrados
-                </td>
-              </tr>
+
+                    <td>
+                        <div class="cliente-info">
+                            <strong>{{ cliente.nombre_comercial }}</strong>
+                            <small style="display: block; color: #666; font-size: 0.8rem;">{{ cliente.nombre_fiscal }}</small>
+                        </div>
+                    </td>
+
+
+                    <td>{{ cliente.cif }}</td>
+
+
+                    <td>{{ cliente.telefono || '---' }}</td>
+
+
+                    <td>
+                        {{ cliente.poblacion || '-' }}
+                        <span
+                            *ngIf="cliente.provincia"
+                            style="color: #999;"
+                        >
+                            ({{ cliente.provincia }})
+                        </span>
+                    </td>
+
+
+                    <td>
+                        <div class="table-row-actions">
+                            <!-- Botón Editar -->
+                            <button
+                                class="edit-btn"
+                                (click)="editarCliente(cliente)"
+                                title="Editar ficha"
+                            >
+                                <img
+                                    src="assets/icons/draft-line.svg"
+                                    alt="Editar"
+                                    width="16"
+                                >
+                                Editar
+                            </button>
+
+
+                            <!-- Botón Borrar (Opcional) -->
+                            <button
+                                class="delete-btn"
+                                (click)="borrarCliente(cliente.id!)"
+                                *ngIf="cliente.id !== 1"
+                                title="Eliminar cliente"
+                            >
+                                <img
+                                    src="assets/icons/delete-bin-line.svg"
+                                    alt="Borrar"
+                                    width="16"
+                                >
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+
+
+                <!-- Estado vacío -->
+                <tr *ngIf="clientes.length === 0">
+                    <td
+                        colspan="6"
+                        style="text-align: center; padding: 40px; color: #888;"
+                    >
+                        No hay clientes registrados en la base de datos.
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
 </div>
+
+
+<app-custom-modal
+    title="Gestionar Cliente"
+    [isOpen]="showModal()"
+    btnPrimaryLabel="Guardar Cliente"
+    btnSecondaryLabel="Volver"
+    [btnPrimaryDisabled]="clienteForm.invalid"
+    (onPrimary)="guardarCliente()"
+    (onSecondary)="showModal.set(false)"
+    (onClose)="showModal.set(false)"
+>
+    <form [formGroup]="clienteForm">
+        <div
+            class="form-grid"
+            style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;"
+        >
+            <app-input-generic
+                label="Nombre Comercial"
+                formControlName="nombre_comercial"
+                placeholder="Ej: Embutidos Paco"
+            ></app-input-generic>
+
+
+            <app-input-generic
+                label="Nombre Fiscal / Razón Social"
+                formControlName="nombre_fiscal"
+                placeholder="Ej: Francisco Garcia S.L."
+            ></app-input-generic>
+
+
+            <app-input-generic
+                label="CIF / NIF"
+                formControlName="cif"
+                placeholder="12345678Z"
+            ></app-input-generic>
+
+
+            <app-input-generic
+                label="Teléfono"
+                formControlName="telefono"
+                placeholder="600 000 000"
+            ></app-input-generic>
+
+
+            <div style="grid-column: span 2;">
+                <app-input-generic
+                    label="Dirección"
+                    formControlName="direccion"
+                    placeholder="Calle Falsa 123"
+                ></app-input-generic>
+            </div>
+
+
+            <app-input-generic
+                label="Población"
+                formControlName="poblacion"
+                placeholder="Móstoles"
+            ></app-input-generic>
+
+
+            <app-input-generic
+                label="Provincia"
+                formControlName="provincia"
+            ></app-input-generic>
+        </div>
+    </form>
+</app-custom-modal>

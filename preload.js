@@ -1,26 +1,56 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  // Función para generar PDFs
-  generatePDF: () => ipcRenderer.invoke('generate-pdf'),
-
+  
+  /* ==========================================
+      PRODUCTOS Y CONFIGURACIÓN
+     ========================================== */
+  
   // Categorías
   getCategorias: () => ipcRenderer.invoke('get-categorias'),
 
-  // Unidades de Medida (NUEVO)
-  // Úsala en Angular para llenar el select del formulario de productos
+  // Unidades de Medida
   getUnidades: () => ipcRenderer.invoke('get-unidades'),
 
-  // Artículos
+  // Artículos (Productos)
   getArticulos: () => ipcRenderer.invoke('get-articulos'),
   saveArticulo: (articulo) => ipcRenderer.invoke('save-articulo', articulo),
 
-  // Clientes
-  saveCliente: (cliente) => ipcRenderer.invoke('save-cliente', cliente),
+  /* ==========================================
+      CLIENTES
+     ========================================== */
+  
+  // Obtener lista completa de clientes
   getClientes: () => ipcRenderer.invoke('get-clientes'),
+  
+  // Obtener un cliente específico por su ID
+  getClienteById: (id) => ipcRenderer.invoke('get-cliente-by-id', id),
+  
+  // Guardar (Crear) o Actualizar un cliente
+  saveCliente: (cliente) => ipcRenderer.invoke('save-cliente', cliente),
+  
+  // Eliminar un cliente
+  deleteCliente: (id) => ipcRenderer.invoke('delete-cliente', id),
 
-  // Facturas
+  /* ==========================================
+      FACTURACIÓN E HISTORIAL
+     ========================================== */
+  
+  // Crear una nueva factura con desglose de IVA
   crearFactura: (datos) => ipcRenderer.invoke('crear-factura', datos),
+  
+  // Consultar todas las facturas de un cliente específico
+  getFacturasCliente: (clienteId) => ipcRenderer.invoke('get-facturas-cliente', clienteId),
+  
+  // Obtener el detalle (cabecera + productos) de una factura concreta
+  getFacturaDetalle: (facturaId) => ipcRenderer.invoke('get-factura-detalle', facturaId),
+
+  /* ==========================================
+      UTILIDADES
+     ========================================== */
+  
+  // Función para generar y guardar el PDF de la vista actual
+  generatePDF: () => ipcRenderer.invoke('generate-pdf'),
 });
 
-console.log('🔥 PRELOAD CARGADO CON SOPORTE PARA UNIDADES');
+console.log('🚀 Preload cargado: Sistema de Facturación y Clientes listo.');

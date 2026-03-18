@@ -14,13 +14,16 @@ export interface Articulo {
 
 export interface Cliente {
   id?: number;
-  nombre: string;
+  nombre_comercial: string;
   nombre_fiscal: string;
   cif: string;
   telefono?: string;
-  calle?: string;
+  email?: string;
+  direccion?: string;
   codigo_postal?: string;
   poblacion?: string;
+  provincia?: string;
+  notas?: string;
 }
 
 export interface DetalleFactura {
