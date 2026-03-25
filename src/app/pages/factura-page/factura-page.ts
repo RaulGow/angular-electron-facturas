@@ -1,13 +1,13 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DecimalPipe, DatePipe, CurrencyPipe } from '@angular/common';
+import { DecimalPipe, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { InvoiceService } from '../../services/invoice.service';
 
 @Component({
   selector: 'app-factura-page',
   standalone: true,
-  imports: [FormsModule, DecimalPipe, DatePipe, CurrencyPipe, RouterLink],
+  imports: [FormsModule, DecimalPipe, DatePipe, RouterLink],
   templateUrl: './factura-page.html',
   styleUrls: ['./factura-page.scss'],
 })

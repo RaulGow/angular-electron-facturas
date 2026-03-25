@@ -1,6 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef, signal } from '@angular/core';
 import { CommonModule, formatDate } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { DatabaseService } from '../../services/database.service';
 import { Cliente } from '../../models/charcuteria.models';
@@ -13,7 +12,6 @@ import { InputGenericComponent } from '../../components/input-generic/input-gene
   standalone: true,
   imports: [
     CommonModule,
-    RouterLink,
     ReactiveFormsModule,
     CustomModalComponent,
     ActionButtonComponent,
@@ -64,12 +62,25 @@ export class ClientesPage implements OnInit {
   }
 
   showModalClientes() {
-    // Limpiamos el formulario para un alta nueva
-    this.clienteForm.reset({ 
-      provincia: 'Madrid', 
-      poblacion: 'Móstoles' 
+    // 1. Limpiamos el ID explícitamente a null para que no crea que estamos editando
+    this.clienteForm.patchValue({ id: null });
+
+    // 2. Reset total del formulario para limpiar errores de validación (el color rojo/bloqueado)
+    this.clienteForm.reset({
+      id: null,
+      provincia: 'Madrid',
+      poblacion: 'Móstoles'
     });
+
+    // 3. Marcamos todos los controles como "pristine" y "untouched"
+    this.clienteForm.markAsPristine();
+    this.clienteForm.markAsUntouched();
+
+    // 4. Abrimos el modal
     this.showModal.set(true);
+
+    // 5. Forzamos a Angular a que renderice el cambio de estado inmediatamente
+    this.cdr.detectChanges();
   }
 
   async editarCliente(cliente: Cliente) {
@@ -98,7 +109,6 @@ export class ClientesPage implements OnInit {
   }
 
   async borrarCliente(id: number) {
-    // Protección: El cliente con ID 1 es el genérico y no debe borrarse
     if (id === 1) {
       alert('El Cliente General no puede ser eliminado del sistema.');
       return;
@@ -106,8 +116,15 @@ export class ClientesPage implements OnInit {
 
     if (confirm('¿Estás seguro de que quieres eliminar este cliente?')) {
       try {
+        // 1. Ejecutamos el borrado
         await this.db.deleteCliente(id);
+
+        // 2. IMPORTANTE: Esperamos a que la carga de clientes termine
+        // antes de permitir cualquier otra acción.
         await this.cargarClientes();
+
+        // Forzamos una detección extra tras el borrado
+        this.cdr.markForCheck();
       } catch (error) {
         console.error('Error al borrar:', error);
         alert('No se puede eliminar: Este cliente ya tiene facturas registradas.');

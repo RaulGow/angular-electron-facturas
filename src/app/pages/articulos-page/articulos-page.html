@@ -59,9 +59,14 @@
               </td>
               <td>
                 <div class="table-row-actions">
-                  <button class="edit-btn" (click)="miFuncionParaAbrirModal()">
-                    Editar
-                  </button>
+                  <app-action-button
+                    label="Editar"
+                    size="small"
+                    icon="assets/icons/file-edit-line.svg"
+                    variant="success"
+                    [isWhiteIcon]="true"
+                    (onClick)="editarArticulo(art)"
+                  ></app-action-button>
                 </div>
               </td>
             </tr>
@@ -78,7 +83,7 @@
 </div>
 
 <app-custom-modal
-  title="Gestionar Artículo"
+  [title]="articuloForm.get('id')?.value ? 'Editar Artículo' : 'Nuevo Artículo'"
   [isOpen]="showModal()"
   btnPrimaryLabel="Guardar Artículo"
   btnSecondaryLabel="Volver"

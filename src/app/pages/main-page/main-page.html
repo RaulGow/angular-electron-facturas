@@ -44,13 +44,14 @@
         </app-card-summary>
     </div>
     <div class="actions">
-        <button
-            class="actions-button"
+        <app-action-button
+            label="Generar Factura"
+            size="normal"
+            icon="assets/icons/delete-bin-2-line.svg"
+            variant="primary"
+            [isWhiteIcon]="true"
             routerLink="/generar"
-        >
-            Generar Factura
-        </button>
-        <button class="actions-button actions-button-secondary">Ver Historial</button>
+        ></app-action-button>
     </div>
     <div class="sumary">
         <table class="sumary-table">
@@ -75,16 +76,19 @@
                     <td class="sumary-table-price">750.00€</td>
                     <td>
                         <div class="table-row-actions">
-                            <button class="edit-btn">
-                                <img src="assets/icons/printer-line.svg" alt="Imprimir">
-                                Imprimir
-                            </button>
-
-
-                            <button class="edit-btn">
-                                <img src="assets/icons/eye-line.svg" alt="Ver">
-                                Ver
-                            </button>
+                            <app-action-button
+                                label="Imprimir"
+                                size="small"
+                                icon="assets/icons/printer-line.svg"
+                                variant="primary"
+                                [isWhiteIcon]="true"
+                            ></app-action-button>
+                            <app-action-button
+                                label="Ver"
+                                size="small"
+                                icon="assets/icons/eye-line.svg"
+                                variant="secondary"
+                            ></app-action-button>
                         </div>
                     </td>
                 </tr>

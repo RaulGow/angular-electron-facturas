@@ -111,6 +111,17 @@ ipcMain.handle('save-articulo', async (event, art) => {
   return result.lastInsertRowid;
 });
 
+// Obtener un solo artículo por ID (Necesario para el modo edición)
+ipcMain.handle('get-articulo-by-id', async (event, id) => {
+  return db.prepare(`
+    SELECT a.*, c.nombre AS categoria_nombre, u.abreviatura AS unidad_abreviatura 
+    FROM articulos a
+    LEFT JOIN categorias c ON a.categoria_id = c.id
+    LEFT JOIN unidades_medida u ON a.unidad_id = u.id
+    WHERE a.id = ?
+  `).get(id);
+});
+
 /* ==============================
     CLIENTES
    ============================== */

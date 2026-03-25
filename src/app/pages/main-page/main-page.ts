@@ -2,11 +2,12 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { formatDate } from '@angular/common';
 import { CardSummaryComponent } from '../../components/card-summary/card-summary.component';
+import { ActionButtonComponent } from '../../components/action-button/action-button.component';
 
 @Component({
   selector: 'app-main-page',
   standalone: true,
-  imports: [RouterLink, CardSummaryComponent],
+  imports: [RouterLink, CardSummaryComponent, ActionButtonComponent],
   templateUrl: './main-page.html',
   styleUrls: ['./main-page.scss'],
 })

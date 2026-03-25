@@ -1,38 +1,67 @@
 @use '../../../styles.scss' as *;
 
 .actions-button {
-  // 1. Estilos estructurales
+  // 1. Estilos estructurales (Equivalente a tamaño 'normal')
   border: none;
-  padding: 8px 24px;
-  line-height: 1.5rem;
-  font-size: 1rem;
+  padding: 8px 24px;      // Padding normal
+  line-height: 1.5rem;    // Line-height normal
+  font-size: 1rem;        // Font-size normal
   border-radius: 8px;
   font-weight: 600;
   display: flex;
   align-items: center;
   cursor: pointer;
-
-  // 2. Transiciones
   transition: transform 0.2s ease, filter 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
 
+  // --- NUEVOS TAMAÑOS ---
+  
+  // Variante Small
+  &.small {
+    padding: 4px 12px;
+    font-size: 0.85rem;
+    line-height: 1rem;
+    border-radius: 6px;
+    
+    .back-icon { // Ajustamos el icono si es pequeño
+      width: 16px;
+      height: 16px;
+      margin-right: 6px;
+    }
+  }
+
+  // Variante Big
+  &.big {
+    padding: 12px 32px;
+    font-size: 1.25rem;
+    line-height: 1.8rem;
+    border-radius: 10px;
+
+    .back-icon { // Ajustamos el icono si es grande
+      width: 24px;
+      height: 24px;
+      margin-right: 10px;
+    }
+  }
+  // ----------------------
+
+  // 2. Variantes de Color
   &-primary { background-color: $primary; color: white; }
   &-secondary { background-color: $secondary; color: #000; }
   &-tertiary { background-color: $tertiary; color: #333; border: 1px solid #ddd; }
   &-success { background-color: $success; color: white; }
   &-danger { background-color: $danger; color: white; }
 
-  // 3. Estado Disabled (Nativo y Clase)
-  // Lo ponemos antes del hover para que el hover no afecte si está disabled
+  // 3. Estado Disabled
   &:disabled, 
   &.is-disabled {
     cursor: not-allowed;
-    opacity: 0.5; // Se vuelve translúcido
-    filter: grayscale(0.6); // Pierde saturación para verse "apagado"
-    pointer-events: none; // Evita cualquier interacción
-    transform: none !important; // Evita que se mueva hacia arriba
+    opacity: 0.5;
+    filter: grayscale(0.6);
+    pointer-events: none;
+    transform: none !important;
   }
 
-  // 4. Hover (Solo si NO está disabled)
+  // 4. Hover
   &:not(:disabled):not(.is-disabled):hover {
     filter: brightness(1.1);
     transform: translateY(-2px);
@@ -50,5 +79,6 @@
   }
 }
 
+// Márgenes extra
 .margin-left { margin-left: 16px; }
 .margin-right { margin-right: 16px; }

@@ -33,7 +33,7 @@
             <thead>
                 <tr>
                     <th>Ref.</th>
-                    <th>Nombre Comercial</th>
+                    <th>Nombre Comercial / Fiscal</th>
                     <th>CIF / NIF</th>
                     <th>Teléfono</th>
                     <th>Población / Prov.</th>
@@ -41,82 +41,63 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let cliente of clientes">
-                    <!-- ID con formato #0001 -->
-                    <td class="sumary-table-number">
-                        #{{ cliente.id?.toString()?.padStart(4, '0') }}
-                    </td>
-
-
+                @for (cliente of clientes; track cliente.id) {
+                    <tr>
+                        <td class="sumary-table-number">
+                            #{{ cliente.id?.toString()?.padStart(4, '0') }}
+                        </td>
                     <td>
                         <div class="cliente-info">
                             <strong>{{ cliente.nombre_comercial }}</strong>
-                            <small style="display: block; color: #666; font-size: 0.8rem;">{{ cliente.nombre_fiscal }}</small>
+                            <small style="display: block; color: #555555; font-size: 0.8rem;">
+                                {{ cliente.nombre_fiscal }}
+                            </small>
                         </div>
                     </td>
-
-
                     <td>{{ cliente.cif }}</td>
-
-
                     <td>{{ cliente.telefono || '---' }}</td>
-
-
                     <td>
                         {{ cliente.poblacion || '-' }}
-                        <span
-                            *ngIf="cliente.provincia"
-                            style="color: #999;"
+                        @if (cliente.provincia) {
+                            <span style="color: #7a7a7a;">
+                                ({{ cliente.provincia }})
+                            </span>
+                        }
+                    </td>
+                        <td>
+                            <div class="table-row-actions">
+                                <app-action-button
+                                    label="Editar"
+                                    size="small"
+                                    icon="assets/icons/file-edit-line.svg"
+                                    variant="success"
+                                    [isWhiteIcon]="true"
+                                    (onClick)="editarCliente(cliente)"
+                                ></app-action-button>
+
+                                @if (cliente.id !== 1) {
+                                    <app-action-button
+                                        label="Eliminar"
+                                        size="small"
+                                        icon="assets/icons/delete-bin-2-line.svg"
+                                        variant="primary"
+                                        [isWhiteIcon]="true"
+                                        (onClick)="borrarCliente(cliente.id!)"
+                                    ></app-action-button>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                } @empty {
+                    <tr>
+                        <td
+                            colspan="6"
+                            style="text-align: center; padding: 40px; color: #888;"
                         >
-                            ({{ cliente.provincia }})
-                        </span>
-                    </td>
-
-
-                    <td>
-                        <div class="table-row-actions">
-                            <!-- Botón Editar -->
-                            <button
-                                class="edit-btn"
-                                (click)="editarCliente(cliente)"
-                                title="Editar ficha"
-                            >
-                                <img
-                                    src="assets/icons/draft-line.svg"
-                                    alt="Editar"
-                                    width="16"
-                                >
-                                Editar
-                            </button>
-
-
-                            <!-- Botón Borrar (Opcional) -->
-                            <button
-                                class="delete-btn"
-                                (click)="borrarCliente(cliente.id!)"
-                                *ngIf="cliente.id !== 1"
-                                title="Eliminar cliente"
-                            >
-                                <img
-                                    src="assets/icons/delete-bin-line.svg"
-                                    alt="Borrar"
-                                    width="16"
-                                >
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-
-
-                <!-- Estado vacío -->
-                <tr *ngIf="clientes.length === 0">
-                    <td
-                        colspan="6"
-                        style="text-align: center; padding: 40px; color: #888;"
-                    >
-                        No hay clientes registrados en la base de datos.
-                    </td>
-                </tr>
+                            No hay clientes registrados en la base de datos.
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>

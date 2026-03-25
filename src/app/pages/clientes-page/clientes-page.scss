@@ -164,7 +164,7 @@
       td {
         font-size: 1rem;
         padding: 14px 16px;
-        color: #333;
+        color: #000000;
 
         &.sumary-table-number {
           font-weight: 600;
@@ -181,19 +181,9 @@
 
 // Estilo para el botón de editar dentro de la tabla
 .table-row-actions {
-  .edit-btn {
-    background: transparent;
-    border: 1px solid $primary;
-    color: $primary;
-    padding: 4px 12px;
-    border-radius: 4px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-
-    &:hover {
-      background-color: $primary;
-      color: white;
-    }
-  }
+  width: fit-content;
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
 }

@@ -35,7 +35,7 @@ export class ArticulosPage implements OnInit, OnDestroy {
   constructor(
     private db: DatabaseService,
     private cdr: ChangeDetectorRef,
-    private fb: FormBuilder 
+    private fb: FormBuilder
   ) {
     // Inicializar el formulario con unidadId en lugar de unidad_medida
     this.articuloForm = this.fb.group({
@@ -44,8 +44,8 @@ export class ArticulosPage implements OnInit, OnDestroy {
       precio_venta: [null, [Validators.required, Validators.min(0)]], // <--- Asegúrate que se llame así
       categoria_id: ['', Validators.required],                      // <--- Y este así
       unidad_id: ['', Validators.required],
-      stock: [0, [Validators.required, Validators.min(0)]], 
-      iva: [10, [Validators.required, Validators.min(0)]]   
+      stock: [0, [Validators.required, Validators.min(0)]],
+      iva: [10, [Validators.required, Validators.min(0)]]
     });
   }
 
@@ -58,22 +58,35 @@ export class ArticulosPage implements OnInit, OnDestroy {
   ngOnDestroy() { }
 
   async guardarArticulo() {
-    if (this.articuloForm.valid) {
-      try {
-        const articuloData = this.articuloForm.value;
-        
-        // Llamada a la base de datos a través del servicio
-        await this.db.saveArticulo(articuloData);
-        
-        console.log('✅ Artículo guardado con éxito');
-        this.showModal.set(false);
-        this.articuloForm.reset({ stock: 0, iva: 10 });
-        await this.cargarArticulos(); // Recargar la lista
-      } catch (error) {
-        console.error('❌ Error al guardar:', error);
-      }
-    } else {
+    if (this.articuloForm.invalid) {
       this.articuloForm.markAllAsTouched();
+      return;
+    }
+
+    try {
+      const articuloData = this.articuloForm.value;
+
+      // 1. Esperamos a que el proceso de guardado (Insert o Update) termine en el Main
+      await this.db.saveArticulo(articuloData);
+
+      console.log('✅ Artículo procesado con éxito');
+
+      // 2. Cerramos el modal primero para mejorar la sensación de velocidad (UX)
+      this.showModal.set(false);
+
+      // 3. IMPORTANTÍSIMO: Recargamos la lista desde la base de datos
+      // Al ser 'async', esperamos a que los nuevos datos lleguen
+      await this.cargarArticulos();
+
+      // 4. Limpiamos el formulario para la próxima vez
+      this.articuloForm.reset({ stock: 0, iva: 10 });
+
+      // 5. Notificamos a Angular que los datos han cambiado (por si acaso)
+      this.cdr.markForCheck();
+
+    } catch (error) {
+      console.error('❌ Error al guardar:', error);
+      alert('No se pudo guardar el artículo. Revisa que los datos sean correctos.');
     }
   }
 
@@ -95,8 +108,9 @@ export class ArticulosPage implements OnInit, OnDestroy {
 
   async cargarArticulos() {
     try {
-      // Ahora este método devuelve los artículos con 'unidad_abreviatura' gracias al JOIN
-      this.articulos = await this.db.getArticulos();
+      const data = await this.db.getArticulos();
+      // Forzamos la asignación de una nueva referencia
+      this.articulos = [...data];
       this.cdr.detectChanges();
     } catch (error) {
       console.error('❌ Error cargando articulos', error);
@@ -110,6 +124,22 @@ export class ArticulosPage implements OnInit, OnDestroy {
     } catch (error) {
       console.error('❌ Error cargando categorias', error);
     }
+  }
+
+  // Nuevo método para editar
+  async editarArticulo(articulo: any) {
+    // 1. Limpiamos cualquier estado previo
+    this.articuloForm.reset();
+
+    // 2. Cargamos los datos del artículo en el formulario
+    // patchValue emparejará automáticamente: id, nombre, precio_venta, categoria_id, unidad_id, stock e iva
+    this.articuloForm.patchValue(articulo);
+
+    // 3. Abrimos el modal
+    this.showModal.set(true);
+
+    // 4. Forzamos detección de cambios para asegurar que los selects se actualicen
+    this.cdr.detectChanges();
   }
 
   // --- NUEVO MÉTODO PARA CARGAR UNIDADES ---
@@ -137,7 +167,13 @@ export class ArticulosPage implements OnInit, OnDestroy {
   }
 
   miFuncionParaAbrirModal() {
-    this.articuloForm.reset({ stock: 0, iva: 10 });
+    this.articuloForm.reset({
+      id: null, // Importante que el ID sea null para que sea un INSERT
+      stock: 0,
+      iva: 10,
+      categoria_id: '',
+      unidad_id: ''
+    });
     this.showModal.set(true);
   }
 }
