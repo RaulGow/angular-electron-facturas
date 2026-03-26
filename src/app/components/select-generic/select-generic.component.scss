@@ -73,11 +73,77 @@
 
         .select-arrow {
             position: absolute;
-            right: 16px;
+            right: 12px;
             color: #64748b;
-            pointer-events: none;
+            cursor: pointer;
             display: flex;
             align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+            
+            &:hover {
+                background-color: #f1f5f9;
+            }
+        }
+
+        .dropdown-list {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border: 2px solid var(--border-base);
+            border-radius: var(--input-radius);
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 50;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 0;
+            margin: 0;
+            list-style: none;
+
+            &::-webkit-scrollbar {
+                width: 8px;
+            }
+            &::-webkit-scrollbar-track {
+                background: #f1f5f9;
+                border-radius: 8px;
+            }
+            &::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 8px;
+            }
+            &::-webkit-scrollbar-thumb:hover {
+                background: #94a3b8;
+            }
+
+            .dropdown-item {
+                padding: 12px 16px;
+                font-size: var(--font-size-main);
+                cursor: pointer;
+                transition: background-color 0.2s;
+                color: var(--text-dark);
+
+                &:hover {
+                    background-color: #f1f5f9;
+                }
+
+                &.selected {
+                    background-color: #e0e7ff;
+                    color: var(--primary);
+                    font-weight: 600;
+                }
+                
+                &.no-results {
+                    color: #64748b;
+                    cursor: default;
+                    font-style: italic;
+                    &:hover { background-color: transparent; }
+                }
+            }
         }
     }
 

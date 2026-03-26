@@ -1,0 +1,23 @@
+<div class="field-wrapper" [class.has-error]="error()" [class.is-disabled]="isDisabled()">
+  <div class="label-row">
+    <label [for]="inputId">{{ label() }}</label>
+    @if (error()) {
+    <span class="error-badge">Requerido</span>
+    }
+  </div>
+
+  <div class="input-container">
+    <input [id]="inputId" matInput [matDatepicker]="picker" [min]="minDate()" [value]="internalValue()"
+      [disabled]="isDisabled()" [placeholder]="placeholder()" (dateChange)="handleDateChange($event)"
+      (blur)="onTouched()" (click)="handleInputClick(picker)" class="input-control" readonly />
+
+    <mat-datepicker-toggle class="date-arrow" matSuffix [for]="picker">
+      <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
+    </mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </div>
+
+  @if (error()) {
+  <p class="error-text" role="alert">{{ error() }}</p>
+  }
+</div>

@@ -14,7 +14,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { ActionButtonComponent } from '../../components/action-button/action-button.component';
 import { InputGenericComponent } from '../../components/input-generic/input-generic.component';
 import { SelectGenericComponent } from '../../components/select-generic/select-generic.component';
+import { DatepickerGenericComponent } from '../../components/datepicker-generic/datepicker-generic.component';
 import { DatabaseService } from '../../services/database.service';
+import { Cliente } from '../../models/charcuteria.models';
 
 @Component({
   selector: 'app-generation-data-page',
@@ -22,13 +24,17 @@ import { DatabaseService } from '../../services/database.service';
   imports: [
     CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule,
     MatAutocompleteModule, MatDatepickerModule, MatNativeDateModule,
-    MatIconModule, ActionButtonComponent, InputGenericComponent, SelectGenericComponent
+    MatIconModule, ActionButtonComponent, InputGenericComponent, SelectGenericComponent,
+    DatepickerGenericComponent
   ],
   providers: [{ provide: MAT_DATE_LOCALE, useValue: 'es-ES' }],
   templateUrl: './generation-data-page.html',
   styleUrls: ['./generation-data-page.scss'],
 })
 export class GenerationDataPage implements OnInit {
+
+  cliente: Cliente[] = [];
+
   // --- NUEVA NOMENCLATURA: Inyección con inject() ---
   private fb = inject(FormBuilder);
   private db = inject(DatabaseService);
@@ -54,6 +60,7 @@ export class GenerationDataPage implements OnInit {
 
   async ngOnInit() {
     await this.cargarArticulosDeBBDD();
+    await this.cargarClientes();
     this.addItem();
   }
 
@@ -61,7 +68,13 @@ export class GenerationDataPage implements OnInit {
     return this.invoiceForm.get('items') as FormArray;
   }
 
-  // --- CARGA DESDE BBDD (Sin JSON) ---
+  get allClientes() {
+    return this.cliente.map(c => ({
+      id: c.id!,
+      nombre: c.nombre_comercial || c.nombre_fiscal || 'Sin nombre'
+    }));
+  }
+
   async cargarArticulosDeBBDD() {
     try {
       const data = await this.db.getArticulos();
@@ -74,6 +87,15 @@ export class GenerationDataPage implements OnInit {
     }
   }
 
+  async cargarClientes() {
+    try {
+      this.cliente = await this.db.getClientes();
+      this.cdr.detectChanges();
+    } catch (error) {
+      console.error('❌ Error cargando clientes', error);
+    }
+  }
+
   addItem() {
     const itemForm = this.fb.group({
       id: [null],
@@ -81,6 +103,25 @@ export class GenerationDataPage implements OnInit {
       quantity: [1, [Validators.required, Validators.min(0.1)]],
       price: [0, [Validators.required, Validators.min(0)]]
     });
+
+    // Sincroniza el precio automáticamente cada vez que cambia el valor del Select
+    itemForm.get('description')?.valueChanges.subscribe(valorSeleccionado => {
+      if (!valorSeleccionado) return;
+      
+      const producto = this.articulos().find(p =>
+        p.id === Number(valorSeleccionado) || p.id === String(valorSeleccionado)
+      );
+
+      if (producto) {
+        itemForm.patchValue({
+          id: producto.id,
+          price: producto.precio_venta || 0
+        }, { emitEvent: false }); // No parches description: producto.nombre, ya que el select espera el ID internamente
+        this.cdr.detectChanges();
+        console.log(`✅ Producto actualizado: ${producto.nombre} - Precio: ${producto.precio_venta}`);
+      }
+    });
+
     this.items.push(itemForm);
     this.cdr.detectChanges();
   }
@@ -103,34 +144,6 @@ export class GenerationDataPage implements OnInit {
     );
   }
 
-  // Sincroniza el precio cuando seleccionas un producto
-  onProductSelect(index: number) {
-    const row = this.items.at(index);
-    
-    setTimeout(() => {
-      const valorSeleccionado = row.get('description')?.value;
-      
-      // Buscamos el producto
-      const producto = this.articulos().find(p => 
-        p.id === Number(valorSeleccionado) || p.nombre === valorSeleccionado
-      );
-
-      if (producto) {
-        // 1. Actualizamos los valores
-        row.patchValue({ 
-          id: producto.id,
-          description: producto.nombre, 
-          price: producto.precio_venta 
-        }, { emitEvent: false });
-
-        // 2. ¡CLAVE! Forzamos a Angular a reconocer el cambio de 0 a X inmediatamente
-        this.cdr.detectChanges(); 
-        
-        console.log(`✅ Producto detectado y vista actualizada: ${producto.nombre}`);
-      }
-    });
-  }
-
   onSubmit() {
     if (this.invoiceForm.valid) {
       const formValue = this.invoiceForm.value;
@@ -142,7 +155,7 @@ export class GenerationDataPage implements OnInit {
         return {
           codigo: item.id || (productoBBDD ? productoBBDD.id : 'S/C'),
           // PRIORIDAD: 1. Nombre de BBDD, 2. Lo que haya escrito el usuario
-          nombre: productoBBDD ? productoBBDD.nombre : item.description, 
+          nombre: productoBBDD ? productoBBDD.nombre : item.description,
           quantity: item.quantity,
           price: item.price
         };

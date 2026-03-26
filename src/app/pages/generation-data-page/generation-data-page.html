@@ -3,90 +3,53 @@
   <form [formGroup]="invoiceForm" (ngSubmit)="onSubmit()">
 
     <div class="header-fields">
-      <app-input-generic 
-        label="Nombre del Cliente"
-        formControlName="customer"
-        placeholder="Nombre del Cliente"
-        [error]="invoiceForm.get('customer')?.touched && invoiceForm.get('customer')?.invalid ? 'Nombre obligatorio' : null"
-      />
+      <app-select-generic label="Elige un Cliente" [options]="allClientes" formControlName="customer"
+        placeholder="Elige un Cliente.."
+        [error]="invoiceForm.get('customer')?.touched && invoiceForm.get('customer')?.invalid ? 'Nombre obligatorio' : null">
+      </app-select-generic>
 
-      <mat-form-field appearance="outline" color="accent">
-        <mat-label>Fecha de emisión</mat-label>
-        <input matInput 
-              [matDatepicker]="picker" 
-              formControlName="date"
-              [min]="today"
-              placeholder="Seleccione fecha">
-        <mat-hint>Formato sugerido: DD/MM/YYYY</mat-hint>
-        <mat-datepicker-toggle matIconSuffix [for]="picker">
-          <mat-icon matDatepickerToggleIcon>event</mat-icon>
-        </mat-datepicker-toggle>
-        <mat-datepicker
-          #picker 
-          startView="month">
-        </mat-datepicker>
-      </mat-form-field>
+      <app-datepicker-generic
+        label="Fecha de emisión"
+        formControlName="date"
+        [minDate]="today"
+        placeholder="Seleccione fecha DD/MM/YYYY"
+        [error]="invoiceForm.get('date')?.touched && invoiceForm.get('date')?.invalid ? 'Fecha requerida' : null">
+      </app-datepicker-generic>
     </div>
 
     <hr>
 
     <div formArrayName="items">
       @for (item of items.controls; track item; let i = $index) {
-        <div [formGroupName]="i" class="item-row">
-          
-          <app-select-generic
-            class="col-desc"
-            label="Artículo"
-            [options]="articulos()"  formControlName="description"
-            placeholder="Selecciona producto..."
-            (change)="onProductSelect(i)" [error]="item.get('description')?.invalid && item.get('description')?.touched ? 'Obligatorio' : null">
-          </app-select-generic>
+      <div [formGroupName]="i" class="item-row">
 
-          <app-input-generic 
-            class="col-qty"
-            label="Cantidad"
-            type="number"
-            formControlName="quantity"
-          />
+        <app-select-generic class="col-desc" label="Artículo" [options]="articulos()" formControlName="description"
+          placeholder="Selecciona producto..."
+          [error]="item.get('description')?.invalid && item.get('description')?.touched ? 'Obligatorio' : null">
+        </app-select-generic>
 
-          <app-input-generic 
-            class="col-subtotal"
-            label="Precio €"
-            type="number"
-            formControlName="price"
-          />
+        <app-input-generic class="col-qty" label="Cantidad" type="number" formControlName="quantity" />
 
-          <div class="col-subtotal">
-            <small>Subtotal</small>
-            <p>{{ (item.get('quantity')?.value * item.get('price')?.value) | currency:'EUR' }}</p>
-          </div>
+        <app-input-generic class="col-subtotal" label="Precio €" type="number" formControlName="price" />
 
-          </div>
+        <div class="col-subtotal">
+          <small>Subtotal</small>
+          <p>{{ (item.get('quantity')?.value * item.get('price')?.value) | currency:'EUR' }}</p>
+        </div>
+
+      </div>
       }
     </div>
 
     <div class="footer-actions">
 
-      <app-action-button
-        type="submit"
-        label="Añadir Línea"
-        icon="assets/icons/add-large-line.svg"
-        variant="success"
-        [isWhiteIcon]="true"
-        (onClick)="addItem()">
+      <app-action-button type="submit" label="Añadir Línea" icon="assets/icons/add-large-line.svg" variant="success"
+        [isWhiteIcon]="true" (onClick)="addItem()">
       </app-action-button>
-      <app-action-button
-        type="submit"
-        [isWhiteIcon]="true"
-        [disabled]="invoiceForm.invalid"
-        label="Generar Factura"
-        icon="assets/icons/file-pdf-2-line.svg"
-        variant="primary">
+      <app-action-button type="submit" [isWhiteIcon]="true" [disabled]="invoiceForm.invalid" label="Generar Factura"
+        icon="assets/icons/file-pdf-2-line.svg" variant="primary">
       </app-action-button>
-      <app-action-button
-        label="Volver al Panel"
-        icon="assets/icons/arrow-go-back-fill.svg"
-        variant="secondary"
+      <app-action-button label="Volver al Panel" icon="assets/icons/arrow-go-back-fill.svg" variant="secondary"
         (onClick)="volverAlDashboard()">
       </app-action-button>
     </div>
