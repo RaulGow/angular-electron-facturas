@@ -6,7 +6,14 @@ export interface InvoiceLine {
 }
 
 export interface Invoice {
-  customer: string;
+  customer: {
+    nombre: string;
+    cif: string;
+    direccion: string;
+    poblacion: string;
+    telefono?: string;
+    email?: string;
+  };
   date: Date;
   items: InvoiceLine[];
   totalAmount: number;

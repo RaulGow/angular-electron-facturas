@@ -1,185 +1,482 @@
+@use '../../../styles.scss' as *;
+
+/* Variables y paleta */
+$primary: #940000;
+$primary-light: rgba(148, 0, 0, 0.25);
+$secondary: #8dc5e6;
+$text-muted: #666666;
+$border-color: #ddd;
+$white: #ffffff;
+$background: #ececec;
+
 :host {
   display: block;
-  background-color: #f5f5f5;
-  padding: 2rem;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
+  background-color: $background;
   min-height: 100vh;
+  padding: 2rem;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  color: $black;
 }
 
-/* Estilo del contenedor de la factura (Simulación de papel A4) */
-.invoice {
-  background: #ffffff;
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 3rem;
-  color: #333;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
+/* Acciones Flotantes */
+.floating-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  .btn-action {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: 500;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    &.back {
+      background: $white;
+      color: $black;
+
+      &:hover {
+        background: #f1f1f1;
+      }
+    }
+
+    &.primary {
+      background: $primary;
+      color: $white;
+
+      &:hover {
+        background: darken(#940000, 10%);
+      }
+    }
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
 }
 
-/* Botón de volver (fuera de la factura) */
-.back-button {
-  margin-bottom: 1rem;
-  padding: 8px 16px;
-  cursor: pointer;
-  background: #666;
-  color: white;
-  border: none;
-  border-radius: 4px;
+/* Contenedor principal */
+.invoice-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.invoice-a4 {
+  background: $white;
+  width: 210mm;
+  min-height: 297mm;
+  box-sizing: border-box;
+  padding: 12mm;
+  /* Reducido para ganar espacio */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Cabecera */
 .invoice-header {
   display: flex;
   justify-content: space-between;
-  border-bottom: 2px solid #333;
+  align-items: flex-start;
+  border-bottom: 2px solid $primary;
   padding-bottom: 1.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 
-  h1 {
-    margin: 0;
-    font-size: 1.8rem;
-    color: #000;
+  .brand-section {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+
+    .logo-container {
+      width: 90px;
+      height: 90px;
+      border-radius: 6px;
+      overflow: hidden;
+
+      .logo-placeholder {
+        width: 100%;
+        height: 100%;
+        background-color: $primary-light;
+        border: 2px dashed $primary;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: $primary;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        text-align: center;
+        line-height: 1.2;
+      }
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+    }
+
+    .company-info {
+      h1 {
+        margin: 0 0 0.2rem 0;
+        font-size: 1.4rem;
+        color: $primary;
+        letter-spacing: -0.5px;
+      }
+
+      p {
+        margin: 1px 0;
+        font-size: 0.85rem;
+        color: $text-muted;
+
+        &.cif {
+          font-weight: 600;
+          color: $black;
+        }
+      }
+    }
   }
 
-  p {
-    margin: 4px 0;
-    font-size: 0.95rem;
-    color: #555;
+  .meta-section {
+    text-align: right;
+
+    .document-type {
+      margin: 0 0 0.8rem 0;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: $primary;
+      letter-spacing: 1px;
+    }
+
+    .meta-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .meta-item {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 1rem;
+
+      .meta-label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: $text-muted;
+        text-transform: uppercase;
+      }
+
+      .meta-value {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: $black;
+        min-width: 90px;
+        text-align: right;
+      }
+    }
   }
 }
 
-.invoice-meta {
-  text-align: right;
+/* Sección Cliente */
+.client-section {
+  margin-bottom: 1.5rem;
 
-  p {
-    font-weight: 500;
-  }
-}
+  .client-box {
+    background-color: #f7f9fa;
+    /* Gris muy clarito */
+    border-left: 4px solid $secondary;
+    padding: 0.8rem 1.2rem;
+    /* Más compacto para no ocupar tanto */
+    border-radius: 0 6px 6px 0;
 
-/* Datos del Cliente */
-.client {
-  margin-bottom: 2.5rem;
+    h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: $text-muted;
+    }
 
-  h3 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.1rem;
-    text-transform: uppercase;
-    color: #777;
-    border-bottom: 1px solid #eee;
-    display: inline-block;
-    padding-right: 2rem;
-  }
+    .client-details {
+      .client-name {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: $primary;
+        margin: 0 0 0.2rem 0;
+      }
 
-  p {
-    margin: 4px 0;
-    font-size: 1.1rem;
-    font-weight: 500;
+      .client-cif {
+        font-size: 0.85rem;
+        margin: 0 0 0.3rem 0;
+        color: $black;
+      }
+
+      .client-address {
+        font-size: 0.85rem;
+        color: $text-muted;
+        margin: 0 0 0.5rem 0;
+        line-height: 1.3;
+      }
+
+      .client-contact {
+        display: flex;
+        gap: 1.5rem;
+
+        p {
+          margin: 0;
+          font-size: 0.85rem;
+          color: $black;
+
+          span {
+            color: $text-muted;
+            font-weight: 600;
+          }
+        }
+      }
+    }
   }
 }
 
 /* Tabla de Artículos */
-.invoice-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 2.5rem;
+.items-section {
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
 
-  th {
-    background: #f8f9fa;
-    text-align: left;
-    font-weight: bold;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-    letter-spacing: 0.5px;
-  }
+  .items-table {
+    width: 100%;
+    border-collapse: collapse;
 
-  th,
-  td {
-    border-bottom: 1px solid #eee;
-    padding: 12px 10px;
-  }
+    th {
+      background-color: $primary;
+      color: $white;
+      padding: 8px 10px;
+      /* Reducido */
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border: none;
+      white-space: nowrap;
+      /* En una línea */
 
-  td {
-    font-size: 0.875rem;
-  }
+      &:first-child {
+        border-radius: 4px 0 0 4px;
+      }
 
-  .right {
-    text-align: right;
+      &:last-child {
+        border-radius: 0 4px 4px 0;
+      }
+    }
+
+    td {
+      padding: 8px 10px;
+      /* Reducido */
+      border-bottom: 1px solid $border-color;
+      font-size: 0.85rem;
+      /* Más pequeño para que quepan más líneas */
+      color: $black;
+    }
+
+    tr:last-child td {
+      border-bottom: 2px solid $primary;
+    }
+
+    .col-codigo {
+      width: 8%;
+      text-align: left;
+      font-family: monospace;
+      color: $white;
+    }
+
+    .col-codigo-content {
+      color: $black;
+    }
+
+    .col-desc {
+      width: 47%;
+      text-align: left;
+      font-weight: 500;
+    }
+
+    .col-num {
+      width: 15%;
+      text-align: right;
+    }
+
+    .col-total {
+      width: 15%;
+      text-align: right;
+      font-weight: 600;
+    }
+
+    .empty-row td {
+      text-align: center;
+      padding: 2rem;
+      color: $text-muted;
+      font-style: italic;
+    }
   }
 }
 
-/* Bloque de Totales */
-.totals {
-  max-width: 250px;
-  margin-left: auto;
+/* Resumen y Totales */
+.summary-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  /* Alinear al fondo */
+  margin-top: auto;
+  padding-top: 1rem;
 
-  div {
-    display: flex;
-    justify-content: space-between;
-    padding: 6px 0;
-    font-size: 1rem;
+  .payment-info {
+    width: 55%;
+    padding-right: 1.5rem;
 
-    span:first-child {
-      color: #666;
+    h3 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      color: $text-muted;
+      margin: 0 0 0.4rem 0;
+      letter-spacing: 1px;
+    }
+
+    p {
+      margin: 0 0 0.2rem 0;
+      font-size: 0.85rem;
+      color: $black;
+    }
+
+    .iban {
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin: 0.4rem 0;
+      letter-spacing: 0.5px;
+      color: $primary;
+    }
+
+    .notes {
+      font-size: 0.8rem;
+      color: $text-muted;
+      margin-top: 0.6rem;
+      font-style: italic;
     }
   }
 
-  .total {
-    font-size: 1.3rem;
-    font-weight: bold;
-    color: #000;
-    border-top: 2px solid #333;
-    margin-top: 10px;
-    padding-top: 10px;
+  .totals-box {
+    width: 40%;
+    background: $white;
+    border-radius: 6px;
+    padding: 1rem 1.2rem;
+    box-shadow: 0 0 0 1px $border-color;
 
-    span:first-child {
-      color: #000;
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      /* Alinear verticalmente */
+      padding: 0.6rem 0;
+      font-size: 0.95rem;
+      color: $black;
+
+      span:first-child {
+        color: $text-muted;
+        font-weight: 500;
+      }
+
+      span:last-child {
+        font-weight: 600;
+      }
+
+      &.iva-row {
+        border-bottom: 1px solid $border-color;
+      }
+
+      &.grand-total {
+        margin-top: 0.4rem;
+        padding-top: 0.8rem;
+
+        span:first-child {
+          color: $primary;
+          font-weight: 800;
+          font-size: 1.1rem;
+          /* Ajustado */
+          text-transform: uppercase;
+        }
+
+        span:last-child {
+          font-size: 1.3rem;
+          /* Ajustado para que no salte de línea */
+          font-weight: 800;
+          color: $primary;
+        }
+      }
     }
   }
 }
 
-/* Acciones inferiores */
-.actions {
+/* Pie de página */
+.invoice-footer {
+  margin-top: 1.5rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid $border-color;
   text-align: center;
-  margin-top: 2rem;
 
-  button {
-    padding: 12px 30px;
-    font-size: 1.1rem;
-    border: none;
-    cursor: pointer;
-    background: #2c3e50; // Un azul oscuro profesional
-    color: #fff;
-    border-radius: 4px;
-    transition: background 0.3s;
-
-    &:hover {
-      background: #1a252f;
-    }
+  p {
+    margin: 0;
+    font-size: 0.75rem;
+    color: $text-muted;
   }
 }
 
-/* REGLAS CRÍTICAS PARA IMPRESIÓN / PDF */
+/* Media query para impresión */
 @media print {
   @page {
-    margin: 0; // Controla los márgenes de la página física
+    size: A4;
+    margin: 0;
   }
 
   :host {
-    background: #fff;
-    padding: 0;
+    background-color: transparent !important;
+    padding: 0 !important;
   }
 
-  .invoice {
-    box-shadow: none;
-    max-width: 100%;
-    margin: 0;
-    padding: 2cm; // Margen estándar de impresión
-  }
-
-  .actions,
-  .back-button,
   .no-print {
     display: none !important;
+  }
+
+  .invoice-wrapper {
+    display: block;
+  }
+
+  .invoice-a4 {
+    width: 100%;
+    min-height: 297mm;
+    padding: 15mm !important;
+    /* Mantener bordes en PDF también más finos */
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0;
+
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .summary-section .totals-box {
+    box-shadow: none !important;
+    border: 1px solid $border-color !important;
+  }
+
+  .client-section .client-box {
+    background-color: #f7f9fa !important;
+    border-left-color: $secondary !important;
   }
 }

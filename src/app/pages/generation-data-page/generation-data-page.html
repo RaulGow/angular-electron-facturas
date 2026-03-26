@@ -8,10 +8,7 @@
         [error]="invoiceForm.get('customer')?.touched && invoiceForm.get('customer')?.invalid ? 'Nombre obligatorio' : null">
       </app-select-generic>
 
-      <app-datepicker-generic
-        label="Fecha de emisión"
-        formControlName="date"
-        [minDate]="today"
+      <app-datepicker-generic label="Fecha de emisión" formControlName="date" [minDate]="today"
         placeholder="Seleccione fecha DD/MM/YYYY"
         [error]="invoiceForm.get('date')?.touched && invoiceForm.get('date')?.invalid ? 'Fecha requerida' : null">
       </app-datepicker-generic>
@@ -46,12 +43,14 @@
       <app-action-button type="submit" label="Añadir Línea" icon="assets/icons/add-large-line.svg" variant="success"
         [isWhiteIcon]="true" (onClick)="addItem()">
       </app-action-button>
-      <app-action-button type="submit" [isWhiteIcon]="true" [disabled]="invoiceForm.invalid" label="Generar Factura"
-        icon="assets/icons/file-pdf-2-line.svg" variant="primary">
-      </app-action-button>
-      <app-action-button label="Volver al Panel" icon="assets/icons/arrow-go-back-fill.svg" variant="secondary"
-        (onClick)="volverAlDashboard()">
-      </app-action-button>
+      <div class="footer-actions-right">
+        <app-action-button label="Volver" icon="assets/icons/arrow-go-back-fill.svg" variant="secondary"
+          (onClick)="volverAlDashboard()">
+        </app-action-button>
+        <app-action-button type="submit" [isWhiteIcon]="true" [disabled]="invoiceForm.invalid" label="Generar Factura"
+          icon="assets/icons/file-pdf-2-line.svg" variant="primary">
+        </app-action-button>
+      </div>
     </div>
   </form>
 </div>

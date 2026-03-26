@@ -127,6 +127,12 @@
       font-size: 1rem;
     }
   }
+
+  .footer-actions-right {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+  }
 }
 
 // Ajustes globales para que Material se vea bien en Electron

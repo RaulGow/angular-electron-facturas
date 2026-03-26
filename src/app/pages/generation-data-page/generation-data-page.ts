@@ -107,7 +107,7 @@ export class GenerationDataPage implements OnInit {
     // Sincroniza el precio automáticamente cada vez que cambia el valor del Select
     itemForm.get('description')?.valueChanges.subscribe(valorSeleccionado => {
       if (!valorSeleccionado) return;
-      
+
       const producto = this.articulos().find(p =>
         p.id === Number(valorSeleccionado) || p.id === String(valorSeleccionado)
       );
@@ -148,21 +148,34 @@ export class GenerationDataPage implements OnInit {
     if (this.invoiceForm.valid) {
       const formValue = this.invoiceForm.value;
 
-      const itemsConDetalle = formValue.items.map((item: any) => {
-        // Buscamos el producto usando el ID que guardamos en el patchValue
-        const productoBBDD = this.articulos().find(p => p.id === item.id);
+      // 1. Buscamos el objeto cliente completo en el array original
+      const c = this.cliente.find(cli => cli.id === formValue.customer);
 
+      // 2. Creamos el objeto de datos del cliente para la factura
+      const clienteParaFactura = {
+        nombre: c ? (c.nombre_fiscal || c.nombre_comercial) : 'Cliente Final',
+        cif: c?.cif || '',
+        direccion: c?.direccion || '',
+        poblacion: c?.poblacion || '',
+        telefono: c?.telefono || '',
+        email: c?.email || ''
+      };
+
+      // 3. Mapeo de artículos (el que ya tenías)
+      const itemsConDetalle = formValue.items.map((item: any) => {
+        const productoBBDD = this.articulos().find(p => p.id === item.id);
         return {
           codigo: item.id || (productoBBDD ? productoBBDD.id : 'S/C'),
-          // PRIORIDAD: 1. Nombre de BBDD, 2. Lo que haya escrito el usuario
           nombre: productoBBDD ? productoBBDD.nombre : item.description,
           quantity: item.quantity,
           price: item.price
         };
       });
 
+      // 4. Enviamos el objeto enriquecido al servicio
       this.invoiceService.setInvoiceData({
-        ...formValue,
+        customer: clienteParaFactura, // <--- Enviamos el objeto, no solo el string
+        date: formValue.date,
         items: itemsConDetalle
       });
 

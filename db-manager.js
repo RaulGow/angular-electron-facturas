@@ -109,7 +109,7 @@ const countCategorias = db.prepare('SELECT COUNT(*) as total FROM categorias').g
 if (countCategorias.total === 0) {
   console.log('🌱 Sembrando categorías...');
   const categoriasDemo = [
-    'Jamones', 'Cocidos', 'Embutidos', 'Precocinados', 'Especias', 
+    'Jamones', 'Cocidos', 'Embutidos', 'Precocinados', 'Especias',
     'Gourmet', 'Quesos', 'Embutidos Frescos', 'Aceites', 'Varios'
   ];
   const insertC = db.prepare('INSERT INTO categorias (nombre) VALUES (?)');
@@ -126,7 +126,7 @@ if (countArticulos.total === 0) {
   // 1. Mapeamos IDs de categorías y unidades para insertar correctamente
   const catMap = {};
   db.prepare('SELECT id, nombre FROM categorias').all().forEach(c => catMap[c.nombre] = c.id);
-  
+
   const uniMap = {};
   db.prepare('SELECT id, abreviatura FROM unidades_medida').all().forEach(u => uniMap[u.abreviatura] = u.id);
 
@@ -192,8 +192,8 @@ if (countArticulos.total === 0) {
 const countClientes = db.prepare('SELECT COUNT(*) as total FROM clientes').get();
 if (countClientes.total === 0) {
   db.prepare(`
-    INSERT INTO clientes (nombre_comercial, nombre_fiscal, cif, poblacion) 
-    VALUES ('Cliente General', 'CLIENTE MENUDEO', '000000000', 'Móstoles')
+    INSERT INTO clientes (nombre_comercial, nombre_fiscal, cif, poblacion, telefono, email, direccion) 
+    VALUES ('Pizzeria Kronos', 'Pizzeria Kronos S.L.', '123456789-E', 'Móstoles', '7854213', 'pizzeriakonoschinchon@gmail.com', 'Calle Chinchon Castillo, 32')
   `).run();
 }
 

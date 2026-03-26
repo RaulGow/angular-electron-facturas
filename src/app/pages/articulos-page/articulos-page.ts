@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef, inject, ViewEncapsulat
 import { CommonModule, formatDate } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { DatabaseService } from '../../services/database.service';
-import { Articulo, Categoria } from '../../models/charcuteria.models';
+import { Categoria } from '../../models/charcuteria.models';
 import { ActionButtonComponent } from '../../components/action-button/action-button.component';
 import { CustomModalComponent } from '../../components/custom-modal/custom-modal.component';
 import { InputGenericComponent } from '../../components/input-generic/input-generic.component'
