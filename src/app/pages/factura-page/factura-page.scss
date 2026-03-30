@@ -75,7 +75,6 @@ $background: #ececec;
   min-height: 297mm;
   box-sizing: border-box;
   padding: 12mm;
-  /* Reducido para ganar espacio */
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   position: relative;
   display: flex;
@@ -193,10 +192,8 @@ $background: #ececec;
 
   .client-box {
     background-color: #f7f9fa;
-    /* Gris muy clarito */
     border-left: 4px solid $secondary;
     padding: 0.8rem 1.2rem;
-    /* Más compacto para no ocupar tanto */
     border-radius: 0 6px 6px 0;
 
     h3 {
@@ -260,14 +257,12 @@ $background: #ececec;
       background-color: $primary;
       color: $white;
       padding: 8px 10px;
-      /* Reducido */
       font-size: 0.75rem;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       border: none;
       white-space: nowrap;
-      /* En una línea */
 
       &:first-child {
         border-radius: 4px 0 0 4px;
@@ -280,10 +275,8 @@ $background: #ececec;
 
     td {
       padding: 8px 10px;
-      /* Reducido */
       border-bottom: 1px solid $border-color;
       font-size: 0.85rem;
-      /* Más pequeño para que quepan más líneas */
       color: $black;
     }
 
@@ -295,7 +288,6 @@ $background: #ececec;
       width: 8%;
       text-align: left;
       font-family: monospace;
-      color: $white;
     }
 
     .col-codigo-content {
@@ -328,17 +320,16 @@ $background: #ececec;
   }
 }
 
-/* Resumen y Totales */
+/* Resumen y Totales - ACTUALIZADO PARA EVITAR SALTOS */
 .summary-section {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  /* Alinear al fondo */
   margin-top: auto;
   padding-top: 1rem;
 
   .payment-info {
-    width: 55%;
+    width: 50%;
     padding-right: 1.5rem;
 
     h3 {
@@ -372,7 +363,7 @@ $background: #ececec;
   }
 
   .totals-box {
-    width: 40%;
+    width: 55%;
     background: $white;
     border-radius: 6px;
     padding: 1rem 1.2rem;
@@ -382,39 +373,55 @@ $background: #ececec;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      /* Alinear verticalmente */
-      padding: 0.6rem 0;
+      padding: 0.5rem 0;
       font-size: 0.95rem;
       color: $black;
 
-      span:first-child {
+      // Estilo para las etiquetas (izquierda)
+      span:first-child,
+      .iva-label span {
         color: $text-muted;
         font-weight: 500;
       }
 
-      span:last-child {
-        font-weight: 600;
+      // Estilo para el desglose detallado del IVA
+      .iva-label {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.2;
+
+        small {
+          font-size: 0.75rem;
+          color: lighten($text-muted, 15%);
+        }
+      }
+
+      // Estilo para los importes (derecha) - EVITA EL SALTO DEL €
+      .amount {
+        font-weight: 700;
+        white-space: nowrap;
+        margin-left: 12px;
+        text-align: right;
       }
 
       &.iva-row {
-        border-bottom: 1px solid $border-color;
+        border-bottom: 1px solid lighten($border-color, 5%);
       }
 
       &.grand-total {
         margin-top: 0.4rem;
         padding-top: 0.8rem;
+        border-top: 2px solid $primary;
 
-        span:first-child {
+        span {
           color: $primary;
           font-weight: 800;
           font-size: 1.1rem;
-          /* Ajustado */
           text-transform: uppercase;
         }
 
-        span:last-child {
-          font-size: 1.3rem;
-          /* Ajustado para que no salte de línea */
+        .amount {
+          font-size: 1.35rem;
           font-weight: 800;
           color: $primary;
         }
@@ -461,7 +468,6 @@ $background: #ececec;
     width: 100%;
     min-height: 297mm;
     padding: 15mm !important;
-    /* Mantener bordes en PDF también más finos */
     box-shadow: none !important;
     border: none !important;
     margin: 0;

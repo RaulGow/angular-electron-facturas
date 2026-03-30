@@ -101,7 +101,8 @@ export class GenerationDataPage implements OnInit {
       id: [null],
       description: ['', Validators.required],
       quantity: [1, [Validators.required, Validators.min(0.1)]],
-      price: [0, [Validators.required, Validators.min(0)]]
+      price: [0, [Validators.required, Validators.min(0)]],
+      iva: [0]
     });
 
     // Sincroniza el precio automáticamente cada vez que cambia el valor del Select
@@ -115,7 +116,8 @@ export class GenerationDataPage implements OnInit {
       if (producto) {
         itemForm.patchValue({
           id: producto.id,
-          price: producto.precio_venta || 0
+          price: producto.precio_venta || 0,
+          iva: producto.iva || 0
         }, { emitEvent: false }); // No parches description: producto.nombre, ya que el select espera el ID internamente
         this.cdr.detectChanges();
         console.log(`✅ Producto actualizado: ${producto.nombre} - Precio: ${producto.precio_venta}`);
@@ -168,7 +170,8 @@ export class GenerationDataPage implements OnInit {
           codigo: item.id || (productoBBDD ? productoBBDD.id : 'S/C'),
           nombre: productoBBDD ? productoBBDD.nombre : item.description,
           quantity: item.quantity,
-          price: item.price
+          price: item.price,
+          iva: item.iva
         };
       });
 

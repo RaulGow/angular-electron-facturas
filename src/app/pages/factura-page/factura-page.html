@@ -1,28 +1,10 @@
 <div class="no-print floating-actions">
-
   <app-action-button label="Dashboard" icon="assets/icons/arrow-go-back-fill.svg" variant="secondary" link="/dashboard">
   </app-action-button>
 
   <app-action-button label="Generar PDF" icon="assets/icons/add-circle-line.svg" variant="primary" [isWhiteIcon]="true"
     (onClick)="generarPDF()">
   </app-action-button>
-  <!-- 
-  <button class="btn-action back" routerLink="/dashboard">
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="m15 18-6-6 6-6" />
-    </svg>
-    Dashboard
-  </button>
-  <button class="btn-action primary" (click)="generarPDF()">
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-      <polyline points="7 10 12 15 17 10" />
-      <line x1="12" x2="12" y1="15" y2="3" />
-    </svg>
-    Generar PDF
-  </button> -->
 </div>
 
 <div class="invoice-wrapper">
@@ -31,10 +13,8 @@
     <header class="invoice-header">
       <div class="brand-section">
         <div class="logo-container">
-          <!-- TODO: Insertar logo real aquí, por ahora un placeholder -->
           <div class="logo-placeholder">
             <span>Logo<br>Charcutería</span>
-            <!-- Cuando lo tengas usa: <img src="assets/tu-logo.png" alt="Logotipo"> -->
           </div>
         </div>
         <div class="company-info">
@@ -51,7 +31,7 @@
         <div class="meta-grid">
           <div class="meta-item">
             <span class="meta-label">Nº FACTURA</span>
-            <span class="meta-value">0001</span>
+            <span class="meta-value">2024-0001</span>
           </div>
           <div class="meta-item">
             <span class="meta-label">FECHA</span>
@@ -95,23 +75,25 @@
           <tr>
             <th class="col-codigo">Código</th>
             <th class="col-desc">Artículo</th>
-            <th class="col-num">Cant. (kg)</th>
-            <th class="col-num">€/kg</th>
+            <th class="col-num">Cant.</th>
+            <th class="col-num">€/un</th>
+            <th class="col-num">IVA</th>
             <th class="col-total">Importe</th>
           </tr>
         </thead>
         <tbody>
-          @for (item of lineasFactura(); track item.codigo) {
+          @for (item of lineasFactura(); track $index) {
           <tr>
             <td class="col-codigo col-codigo-content">{{ item.codigo }}</td>
             <td class="col-desc">{{ item.nombre }}</td>
             <td class="col-num">{{ item.cantidad | number:'1.2-2' }}</td>
             <td class="col-num">{{ item.precio | number:'1.2-2' }} €</td>
+            <td class="col-num">{{ item.iva }}%</td>
             <td class="col-total">{{ getTotalLinea(item) | number:'1.2-2' }} €</td>
           </tr>
           } @empty {
           <tr class="empty-row">
-            <td colspan="5">No hay artículos en la factura</td>
+            <td colspan="6">No hay artículos en la factura</td>
           </tr>
           }
         </tbody>
@@ -132,10 +114,15 @@
           <span>Base Imponible</span>
           <span>{{ totalBase() | number:'1.2-2' }} €</span>
         </div>
+
+        <!-- Desglose de IVA dinámico (Muestra 4% y/o 10% según existan) -->
+        @for (iva of desgloseIVA() | keyvalue; track iva.key) {
         <div class="total-row iva-row">
-          <span>IVA (10%)</span>
-          <span>{{ totalIVA() | number:'1.2-2' }} €</span>
+          <span>Cuota IVA {{ iva.key }}% (sobre {{ iva.value.base | number:'1.2-2' }}€)</span>
+          <span>{{ iva.value.cuota | number:'1.2-2' }} €</span>
         </div>
+        }
+
         <div class="total-row grand-total">
           <span>TOTAL</span>
           <span>{{ totalFinal() | number:'1.2-2' }} €</span>

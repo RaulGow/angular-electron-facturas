@@ -29,6 +29,11 @@
 
         <app-input-generic class="col-subtotal" label="Precio €" type="number" formControlName="price" />
 
+        <div class="col-iva">
+          <small>IVA</small>
+          <p>{{ item.get('iva')?.value }}%</p>
+        </div>
+
         <div class="col-subtotal">
           <small>Subtotal</small>
           <p>{{ (item.get('quantity')?.value * item.get('price')?.value) | currency:'EUR' }}</p>
@@ -40,8 +45,8 @@
 
     <div class="footer-actions">
 
-      <app-action-button type="submit" label="Añadir Línea" icon="assets/icons/add-large-line.svg" variant="success"
-        [isWhiteIcon]="true" (onClick)="addItem()">
+      <app-action-button type="button" type="submit" label="Añadir Línea" icon="assets/icons/add-large-line.svg"
+        variant="success" [isWhiteIcon]="true" (onClick)="addItem()">
       </app-action-button>
       <div class="footer-actions-right">
         <app-action-button label="Volver" icon="assets/icons/arrow-go-back-fill.svg" variant="secondary"
