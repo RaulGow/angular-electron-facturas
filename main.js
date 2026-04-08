@@ -268,6 +268,27 @@ ipcMain.handle('crear-factura', async (event, { clienteId, items, totales }) => 
   }
 });
 
+// Obtener TODAS las facturas del sistema (para el Panel de Control)
+ipcMain.handle('get-all-facturas', async () => {
+  return db.prepare(`
+    SELECT 
+      f.id,
+      f.numero_factura,
+      f.fecha,
+      f.total,
+      f.base_4,
+      f.cuota_4,
+      f.base_10,
+      f.cuota_10,
+      c.nombre_comercial, 
+      c.nombre_fiscal,
+      c.cif -- Traemos el CIF para mostrarlo en la tabla
+    FROM facturas f 
+    JOIN clientes c ON f.cliente_id = c.id 
+    ORDER BY f.fecha DESC
+  `).all();
+});
+
 /* ==============================
     PDF GENERATION
    ============================== */

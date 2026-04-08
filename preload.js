@@ -43,10 +43,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
     crearFactura: (datos) => ipcRenderer.invoke('crear-factura', datos),
 
     // Consultar todas las facturas de un cliente específico
-    getFacturasCliente: (clienteId) => ipcRenderer.invoke('get-facturas-cliente', clienteId),
+    getAllFacturas: () => ipcRenderer.invoke('get-all-facturas'),
 
     // Obtener el detalle (cabecera + productos) de una factura concreta
-    getFacturaDetalle: (facturaId) => ipcRenderer.invoke('get-factura-detalle', facturaId),
+    getFacturaDetalle: (id) => ipcRenderer.invoke('get-factura-detalle', id),
 
     /* ==========================================
         UTILIDADES

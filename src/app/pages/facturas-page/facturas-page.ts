@@ -1,38 +1,37 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { formatDate } from '@angular/common';
+import { Component, OnInit, inject, signal } from '@angular/core'; // Añadimos inject y signal
+import { formatDate, CommonModule } from '@angular/common'; // Añadimos CommonModule
 import { RouterLink } from '@angular/router';
+import { DatabaseService } from '../../services/database.service';
 
 @Component({
   selector: 'facturas-page',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, CommonModule], // Importante añadir CommonModule para los pipes y *ngFor/@for
   templateUrl: './facturas-page.html',
   styleUrls: ['./facturas-page.scss'],
 })
-export class FacturasPage implements OnInit, OnDestroy {
-
+export class FacturasPage implements OnInit {
+  private db = inject(DatabaseService);
+  
+  // Usamos un signal para que la tabla se actualice sola cuando lleguen los datos
+  listaFacturas = signal<any[]>([]);
   today = new Date();
 
-  ngOnInit() {
-    // ngOninit
+  async ngOnInit() {
+    await this.cargarFacturas();
   }
 
-  ngOnDestroy() {
-    //destroy
+  async cargarFacturas() {
+    const data = await this.db.getAllFacturas();
+    this.listaFacturas.set(data);
   }
 
   get fechaFormateada(): string {
-    // 1. Obtenemos la fecha en formato: "martes, 20 de enero de 2026"
-    let fecha = formatDate(this.today, "EEEE, d 'de' MMMM 'de' y", 'es-ES');
-
-    // 2. Dividimos por espacios y procesamos cada palabra
-    return fecha.split(' ').map(palabra => {
-      // Si la palabra es "de", la dejamos en minúscula
-      if (palabra.toLowerCase() === 'de') return palabra.toLowerCase();
-
-      // Para las demás, ponemos la primera letra en mayúscula
-      return palabra.charAt(0).toUpperCase() + palabra.slice(1);
-    }).join(' ');
+     // ... tu lógica de formateo se mantiene igual
+     let fecha = formatDate(this.today, "EEEE, d 'de' MMMM 'de' y", 'es-ES');
+     return fecha.split(' ').map(palabra => {
+       if (palabra.toLowerCase() === 'de') return palabra.toLowerCase();
+       return palabra.charAt(0).toUpperCase() + palabra.slice(1);
+     }).join(' ');
   }
-
 }

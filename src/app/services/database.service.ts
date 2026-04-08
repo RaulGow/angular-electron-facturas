@@ -19,11 +19,11 @@ export class DatabaseService {
   async getCategorias(): Promise<Categoria[]> {
     if (!this.api) {
       return [
-        { id: 1, nombre: 'Jamones'}, { id: 2, nombre: 'Cocidos'},
-        { id: 3, nombre: 'Embutidos' }, { id: 4, nombre: 'Precocinados'},
-        { id: 5, nombre: 'Especias'}, { id: 6, nombre: 'Gourmet'},
-        { id: 7, nombre: 'Quesos'}, { id: 8, nombre: 'Embutidos Frescos'},
-        { id: 9, nombre: 'Aceites'}, { id: 10, nombre: 'Varios'}
+        { id: 1, nombre: 'Jamones' }, { id: 2, nombre: 'Cocidos' },
+        { id: 3, nombre: 'Embutidos' }, { id: 4, nombre: 'Precocinados' },
+        { id: 5, nombre: 'Especias' }, { id: 6, nombre: 'Gourmet' },
+        { id: 7, nombre: 'Quesos' }, { id: 8, nombre: 'Embutidos Frescos' },
+        { id: 9, nombre: 'Aceites' }, { id: 10, nombre: 'Varios' }
       ];
     }
     try {
@@ -151,15 +151,46 @@ export class DatabaseService {
   }
 
   // ==========================================
-  // FACTURACIÓN
+  // FACTURACIÓN (Actualizado para soportar desgloses)
   // ==========================================
-  async crearFactura(clienteId: number, items: any[], total: number): Promise<number> {
-    if (!this.api) return -1;
+  async crearFactura(clienteId: number, items: any[], totales: any): Promise<number> {
+    if (!this.api) {
+      console.warn('🌐 Navegador: Factura no guardada (sin Electron)');
+      return Math.floor(Math.random() * 1000); // Simulamos un ID para que no rompa en el navegador
+    }
+
     try {
-      return await this.api.crearFactura({ clienteId, items, total });
+      // Enviamos el objeto exactamente como lo espera el ipcMain.handle de Electron
+      return await this.api.crearFactura({ clienteId, items, totales });
     } catch (error) {
       console.error('❌ Error creando factura', error);
       return -1;
+    }
+  }
+
+  // ==========================================
+  // FACTURACIÓN - CONSULTAS
+  // ==========================================
+
+  // Obtener todas las facturas con nombre de cliente
+  async getAllFacturas(): Promise<any[]> {
+    if (!this.api) return [];
+    try {
+      return await this.api.getAllFacturas();
+    } catch (error) {
+      console.error('❌ Error al obtener todas las facturas', error);
+      return [];
+    }
+  }
+
+  // Obtener una factura específica con sus líneas de detalle
+  async getFacturaDetalle(facturaId: number): Promise<any> {
+    if (!this.api) return null;
+    try {
+      return await this.api.getFacturaDetalle(facturaId);
+    } catch (error) {
+      console.error('❌ Error al obtener detalle de factura', error);
+      return null;
     }
   }
 

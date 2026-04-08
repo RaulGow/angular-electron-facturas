@@ -146,14 +146,12 @@ export class GenerationDataPage implements OnInit {
     );
   }
 
-  onSubmit() {
+  async onSubmit() {
     if (this.invoiceForm.valid) {
       const formValue = this.invoiceForm.value;
 
-      // 1. Buscamos el objeto cliente completo en el array original
+      // 1. CONTEXTO CLIENTE (Tal cual lo tienes en tu interfaz)
       const c = this.cliente.find(cli => cli.id === formValue.customer);
-
-      // 2. Creamos el objeto de datos del cliente para la factura
       const clienteParaFactura = {
         nombre: c ? (c.nombre_fiscal || c.nombre_comercial) : 'Cliente Final',
         cif: c?.cif || '',
@@ -163,26 +161,56 @@ export class GenerationDataPage implements OnInit {
         email: c?.email || ''
       };
 
-      // 3. Mapeo de artículos (el que ya tenías)
-      const itemsConDetalle = formValue.items.map((item: any) => {
-        const productoBBDD = this.articulos().find(p => p.id === item.id);
+      // 2. CÁLCULOS (Doble propósito: BBDD y tu totalAmount)
+      let b4 = 0, c4 = 0, b10 = 0, c10 = 0, acumuladoTotal = 0;
+
+      const itemsProcesados = formValue.items.map((item: any) => {
+        const subtotal = item.quantity * item.price;
+        const cuota = subtotal * (item.iva / 100);
+        const totalLinea = subtotal + cuota;
+
+        if (item.iva === 4) { b4 += subtotal; c4 += cuota; }
+        else if (item.iva === 10) { b10 += subtotal; c10 += cuota; }
+
+        acumuladoTotal += totalLinea;
+
         return {
-          codigo: item.id || (productoBBDD ? productoBBDD.id : 'S/C'),
-          nombre: productoBBDD ? productoBBDD.nombre : item.description,
+          id: item.id,            // Solo para el mapper de la BBDD
+          codigo: item.id || 'S/C',
+          nombre: this.articulos().find(p => p.id === item.id)?.nombre || item.description,
           quantity: item.quantity,
           price: item.price,
-          iva: item.iva
+          iva: item.iva,
+          subtotal: subtotal
         };
       });
 
-      // 4. Enviamos el objeto enriquecido al servicio
-      this.invoiceService.setInvoiceData({
-        customer: clienteParaFactura, // <--- Enviamos el objeto, no solo el string
-        date: formValue.date,
-        items: itemsConDetalle
-      });
+      try {
+        // 3. GUARDAR EN BBDD (Aquí enviamos el desglose que pide Electron)
+        const facturaId = await this.db.crearFactura(
+          formValue.customer,
+          itemsProcesados,
+          {
+            base_4: b4, cuota_4: c4,
+            base_10: b10, cuota_10: c10,
+            total: acumuladoTotal
+          }
+        );
 
-      this.router.navigate(['/factura']);
+        // 4. PASAR AL SERVICIO (Usando TU interfaz Invoice original)
+        // Ya no pasamos el 'id' ni 'totales' si no quieres cambiar la interfaz
+        this.invoiceService.setInvoiceData({
+          customer: clienteParaFactura,
+          date: formValue.date,
+          items: itemsProcesados,
+        });
+
+        console.log('✅ Factura guardada en BBDD con ID:', facturaId);
+        this.router.navigate(['/factura']);
+
+      } catch (error) {
+        console.error('Error:', error);
+      }
     }
   }
 

@@ -42,42 +42,37 @@
             <thead>
                 <tr>
                     <th>Factura Nº</th>
-                    <th>Cliente</th>
-                    <th>Fecha</th>
-                    <th>Total</th>
+                    <th>Cliente / CIF</th> <th>Fecha</th>
+                    <th>IVA 4% (Cuota)</th> <th>IVA 10% (Cuota)</th> <th>Total</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td class="sumary-table-number">Fact-0001</td>
-                    <td>Juan Pérez Garcia</td>
-                    <td>01/01/2024</td>
-                    <td class="sumary-table-price">350.00€</td>
-                </tr>
-                <tr>
-                    <td class="sumary-table-number">Fact-0002</td>
-                    <td>Ana Gómez Salcedo</td>
-                    <td>05/01/2026</td>
-                    <td class="sumary-table-price">150.00€</td>
-                </tr>
-                <tr>
-                    <td class="sumary-table-number">Fact-0003</td>
-                    <td>Carlos Ruiz Martinez</td>
-                    <td>10/01/2026</td>
-                    <td class="sumary-table-price">500.00€</td>
-                </tr>
-                <tr>
-                    <td class="sumary-table-number">Fact-0004</td>
-                    <td>Carlos Ruiz Caballero</td>
-                    <td>12/01/2026</td>
-                    <td class="sumary-table-price">250.00€</td>
-                </tr>
-                <tr>
-                    <td class="sumary-table-number">Fact-0005</td>
-                    <td>Carlos Maria Martin</td>
-                    <td>14/01/2026</td>
-                    <td class="sumary-table-price">250.00€</td>
-                </tr>
+                @for (factura of listaFacturas(); track factura.id) {
+                    <tr>
+                        <td class="sumary-table-number">{{ factura.numero_factura }}</td>
+                        <td>
+                            <div style="font-weight: 500;">{{ factura.nombre_comercial || factura.nombre_fiscal }}</div>
+                            <div style="font-size: 0.85em; color: #666;">{{ factura.cif }}</div>
+                        </td>
+                        <td>{{ factura.fecha | date:'dd/MM/yyyy' }}</td>
+                        
+                        <td class="iva-cell">
+                            {{ (factura.cuota_4 || 0) | currency:'EUR' }}
+                        </td>
+
+                        <td class="iva-cell">
+                            {{ (factura.cuota_10 || 0) | currency:'EUR' }}
+                        </td>
+
+                        <td class="sumary-table-price">{{ factura.total | currency:'EUR' }}</td>
+                    </tr>
+                } @empty {
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 20px;">
+                            No hay facturas registradas todavía.
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
