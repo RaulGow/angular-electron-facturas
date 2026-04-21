@@ -11,6 +11,7 @@ export const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'dashboard', component: MainPage },
   { path: 'generar', component: GenerationDataPage },
+  { path: 'editar-factura/:id', component: GenerationDataPage },
   { path: 'factura', component: FacturaPage },
   { path: 'articulos', component: ArticulosPage },
   { path: 'clientes', component: ClientesPage },

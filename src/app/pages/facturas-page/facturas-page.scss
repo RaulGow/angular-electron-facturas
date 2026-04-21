@@ -49,38 +49,6 @@
 .actions {
   display: flex;
   gap: 16px;
-
-  .actions-button {
-    background-color: $primary;
-    color: white;
-    border: none;
-    padding: 10px 24px;
-    border-radius: 8px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-
-    &-secondary {
-      background-color: #8dc5e6;
-      color: #000;
-    }
-
-    &:hover {
-      filter: brightness(1.1);
-      transform: translateY(-2px);
-    }
-
-    .white-icon {
-      filter: invert(1);
-    }
-
-    .back-icon {
-      width: 20px;
-      margin-right: 8px;
-    }
-  }
 }
 
 .sumary {
@@ -170,6 +138,12 @@
           font-weight: 700;
           color: $primary;
           font-size: 1.1rem;
+        }
+
+        .table-row-actions {
+          display: flex;
+          justify-content: flex-end;
+          gap: 1rem;
         }
       }
     }

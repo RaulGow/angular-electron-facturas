@@ -15,25 +15,11 @@
 
 
     <div class="actions">
-        <button
-            class="actions-button"
-            routerLink="/dashboard"
-        >
-            <img
-                src="assets/icons/arrow-go-back-fill.svg"
-                alt="back Button"
-                class="back-icon white-icon"
-            >
-            Volver al Panel
-        </button>
-        <button class="actions-button actions-button-secondary">
-            <img
-                src="assets/icons/add-circle-line.svg"
-                alt="back Button"
-                class="back-icon"
-            >
-            Añadir Factura
-        </button>
+        <app-action-button label="Volver al Panel" icon="assets/icons/arrow-go-back-fill.svg" variant="primary"
+            link="/dashboard" [isWhiteIcon]="true">
+        </app-action-button>
+        <app-action-button label="Añadir Factura" size="normal" icon="assets/icons/delete-bin-2-line.svg"
+            variant="secondary" [isWhiteIcon]="false" routerLink="/generar"></app-action-button>
     </div>
 
 
@@ -42,36 +28,47 @@
             <thead>
                 <tr>
                     <th>Factura Nº</th>
-                    <th>Cliente / CIF</th> <th>Fecha</th>
-                    <th>IVA 4% (Cuota)</th> <th>IVA 10% (Cuota)</th> <th>Total</th>
+                    <th>Cliente / CIF</th>
+                    <th>Fecha</th>
+                    <th>IVA 4% (Cuota)</th>
+                    <th>IVA 10% (Cuota)</th>
+                    <th>Total</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 @for (factura of listaFacturas(); track factura.id) {
-                    <tr>
-                        <td class="sumary-table-number">{{ factura.numero_factura }}</td>
-                        <td>
-                            <div style="font-weight: 500;">{{ factura.nombre_comercial || factura.nombre_fiscal }}</div>
-                            <div style="font-size: 0.85em; color: #666;">{{ factura.cif }}</div>
-                        </td>
-                        <td>{{ factura.fecha | date:'dd/MM/yyyy' }}</td>
-                        
-                        <td class="iva-cell">
-                            {{ (factura.cuota_4 || 0) | currency:'EUR' }}
-                        </td>
+                <tr>
+                    <td class="sumary-table-number">{{ factura.numero_factura }}</td>
+                    <td>
+                        <div style="font-weight: 500;">{{ factura.nombre_comercial || factura.nombre_fiscal }}</div>
+                        <div style="font-size: 0.85em; color: #666;">{{ factura.cif }}</div>
+                    </td>
+                    <td>{{ factura.fecha | date:'dd/MM/yyyy' }}</td>
 
-                        <td class="iva-cell">
-                            {{ (factura.cuota_10 || 0) | currency:'EUR' }}
-                        </td>
+                    <td class="iva-cell">
+                        {{ (factura.cuota_4 || 0) | currency:'EUR' }}
+                    </td>
 
-                        <td class="sumary-table-price">{{ factura.total | currency:'EUR' }}</td>
-                    </tr>
+                    <td class="iva-cell">
+                        {{ (factura.cuota_10 || 0) | currency:'EUR' }}
+                    </td>
+
+                    <td class="sumary-table-price">{{ factura.total | currency:'EUR' }}</td>
+                    <td>
+                        <div class="table-row-actions">
+                            <app-action-button label="Editar" size="small" icon="assets/icons/draft-line.svg"
+                                variant="primary" [isWhiteIcon]="true"
+                                (click)="editarFactura(factura.id)"></app-action-button>
+                        </div>
+                    </td>
+                </tr>
                 } @empty {
-                    <tr>
-                        <td colspan="6" style="text-align: center; padding: 20px;">
-                            No hay facturas registradas todavía.
-                        </td>
-                    </tr>
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 20px;">
+                        No hay facturas registradas todavía.
+                    </td>
+                </tr>
                 }
             </tbody>
         </table>
