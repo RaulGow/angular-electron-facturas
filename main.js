@@ -75,8 +75,9 @@ ipcMain.handle('get-facturas-cliente', async (event, clienteId) => {
 
 // Obtener una factura detallada (para ver sus productos)
 ipcMain.handle('get-factura-detalle', async (event, facturaId) => {
+  // CORRECCIÓN: c.nombre_comercial en lugar de c.nombre
   const cabecera = db.prepare(`
-    SELECT f.*, c.nombre, c.cif, c.poblacion 
+    SELECT f.*, c.nombre_comercial, c.nombre_fiscal, c.cif, c.poblacion 
     FROM facturas f 
     JOIN clientes c ON f.cliente_id = c.id 
     WHERE f.id = ?
@@ -90,6 +91,51 @@ ipcMain.handle('get-factura-detalle', async (event, facturaId) => {
   `).all(facturaId);
 
   return { cabecera, lineas };
+});
+
+// Actualizar factura existente (borra detalles antiguos y pone los nuevos)
+ipcMain.handle('update-factura', async (event, { facturaId, clienteId, items, totales }) => {
+  const transaction = db.transaction((fId, cId, t, its) => {
+    // 1. Actualizar cabecera
+    db.prepare(`
+      UPDATE facturas SET 
+        cliente_id = ?, base_4 = ?, cuota_4 = ?, base_10 = ?, cuota_10 = ?, total = ?
+      WHERE id = ?
+    `).run(cId, t.base_4, t.cuota_4, t.base_10, t.cuota_10, t.total, fId);
+
+    // 2. Gestionar stock: Devolver al inventario lo que se había vendido antes
+    const detallesAntiguos = db.prepare('SELECT articulo_id, cantidad FROM factura_detalles WHERE factura_id = ?').all(fId);
+    for (const d of detallesAntiguos) {
+      db.prepare('UPDATE articulos SET stock = stock + ? WHERE id = ?').run(d.cantidad, d.articulo_id);
+    }
+
+    // 3. Borrar detalles antiguos
+    db.prepare('DELETE FROM factura_detalles WHERE factura_id = ?').run(fId);
+
+    // 4. Insertar nuevos detalles (CORREGIDO: precio_unidad)
+    const insertDetalle = db.prepare(`
+      INSERT INTO factura_detalles (factura_id, articulo_id, cantidad, precio_unidad, iva_aplicado, subtotal)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `);
+
+    for (const item of its) {
+      // Usamos item.price o item.precio_venta según lo que envíes desde Angular
+      const precio = item.price || item.precio_venta || 0;
+
+      insertDetalle.run(fId, item.id, item.quantity, precio, item.iva, item.subtotal);
+
+      // Restar stock nuevo
+      db.prepare('UPDATE articulos SET stock = stock - ? WHERE id = ?').run(item.quantity, item.id);
+    }
+    return fId;
+  });
+
+  try {
+    return transaction(facturaId, clienteId, totales, items);
+  } catch (error) {
+    console.error("❌ Error en update-factura:", error);
+    throw error;
+  }
 });
 
 // Guardar o actualizar artículos (Actualizado a unidad_id)
@@ -246,15 +292,15 @@ ipcMain.handle('crear-factura', async (event, { clienteId, items, totales }) => 
       insertDetalle.run(
         facturaId,
         item.id,
-        item.cantidad,
-        item.precio_venta,
+        item.quantity,
+        item.price,
         item.iva, // Guardamos el % de IVA que tenía el artículo al venderse
         item.subtotal
       );
 
       // EXTRA: Actualizar stock automáticamente
       db.prepare('UPDATE articulos SET stock = stock - ? WHERE id = ?')
-        .run(item.cantidad, item.id);
+        .run(item.quantity, item.id);
     }
 
     return facturaId;

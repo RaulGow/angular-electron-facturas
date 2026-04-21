@@ -194,6 +194,16 @@ export class DatabaseService {
     }
   }
 
+  async updateFactura(facturaId: number, clienteId: number, items: any[], totales: any): Promise<number> {
+    if (!this.api) return -1;
+    try {
+      return await this.api.updateFactura({ facturaId, clienteId, items, totales });
+    } catch (error) {
+      console.error('❌ Error actualizando factura', error);
+      return -1;
+    }
+  }
+
   // ==========================================
   // PDF
   // ==========================================

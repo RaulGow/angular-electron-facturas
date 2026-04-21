@@ -39,8 +39,19 @@
           <p>{{ (item.get('quantity')?.value * item.get('price')?.value) | currency:'EUR' }}</p>
         </div>
 
+        @if (items.length > 1) {
+        <button type="button" class="btn-delete" (click)="removeItem(i)">×</button>
+        }
+
       </div>
       }
+    </div>
+
+    <div class="total-container">
+      <div class="total-box">
+        <span>TOTAL FACTURA (IVA Incl.):</span>
+        <strong>{{ totalFactura | currency:'EUR' }}</strong>
+      </div>
     </div>
 
     <div class="footer-actions">

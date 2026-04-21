@@ -124,6 +124,37 @@
     margin-left: 8px;
   }
 
+  // --- AÑADE ESTO ---
+  .total-container {
+    display: flex;
+    justify-content: flex-end;
+    margin: 20px 0;
+
+    .total-box {
+      background: #f8f9fa;
+      padding: 20px 40px;
+      border-radius: 12px;
+      border: 2px solid #3f51b5; // Usando tu color corporativo
+      text-align: right;
+      box-shadow: 0 4px 12px rgba(63, 81, 181, 0.1);
+
+      span {
+        display: block;
+        color: #727879;
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+      }
+
+      strong {
+        font-size: 2rem;
+        color: #2c3e50;
+        font-weight: 900;
+      }
+    }
+  }
+
   // Botones inferiores
   .footer-actions {
     display: flex;

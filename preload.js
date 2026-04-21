@@ -48,6 +48,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
     // Obtener el detalle (cabecera + productos) de una factura concreta
     getFacturaDetalle: (id) => ipcRenderer.invoke('get-factura-detalle', id),
 
+    // Poder editar factura
+    updateFactura: (datos) => ipcRenderer.invoke('update-factura', datos),
+
     /* ==========================================
         UTILIDADES
        ========================================== */
