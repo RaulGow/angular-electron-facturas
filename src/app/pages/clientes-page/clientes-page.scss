@@ -15,11 +15,11 @@
 
 .header {
   display: flex;
-  flex-direction: row; // Los pone en fila
-  justify-content: space-between; // Uno a la izquierda, otro a la derecha
-  align-items: flex-end; // Alinea ambos bloques por la parte de abajo
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
   padding-bottom: 16px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1); // Opcional: una línea sutil separadora
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 
   .header-left {
     h1 {
@@ -28,7 +28,6 @@
       color: #000;
       line-height: 1.2;
     }
-
     p {
       margin: 4px 0 0;
       color: #666;
@@ -38,19 +37,17 @@
 
   .header-right {
     text-align: right;
-
     .date {
       font-size: 1.4rem;
       font-weight: 600;
       color: #333;
       margin: 0;
     }
-
     .time {
-      font-size: 1.1rem; // Un poco más pequeña que la fecha
-      font-weight: 400; // Menos grosor para que no compita
-      color: $primary; // Mantenemos el rojo para darle el toque de identidad
-      margin-top: -2px; // Pegamos un poquito más a la fecha
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: $primary;
+      margin-top: -2px;
     }
   }
 }
@@ -105,9 +102,7 @@
   flex-direction: column;
   gap: 16px;
 
-  h2 {
-    margin: 0;
-  }
+  h2 { margin: 0; }
 
   .form-grid {
     display: grid;
@@ -128,62 +123,91 @@
   }
 }
 
+// TABLA MODERNIZADA (CON SCROLL INTERNO)
 .sumary {
   flex: 1;
   background-color: $white;
   border-radius: 12px;
   box-shadow: $shadow;
-  overflow-y: auto; // Permite scroll si hay muchos artículos
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 
   .sumary-table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 
     thead {
-      background-color: #c1c1c1;
-      position: sticky;
-      top: 0;
+      background-color: $primary;
+      color: $white;
+      flex-shrink: 0;
+      display: table;
+      width: 100%;
+      table-layout: fixed;
 
       th {
         padding: 1rem;
         font-size: 1rem;
         font-weight: 600;
-        border-bottom: 2px solid #eee;
         text-align: left;
+        border-bottom: 2px solid rgba(0,0,0,0.05);
+
+        &:first-child { border-top-left-radius: 12px; }
+        &:last-child { border-top-right-radius: 12px; }
       }
     }
 
-    tbody tr {
-      border-bottom: 1px solid #f0f0f0;
-      transition: background 0.2s;
+    tbody {
+      flex: 1;
+      overflow-y: auto;
+      display: block;
+      width: 100%;
 
-      &:hover {
-        background-color: #f3d1d1;
+      &::-webkit-scrollbar { width: 8px; }
+      &::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 10px;
       }
 
-      td {
-        font-size: 1rem;
-        padding: 14px 16px;
-        color: #000000;
+      tr {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+        border-bottom: 1px solid #f0f0f0;
+        transition: background 0.2s;
 
-        &.sumary-table-number {
-          font-weight: 600;
+        &:hover {
+          background-color: rgba($primary, 0.03); // Un toque sutil del color de marca
         }
 
-        &.sumary-table-price {
-          font-weight: 600;
-          color: $primary;
+        td {
+          font-size: 1rem;
+          padding: 14px 16px;
+          color: #000000;
+          word-break: break-word;
+
+          &.sumary-table-number {
+            font-weight: 600;
+          }
+
+          &.sumary-table-price {
+            font-weight: 600;
+            color: $primary;
+          }
+
+          // Alineación para acciones en la tabla
+          .table-row-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            justify-content: flex-end;
+          }
         }
       }
     }
   }
-}
-
-// Estilo para el botón de editar dentro de la tabla
-.table-row-actions {
-  width: fit-content;
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
-  align-items: center;
 }

@@ -19,10 +19,10 @@
         </div>
         <div class="company-info">
           <h1>Charcutería Cristóbal</h1>
-          <p class="cif">CIF: B12345678</p>
-          <p>Calle de Doña Urraca, 15</p>
-          <p>Latina, 28011 Madrid</p>
-          <p>Tel: 91 123 45 67 • info@charcuteriacristobal.com</p>
+          <p class="cif">NIE: X1082252X</p>
+          <p><strong>Krzysztof Robert Przybylek</strong></p>
+          <p>Calle de Doña Urraca, 15, </p>
+          <p>Mercado Tirso de Molina, 28011 Madrid</p>
         </div>
       </div>
 
@@ -47,21 +47,27 @@
         <h3>Facturar a</h3>
         <div class="client-details">
           <p class="client-name">{{ customerData().nombre }}</p>
-          <p class="client-cif">CIF/DNI: <strong>{{ customerData().cif || 'N/A' }}</strong></p>
+          
+          <p>
+            <span class="label">CIF/DNI: </span>
+            <span class="client-info">{{ customerData().cif || 'N/A' }}</span>
+          </p>
 
           @if (customerData().direccion || customerData().poblacion) {
-          <p class="client-address">
-            {{ customerData().direccion }}{{ customerData().direccion && customerData().poblacion ? ', ' : '' }}{{
-            customerData().poblacion }}
-          </p>
+            <p>
+              <span class="label">Dirección: </span>
+              <span class="client-address">
+                {{ customerData().direccion }}{{ customerData().direccion && customerData().poblacion ? ', ' : '' }}{{ customerData().poblacion }}
+              </span>
+            </p>
           }
 
           <div class="client-contact">
             @if (customerData().telefono) {
-            <p><span>Tel:</span> {{ customerData().telefono }}</p>
+              <p><span class="label">Teléfono:</span> {{ customerData().telefono }}</p>
             }
             @if (customerData().email) {
-            <p><span>Email:</span> {{ customerData().email }}</p>
+              <p><span class="label">Email:</span> {{ customerData().email }}</p>
             }
           </div>
         </div>
@@ -75,8 +81,8 @@
           <tr>
             <th class="col-codigo">Código</th>
             <th class="col-desc">Artículo</th>
-            <th class="col-num">Cant.</th>
-            <th class="col-num">€/un</th>
+            <th class="col-num">Cantidad</th>
+            <th class="col-num">€€ Ud./Kg</th>
             <th class="col-num">IVA</th>
             <th class="col-total">Importe</th>
           </tr>
@@ -102,12 +108,6 @@
 
     <!-- Resumen y Totales -->
     <section class="summary-section">
-      <div class="payment-info">
-        <h3>Información de Pago</h3>
-        <p>Transferencia bancaria a favor de Charcutería Cristóbal:</p>
-        <p class="iban">IBAN: ESXX XXXX XXXX XXXX XXXX</p>
-        <p class="notes">Gracias por confiar en nuestros productos.</p>
-      </div>
 
       <div class="totals-box">
         <div class="total-row">
