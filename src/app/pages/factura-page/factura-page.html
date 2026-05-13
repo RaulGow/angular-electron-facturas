@@ -1,5 +1,5 @@
 <div class="no-print floating-actions">
-  <app-action-button label="Dashboard" icon="assets/icons/arrow-go-back-fill.svg" variant="secondary" link="/dashboard">
+  <app-action-button label="Volver al inicio" icon="assets/icons/arrow-go-back-fill.svg" variant="secondary" link="/dashboard">
   </app-action-button>
 
   <app-action-button label="Generar PDF" icon="assets/icons/add-circle-line.svg" variant="primary" [isWhiteIcon]="true"
@@ -81,9 +81,9 @@
           <tr>
             <th class="col-codigo">Código</th>
             <th class="col-desc">Artículo</th>
-            <th class="col-num">Cantidad</th>
+            <th class="col-cant">Cantidad</th>
             <th class="col-num">€€ Ud./Kg</th>
-            <th class="col-num">IVA</th>
+            <th class="col-iva">IVA</th>
             <th class="col-total">Importe</th>
           </tr>
         </thead>
@@ -92,9 +92,9 @@
           <tr>
             <td class="col-codigo col-codigo-content">{{ item.codigo }}</td>
             <td class="col-desc">{{ item.nombre }}</td>
-            <td class="col-num">{{ item.cantidad | number:'1.2-2' }}</td>
+            <td class="col-cant">{{ item.cantidad | number:'1.2-2' }}</td>
             <td class="col-num">{{ item.precio | number:'1.2-2' }} €</td>
-            <td class="col-num">{{ item.iva }}%</td>
+            <td class="col-iva">{{ item.iva }}%</td>
             <td class="col-total">{{ getTotalLinea(item) | number:'1.2-2' }} €</td>
           </tr>
           } @empty {

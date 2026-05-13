@@ -262,6 +262,13 @@ $black: #000000;
   .items-table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
+
+    th,
+    td {
+      word-wrap: break-word; // Evita que el texto largo rompa la tabla
+      overflow: hidden;
+    }
 
     th {
       background-color: $primary;
@@ -295,19 +302,20 @@ $black: #000000;
     }
 
     .col-codigo {
-      width: 8%;
+      width: 8%; // Bajamos un poco
       text-align: left;
       font-family: monospace;
     }
 
-    .col-codigo-content {
-      color: $black;
-    }
-
     .col-desc {
-      width: 47%;
+      width: 41%; // Ajustamos para que el resto sume
       text-align: left;
       font-weight: 500;
+    }
+
+    .col-cant {
+      width: 13%;
+      text-align: right;
     }
 
     .col-num {
@@ -315,8 +323,13 @@ $black: #000000;
       text-align: right;
     }
 
+    .col-iva {
+      width: 8%;
+      text-align: right;
+    }
+
     .col-total {
-      width: 15%;
+      width: 15%; // <--- Ahora sí será exactamente el 20%
       text-align: right;
       font-weight: 600;
     }

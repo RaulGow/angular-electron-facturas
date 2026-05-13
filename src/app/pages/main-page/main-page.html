@@ -5,13 +5,11 @@
             <p>Bienvenido al sistema de facturación</p>
         </div>
 
-
-
-
         <div class="header-right">
             <p class="date">{{ fechaFormateada }}</p>
         </div>
     </div>
+
     <div class="dashboard-sumary">
         <app-card-summary
           link="/articulos"
@@ -31,55 +29,63 @@
           title="Facturas">
         </app-card-summary>
     </div>
+
     <div class="actions">
         <app-action-button
             label="Generar Factura"
             size="normal"
-            icon="assets/icons/delete-bin-2-line.svg"
+            icon="assets/icons/add-large-line.svg"
             variant="primary"
             [isWhiteIcon]="true"
             routerLink="/generar"
         ></app-action-button>
     </div>
+
     <div class="sumary">
         <table class="sumary-table">
             <thead>
                 <tr>
                     <th>Factura Nº</th>
-                    <th>Cliente</th>
-                    <th>CIF</th>
+                    <th>Cliente / CIF</th>
                     <th>Fecha</th>
-                    <th>Tlfno.</th>
-                    <th>Importe</th>
+                    <th>IVA (Cuota)</th>
+                    <th>Total</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
+                @for (factura of listaFacturas(); track factura.id) {
                 <tr>
-                    <td class="sumary-table-number">Fact-0001</td>
-                    <td>Pizzeria Kronos</td>
-                    <td>X-123589647</td>
-                    <td>15/01/2026</td>
-                    <td>914785987</td>
-                    <td class="sumary-table-price">750.00€</td>
+                    <td class="sumary-table-number">{{ factura.numero_factura }}</td>
+                    <td>
+                        <div style="font-weight: 500;">{{ factura.nombre_comercial || factura.nombre_fiscal }}</div>
+                        <div style="font-size: 0.85em; color: #666;">{{ factura.cif }}</div>
+                    </td>
+                    <td>{{ factura.fecha | date:'dd/MM/yyyy' }}</td>
+                    
+                    <td>{{ ((factura.cuota_4 || 0) + (factura.cuota_10 || 0)) | currency:'EUR' }}</td>
+                    
+                    <td class="sumary-table-price">{{ factura.total | currency:'EUR' }}</td>
                     <td>
                         <div class="table-row-actions">
                             <app-action-button
-                                label="Imprimir"
+                                label="Editar"
                                 size="small"
                                 icon="assets/icons/printer-line.svg"
                                 variant="primary"
                                 [isWhiteIcon]="true"
-                            ></app-action-button>
-                            <app-action-button
-                                label="Ver"
-                                size="small"
-                                icon="assets/icons/eye-line.svg"
-                                variant="secondary"
+                                (click)="imprimirFactura(factura.id)"
                             ></app-action-button>
                         </div>
                     </td>
                 </tr>
+                } @empty {
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 20px;">
+                        No hay facturas recientes para mostrar.
+                    </td>
+                </tr>
+                }
             </tbody>
         </table>
     </div>

@@ -58,5 +58,3 @@ contextBridge.exposeInMainWorld('electronAPI', {
     // Función para generar y guardar el PDF de la vista actual
     generatePDF: () => ipcRenderer.invoke('generate-pdf'),
 });
-
-console.log('🚀 Preload cargado: Sistema de Facturación y Clientes listo.');

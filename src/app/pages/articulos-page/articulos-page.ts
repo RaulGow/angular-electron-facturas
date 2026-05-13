@@ -69,8 +69,6 @@ export class ArticulosPage implements OnInit, OnDestroy {
       // 1. Esperamos a que el proceso de guardado (Insert o Update) termine en el Main
       await this.db.saveArticulo(articuloData);
 
-      console.log('✅ Artículo procesado con éxito');
-
       // 2. Cerramos el modal primero para mejorar la sensación de velocidad (UX)
       this.showModal.set(false);
 

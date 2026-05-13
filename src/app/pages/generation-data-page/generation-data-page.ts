@@ -98,7 +98,6 @@ export class GenerationDataPage implements OnInit {
 
   async cargarFacturaParaEdicion(id: number) {
     const data = await this.db.getFacturaDetalle(id);
-    console.log('📦 Datos recibidos de la DB:', data); // REVISA ESTO EN LA CONSOLA (F12)
 
     if (!data || !data.cabecera) return;
 
@@ -192,7 +191,6 @@ export class GenerationDataPage implements OnInit {
           iva: producto.iva || 0
         }, { emitEvent: false }); // No parches description: producto.nombre, ya que el select espera el ID internamente
         this.cdr.detectChanges();
-        console.log(`✅ Producto actualizado: ${producto.nombre} - Precio: ${producto.precio_venta}`);
       }
     });
 
@@ -276,7 +274,6 @@ export class GenerationDataPage implements OnInit {
           itemsProcesados,
           totales
         );
-        console.log('✅ Factura actualizada con éxito');
       } else {
         // Es una factura nueva
         idResultado = await this.db.crearFactura(
@@ -284,7 +281,6 @@ export class GenerationDataPage implements OnInit {
           itemsProcesados,
           totales
         );
-        console.log('✅ Factura creada con ID:', idResultado);
       }
 
       // 4. PASAR AL SERVICIO PARA EL PDF (Igual que antes)

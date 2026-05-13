@@ -1,27 +1,26 @@
 @use '../../../styles.scss' as *;
 
-// Reset para el componente y asegurar el 100% sin scroll
 .main-page {
   font-family: Arial, Helvetica, sans-serif;
   padding: 24px;
   background-color: $background;
   display: flex;
   flex-direction: column;
-  gap: 48px;
-  height: 100vh; // Ocupa todo el alto
-  width: 100%; // Ocupa todo el ancho
+  gap: 32px; // Reducido para que quepa todo mejor
+  height: 100vh;
+  width: 100%;
   box-sizing: border-box;
-  overflow: hidden; // Evita scroll general
+  overflow: hidden; // Evita scroll en el body, lo hace la tabla
 }
 
-// Estilos para el Header
+// Header unificado
 .header {
   display: flex;
-  flex-direction: row; // Los pone en fila
-  justify-content: space-between; // Uno a la izquierda, otro a la derecha
-  align-items: flex-end; // Alinea ambos bloques por la parte de abajo
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
   padding-bottom: 16px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1); // Opcional: una línea sutil separadora
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 
   .header-left {
     h1 {
@@ -30,7 +29,6 @@
       color: #000;
       line-height: 1.2;
     }
-
     p {
       margin: 4px 0 0;
       color: #666;
@@ -40,111 +38,102 @@
 
   .header-right {
     text-align: right;
-
     .date {
       font-size: 1.4rem;
       font-weight: 600;
-      color: #000000;
+      color: #333;
       margin: 0;
-    }
-
-    .time {
-      font-size: 1.1rem; // Un poco más pequeña que la fecha
-      font-weight: 400; // Menos grosor para que no compita
-      color: $primary; // Mantenemos el rojo para darle el toque de identidad
-      margin-top: -2px; // Pegamos un poquito más a la fecha
     }
   }
 }
 
-// Resumen de tarjetas
 .dashboard-sumary {
   display: flex;
   flex-wrap: wrap;
   width: 100%;
-  flex-direction: row;
   gap: 24px;
-  box-sizing: border-box;
 }
 
 .actions {
   display: flex;
   gap: 16px;
-
-  .actions-button {
-    background-color: $primary;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background 0.3s;
-
-    &-secondary {
-      background-color: #8dc5e6;
-      color: #000;
-    }
-
-    &:hover {
-      filter: brightness(1.1);
-    }
-
-    &:active {
-      transform: scale(0.98);
-    }
-  }
 }
 
-// Sección de Tabla (con scroll interno si hay muchos datos)
+// Estructura de tabla "Facturas Style" aplicada a Main
 .sumary {
   flex: 1;
   background-color: $white;
   border-radius: 12px;
   box-shadow: $shadow;
-  overflow: hidden; // Para que el borde redondeado funcione
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 
   .sumary-table {
     width: 100%;
-    border-collapse: collapse;
-    text-align: left;
+    border-collapse: separate;
+    border-spacing: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 
     thead {
-      background-color: #c1c1c1;
-      position: sticky;
-      top: 0;
+      background-color: $primary; // Ahora es rojo como en facturas
+      color: $white;
+      flex-shrink: 0;
+      display: table;
+      width: 100%;
+      table-layout: fixed;
 
       th {
-        font-size: 1.25rem;
-        padding: 16px;
-        color: #000000;
+        padding: 1rem;
+        font-size: 1rem;
         font-weight: 600;
-        border-bottom: 2px solid #eee;
+        text-align: center;
+        border-bottom: 2px solid rgba(0,0,0,0.05);
+
+        &:first-child { border-top-left-radius: 12px; }
+        &:last-child { border-top-right-radius: 12px; }
       }
     }
 
     tbody {
+      flex: 1;
+      overflow-y: auto;
+      display: block;
+      width: 100%;
+
+      // Scrollbar minimalista
+      &::-webkit-scrollbar { width: 8px; }
+      &::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 10px;
+      }
+
       tr {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
         border-bottom: 1px solid #f0f0f0;
+        transition: background 0.2s;
 
         &:hover {
-          background-color: #f3d1d1;
+          background-color: #f8f8f8; // Un gris más limpio
         }
 
         td {
           font-size: 1rem;
-          padding: 14px 16px;
-          color: #000000;
+          padding: 12px 16px;
+          color: #333;
+          text-align: center;
+          word-break: break-word;
 
           &.sumary-table-number {
             font-weight: 600;
           }
 
           &.sumary-table-price {
-            font-weight: 600;
+            font-weight: 700;
             color: $primary;
           }
         }
@@ -153,41 +142,9 @@
   }
 }
 
-// Estilo para el botón de editar dentro de la tabla
+// Acciones de la fila
 .table-row-actions {
   display: flex;
-  justify-content: flex-s;
-  gap: 1rem;
-
-  .edit-btn {
-    background: $white;
-    border: 1px solid $black;
-    color: $text-dark;
-    padding: 4px 12px;
-    border-radius: 4px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 1rem;
-
-    img {
-      width: 18px;
-      height: 18px;
-      filter: none;
-      transition: filter 0.2s ease;
-    }
-
-    &:hover {
-      background-color: $primary;
-      border: 1px solid $primary;
-      color: white;
-    }
-
-    &:hover img {
-      filter: brightness(0) invert(1);
-    }
-  }
+  justify-content: center;
+  gap: 8px;
 }
