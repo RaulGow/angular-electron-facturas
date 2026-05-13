@@ -2,6 +2,42 @@ const fs = require('fs');
 const path = require('path');
 const { app } = require('electron');
 
+/* ==========================================================
+    0. CREACIÓN DE COPIA DE SEGURIDAD
+   ========================================================== */
+
+/**
+ * Realiza una copia de seguridad de la base de datos
+ * @param {string} destinationFolder - Carpeta donde se guardará (opcional)
+ */
+async function createBackup(destinationFolder = null) {
+  const db = require('./db-manager'); // Importa tu conexión activa
+
+  // 1. Determinar ruta de destino
+  // Si no pasan carpeta, usamos una carpeta 'backups' en los datos de la app
+  const backupDir = destinationFolder || path.join(app.getPath('documents'), 'Backups_Charcuteria');
+
+  if (!fs.existsSync(backupDir)) {
+    fs.mkdirSync(backupDir, { recursive: true });
+  }
+
+  // 2. Crear nombre con fecha: charcuteria_2026-05-13_1530.db
+  const now = new Date();
+  const timestamp = now.toISOString().replace(/[:T]/g, '-').slice(0, 16);
+  const backupPath = path.join(backupDir, `backup_${timestamp}.db`);
+
+  try {
+    // 3. El método backup de better-sqlite3 es asíncrono y seguro
+    await db.backup(backupPath);
+    console.log(`Copia de seguridad creada en: ${backupPath}`);
+    return backupPath;
+  } catch (err) {
+    console.error('Error al crear la copia de seguridad:', err);
+    throw err;
+  }
+}
+
+
 const dbPath = path.join(app.getPath('userData'), 'charcuteria.db');
 
 // 🔴 PASO 1: DEJA ESTO ACTIVO SOLO PARA EL PRIMER ARRANQUE (RESET)

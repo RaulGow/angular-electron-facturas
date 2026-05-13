@@ -357,10 +357,80 @@ ipcMain.handle('generate-pdf', async () => {
 });
 
 /* ==============================
-    APP LIFECYCLE
+    SISTEMA DE COPIAS DE SEGURIDAD (30 días)
+   ============================== */
+async function realizarBackup() {
+  const backupDir = path.join(app.getPath('documents'), 'Backups_Charcuteria');
+
+  if (!fs.existsSync(backupDir)) {
+    fs.mkdirSync(backupDir, { recursive: true });
+  }
+
+  // --- 2. Generar nombre de archivo con la hora de MADRID ---
+  const ahora = new Date();
+
+  // Extraemos las partes de la fecha en formato Madrid
+  // Formato resultante: "2026-05-13_22-05"
+  const opciones = {
+    timeZone: 'Europe/Madrid',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  };
+
+  const partes = new Intl.DateTimeFormat('es-ES', opciones).formatToParts(ahora);
+  const d = partes.find(p => p.type === 'day').value;
+  const m = partes.find(p => p.type === 'month').value;
+  const y = partes.find(p => p.type === 'year').value;
+  const hour = partes.find(p => p.type === 'hour').value;
+  const min = partes.find(p => p.type === 'minute').value;
+
+  // Nombre del archivo: backup_2026-05-13_22-05.db
+  const fechaStr = `${y}-${m}-${d}_${hour}-${min}`;
+  const backupPath = path.join(backupDir, `backup_${fechaStr}.db`);
+
+  try {
+    // 3. Realizar la copia asíncrona
+    await db.backup(backupPath);
+    console.log(`✅ Backup creado (Hora Madrid): ${backupPath}`);
+
+    // 4. Limpieza: Mantener solo las últimas 30 copias
+    const archivos = fs.readdirSync(backupDir)
+      .filter(f => f.startsWith('backup_') && f.endsWith('.db'))
+      .map(f => ({
+        name: f,
+        time: fs.statSync(path.join(backupDir, f)).mtime.getTime()
+      }))
+      .sort((a, b) => b.time - a.time);
+
+    if (archivos.length > 30) {
+      const aBorrar = archivos.slice(30);
+      aBorrar.forEach(f => {
+        fs.unlinkSync(path.join(backupDir, f.name));
+        console.log(`🗑️ Backup antiguo eliminado: ${f.name}`);
+      });
+    }
+  } catch (err) {
+    console.error('❌ Error en backup:', err);
+  }
+}
+// 4. Limpieza: Mantener solo las últimas 30 copias
+
+
+/* ==============================
+    APP LIFECYCLE (Ciclo de Vida)
    ============================== */
 app.whenReady().then(createWindow);
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
+// MODIFICADO: Ahora hace backup antes de cerrar definitivamente
+app.on('window-all-closed', async () => {
+  console.log('Cerrando app y preparando backup...');
+  await realizarBackup();
+
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
 });
